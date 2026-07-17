@@ -6,8 +6,8 @@
 <title>Combustível de Frota — IURD Rio de Janeiro</title>
 <style>
   :root{
-    --verde:#3E82DC;
-    --verde-esc:#78B0FF;
+    --verde:#00A651;
+    --verde-esc:#3FCB82;
     --verde-mais-esc:#02040C;
     --amarelo:#D8B573;
     --amarelo-esc:#EAD09A;
@@ -15,8 +15,8 @@
     --text-600:#A7B6DE;
     --text-400:#6E7EA8;
     --paper:#050912;
-    --paper-grad:radial-gradient(1200px 640px at 10% -12%, rgba(62,130,220,0.28), transparent 60%),
-                 radial-gradient(900px 700px at 105% 5%, rgba(216,181,115,0.10), transparent 55%),
+    --paper-grad:radial-gradient(1200px 640px at 10% -12%, rgba(62,130,220,0.24), transparent 60%),
+                 radial-gradient(900px 700px at 105% 5%, rgba(0,166,81,0.16), transparent 55%),
                  linear-gradient(180deg, #060B18, #04070F 55%, #02040A);
     --card:rgba(140,175,255,0.075);
     --card-solid:#0A1226;
@@ -52,7 +52,7 @@
 
   /* ---------- header ---------- */
   .topbar{
-    background:linear-gradient(135deg, rgba(62,130,220,0.16), rgba(216,181,115,0.05)), var(--card);
+    background:linear-gradient(135deg, rgba(62,130,220,0.14), rgba(0,166,81,0.10)), var(--card);
     backdrop-filter:blur(var(--glass-blur));
     -webkit-backdrop-filter:blur(var(--glass-blur));
     border:1px solid var(--border);
@@ -244,7 +244,7 @@
   /* ---------- compartilhar destacado ---------- */
   .share-highlight{
     margin-top:16px;padding:14px;border-radius:var(--radius-md);
-    background:linear-gradient(135deg, rgba(62,130,220,0.16), rgba(216,181,115,0.05));
+    background:linear-gradient(135deg, rgba(62,130,220,0.14), rgba(0,166,81,0.10));
     border:1px solid var(--border);
   }
   .share-highlight-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--verde-esc);margin:0 0 10px;}
@@ -400,6 +400,21 @@
   .addr-status-warn{background:var(--warning-bg);color:var(--warning);border:1px solid transparent;}
   .addr-status-neutral{background:var(--card-solid);color:var(--text-600);border:1px dashed var(--border);}
 
+  .addr-bloco-picker{
+    background:linear-gradient(135deg, rgba(62,130,220,0.10), rgba(0,166,81,0.08));
+    border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;margin-bottom:14px;
+  }
+  .addr-bloco-igrejas{
+    display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;max-height:150px;overflow-y:auto;
+  }
+  .addr-bloco-chip{
+    border:1px solid var(--border);background:var(--card-solid);color:var(--text-600);
+    border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;
+    font-family:var(--font-body);
+  }
+  .addr-bloco-chip:hover{border-color:var(--verde);}
+  .addr-bloco-chip.ativo{background:var(--verde);border-color:var(--verde);color:#04140C;}
+
   /* ---------- print-only summary ---------- */
   .print-only{display:none;}
   @media print{
@@ -461,6 +476,15 @@
 
       <div id="adminPainel" hidden>
         <div class="addr-block">
+          <div class="addr-title" style="margin-bottom:10px;">Liberar edição de KM e preço</div>
+          <p class="hint">Por padrão, distância e preço do combustível ficam travados para todo mundo — vêm só do cálculo automático da rota e da tabela fixa. Ligue aqui se precisar corrigir manualmente por algum motivo, nesta sessão do navegador.</p>
+          <label class="checkbox-row" for="chkLiberarEdicao" style="margin:0;">
+            <input type="checkbox" id="chkLiberarEdicao">
+            <span>Permitir editar KM e preço manualmente agora</span>
+          </label>
+        </div>
+
+        <div class="addr-block">
           <div class="addr-title" style="margin-bottom:10px;">Trocar senha de acesso (todo mundo usa)</div>
           <div class="two-col">
             <div class="field"><label for="novaSenha1">Nova senha</label><div class="input-suffix"><input type="password" id="novaSenha1"></div></div>
@@ -478,6 +502,7 @@
           </div>
           <button type="button" class="btn-secondary" id="btnTrocarSenhaAdmin">Definir nova senha de administrador</button>
           <p class="hint" id="senhaAdminMsg"></p>
+
         </div>
 
         <div class="addr-block">
@@ -647,9 +672,9 @@
     <div class="layout" style="margin-top:0;">
       <div>
         <div class="field">
-          <label for="distancia">Distância percorrida</label>
-          <div class="input-suffix">
-            <input type="number" id="distancia" min="0" step="0.1" placeholder="0" inputmode="decimal">
+          <label for="distancia">Distância percorrida <span class="auto-badge" id="distanciaTravadaBadge">travado</span></label>
+          <div class="input-suffix campo-fixo" id="distanciaWrap">
+            <input type="number" id="distancia" min="0" step="0.1" placeholder="0" inputmode="decimal" readonly>
             <span>km</span>
           </div>
           <div class="hint" id="distanciaAutoHint" style="margin:6px 0 0;"></div>
@@ -671,7 +696,7 @@
 
         <div class="field">
           <label for="preco">Preço do combustível <span class="auto-badge" id="precoTipoBadge">fixo</span></label>
-          <div class="input-suffix campo-fixo">
+          <div class="input-suffix campo-fixo" id="precoWrap">
             <span class="prefix">R$</span>
             <input type="text" id="preco" value="7,10" readonly>
             <span>/L</span>
@@ -902,10 +927,16 @@
   // Preço fixo por combustível — sem edição manual (definido pelo administrador).
   // Obs.: não foi informado valor de Diesel; usei uma estimativa de mercado até confirmação.
   var PRECOS_FIXOS = {"Gasolina": 7.10, "Etanol": 6.50, "Diesel": 6.20, "Flex": 7.10};
+  var precoFuelTypeAtual = "Gasolina";
+  var edicaoAdminLiberada = false;
+  function atualizarBadgePreco(){
+    el.precoTipoBadge.textContent = precoFuelTypeAtual + (edicaoAdminLiberada ? " · editável (admin)" : " · fixo");
+  }
   function definirPrecoFixo(nomeCombustivel){
     var chave = PRECOS_FIXOS.hasOwnProperty(nomeCombustivel) ? nomeCombustivel : "Gasolina";
-    el.preco.value = fmtNum(PRECOS_FIXOS[chave], 2);
-    el.precoTipoBadge.textContent = chave + " · fixo";
+    precoFuelTypeAtual = chave;
+    if (!edicaoAdminLiberada) el.preco.value = fmtNum(PRECOS_FIXOS[chave], 2);
+    atualizarBadgePreco();
     calcular();
   }
   function formataPlacaExibicao(raw){
@@ -962,6 +993,23 @@
     IGREJAS_CONHECIDAS = Object.keys(set).sort();
   }
 
+  // Bloco -> lista de igrejas daquele bloco (para o seletor rápido do Destino)
+  var BLOCOS_CONHECIDOS = [];
+  var IGREJAS_POR_BLOCO = {};
+  (function(){
+    var mapa = {};
+    DB.vehicles.forEach(function(v){
+      var bloco = v[1], igreja = v[3];
+      if (!bloco || !igreja) return;
+      if (!mapa[bloco]) mapa[bloco] = {};
+      mapa[bloco][igreja] = true;
+    });
+    BLOCOS_CONHECIDOS = Object.keys(mapa).sort();
+    BLOCOS_CONHECIDOS.forEach(function(bloco){
+      IGREJAS_POR_BLOCO[bloco] = Object.keys(mapa[bloco]).sort();
+    });
+  })();
+
   function haversineKm(lat1, lon1, lat2, lon2){
     var R = 6371;
     var dLat = (lat2 - lat1) * Math.PI / 180;
@@ -973,7 +1021,7 @@
     return R * c;
   }
 
-  function criarBlocoEnderecoElemento(titulo, removivel){
+  function criarBlocoEnderecoElemento(titulo, removivel, comBlocoPicker){
     var div = document.createElement("div");
     div.className = "addr-block";
     div.innerHTML =
@@ -981,6 +1029,13 @@
         '<span class="addr-title">' + titulo + '</span>' +
         (removivel ? '<button type="button" class="addr-remove" title="Remover parada">&times;</button>' : '') +
       '</div>' +
+      (comBlocoPicker ?
+        '<div class="field addr-bloco-picker">' +
+          '<label>Escolher por bloco (opcional, mais rápido)</label>' +
+          '<select class="addr-bloco-select"><option value="">Selecione um bloco…</option></select>' +
+          '<div class="addr-bloco-igrejas" hidden></div>' +
+        '</div>'
+      : "") +
       '<div class="field" style="position:relative;margin-bottom:12px;">' +
         '<label>Igreja / local</label>' +
         '<div class="input-suffix"><input type="text" class="addr-igreja" placeholder="Nome da igreja ou local" autocomplete="off"></div>' +
@@ -1001,6 +1056,35 @@
         '<div class="input-suffix"><textarea class="addr-endereco" rows="2" placeholder="Rua, número, bairro, cidade/UF"></textarea></div>' +
       '</div>' +
       '<button type="button" class="btn-ghost small addr-salvar">Salvar este endereço para esta igreja</button>';
+
+    if (comBlocoPicker){
+      var selectEl = div.querySelector(".addr-bloco-select");
+      BLOCOS_CONHECIDOS.forEach(function(bloco){
+        var opt = document.createElement("option");
+        opt.value = bloco; opt.textContent = bloco;
+        selectEl.appendChild(opt);
+      });
+      var listaEl = div.querySelector(".addr-bloco-igrejas");
+      selectEl.addEventListener("change", function(){
+        var bloco = selectEl.value;
+        listaEl.innerHTML = "";
+        if (!bloco){ listaEl.hidden = true; return; }
+        var igrejas = IGREJAS_POR_BLOCO[bloco] || [];
+        igrejas.forEach(function(nome){
+          var chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "addr-bloco-chip";
+          chip.textContent = nome;
+          chip.addEventListener("click", function(){
+            if (div._api) div._api.setIgreja(nome);
+            listaEl.querySelectorAll(".addr-bloco-chip").forEach(function(c){ c.classList.remove("ativo"); });
+            chip.classList.add("ativo");
+          });
+          listaEl.appendChild(chip);
+        });
+        listaEl.hidden = igrejas.length === 0;
+      });
+    }
     return div;
   }
 
@@ -1131,7 +1215,7 @@
       atualizarIgrejasConhecidas();
     });
 
-    return {
+    var api = {
       get igreja(){ return igrejaInput.value.trim(); },
       get endereco(){ return enderecoInput.value.trim(); },
       get lat(){ return latAtual; },
@@ -1155,6 +1239,8 @@
         setStatus("Preencha a igreja ou o CEP", "neutral");
       }
     };
+    root._api = api;
+    return api;
   }
 
   var blocoOrigem = null, blocoDestino = null;
@@ -1921,6 +2007,17 @@
     });
   });
 
+  document.getElementById("chkLiberarEdicao").addEventListener("change", function(){
+    edicaoAdminLiberada = this.checked;
+    el.distancia.readOnly = !edicaoAdminLiberada;
+    el.preco.readOnly = !edicaoAdminLiberada;
+    document.getElementById("distanciaWrap").classList.toggle("campo-fixo", !edicaoAdminLiberada);
+    document.getElementById("precoWrap").classList.toggle("campo-fixo", !edicaoAdminLiberada);
+    document.getElementById("distanciaTravadaBadge").textContent = edicaoAdminLiberada ? "editável (admin)" : "travado";
+    atualizarBadgePreco();
+    if (!edicaoAdminLiberada) definirPrecoFixo(precoFuelTypeAtual);
+  });
+
   document.getElementById("btnTrocarSenha").addEventListener("click", function(){
     var s1 = document.getElementById("novaSenha1").value;
     var s2 = document.getElementById("novaSenha2").value;
@@ -1983,7 +2080,7 @@
   atualizarIgrejasConhecidas();
   el.origemBlocoWrap.appendChild(criarBlocoEnderecoElemento("Igreja de origem (via placa)", false));
   blocoOrigem = inicializarBlocoEndereco(el.origemBlocoWrap.querySelector(".addr-block"), agendarRecalculoRota);
-  el.destinoBlocoWrap.appendChild(criarBlocoEnderecoElemento("Igreja / endereço de destino", false));
+  el.destinoBlocoWrap.appendChild(criarBlocoEnderecoElemento("Igreja / endereço de destino", false, true));
   blocoDestino = inicializarBlocoEndereco(el.destinoBlocoWrap.querySelector(".addr-block"), agendarRecalculoRota);
   document.getElementById("btnAddParada").addEventListener("click", adicionarParada);
   atualizarUiParadas();
