@@ -6,64 +6,38 @@
 <title>Combustível de Frota — IURD Rio de Janeiro</title>
 <style>
   :root{
-    --verde:#2FA9BC;
-    --verde-esc:#5FC4D4;
-    --verde-mais-esc:#04141A;
-    --amarelo:#E8B84B;
-    --amarelo-esc:#F2CC77;
-    --ink:#EAF4F6;
-    --text-600:#9FB9C0;
-    --text-400:#6C8890;
-    --paper:#061217;
-    --paper-grad:radial-gradient(1100px 620px at 12% -10%, rgba(47,169,188,0.22), transparent 60%),
-                 radial-gradient(900px 700px at 100% 0%, rgba(232,184,75,0.10), transparent 55%),
-                 linear-gradient(180deg, #071A20, #050F13 60%, #040B0E);
-    --card:rgba(255,255,255,0.09);
-    --card-solid:#0D242C;
-    --border:rgba(255,255,255,0.11);
-    --glass-blur:18px;
-    --success:#3FCB8E;
-    --success-bg:rgba(63,203,142,0.16);
-    --warning:#F2B93B;
-    --warning-bg:rgba(242,185,59,0.16);
-    --danger:#FF7A70;
-    --danger-bg:rgba(255,122,112,0.16);
-    --radius-lg:16px;
-    --radius-md:10px;
-    --shadow:0 20px 44px rgba(0,0,0,0.45);
+    --verde:#3E82DC;
+    --verde-esc:#78B0FF;
+    --verde-mais-esc:#02040C;
+    --amarelo:#D8B573;
+    --amarelo-esc:#EAD09A;
+    --ink:#EEF3FE;
+    --text-600:#A7B6DE;
+    --text-400:#6E7EA8;
+    --paper:#050912;
+    --paper-grad:radial-gradient(1200px 640px at 10% -12%, rgba(62,130,220,0.28), transparent 60%),
+                 radial-gradient(900px 700px at 105% 5%, rgba(216,181,115,0.10), transparent 55%),
+                 linear-gradient(180deg, #060B18, #04070F 55%, #02040A);
+    --card:rgba(140,175,255,0.075);
+    --card-solid:#0A1226;
+    --border:rgba(160,195,255,0.20);
+    --glass-blur:22px;
+    --success:#4ADE9E;
+    --success-bg:rgba(74,222,158,0.15);
+    --warning:#F0C158;
+    --warning-bg:rgba(240,193,88,0.15);
+    --danger:#FF7A85;
+    --danger-bg:rgba(255,122,133,0.15);
+    --radius-lg:18px;
+    --radius-md:11px;
+    --shadow:0 24px 54px rgba(0,4,16,0.55);
     --font-head: Helvetica, Arial, sans-serif;
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  }
-  }
-  [data-theme="light"]{
-    --verde:#0E6E80;
-    --verde-esc:#0A4E59;
-    --verde-mais-esc:#072B33;
-    --amarelo:#B9862B;
-    --amarelo-esc:#96691C;
-    --ink:#0B2229;
-    --text-600:#48666D;
-    --text-400:#7C9AA1;
-    --paper:#EEF4F5;
-    --paper-grad:radial-gradient(1100px 620px at 12% -10%, rgba(14,110,128,0.08), transparent 60%),
-                 linear-gradient(180deg, #F3F8F9, #E9F0F1);
-    --card:#FFFFFF;
-    --card-solid:#FFFFFF;
-    --border:#D7E4E6;
-    --glass-blur:0px;
-    --success:#0E7A4D;
-    --success-bg:#E1F3EA;
-    --warning:#93650A;
-    --warning-bg:#FBF0DC;
-    --danger:#B3261E;
-    --danger-bg:#FCE9E8;
-    --shadow:0 14px 32px rgba(7,43,51,0.12);
   }
   *{box-sizing:border-box;}
   [hidden]{display:none !important;}
   html,body{margin:0;padding:0;}
   html{color-scheme:dark;}
-  [data-theme="light"]{color-scheme:light;}
   body{
     background-color:var(--paper);
     background-image:var(--paper-grad);
@@ -72,14 +46,13 @@
     font-family:var(--font-body);
     -webkit-font-smoothing:antialiased;
     line-height:1.4;
-    transition:background-color .2s ease, color .2s ease;
     min-height:100vh;
   }
   .app{max-width:1120px;margin:0 auto;padding:0 20px 64px;}
 
   /* ---------- header ---------- */
   .topbar{
-    background:linear-gradient(135deg, rgba(47,169,188,0.16), rgba(232,184,75,0.05)), var(--card);
+    background:linear-gradient(135deg, rgba(62,130,220,0.16), rgba(216,181,115,0.05)), var(--card);
     backdrop-filter:blur(var(--glass-blur));
     -webkit-backdrop-filter:blur(var(--glass-blur));
     border:1px solid var(--border);
@@ -98,7 +71,7 @@
     right:-70px;top:-70px;
     width:220px;height:220px;
     border-radius:50%;
-    background:radial-gradient(circle, rgba(47,169,188,0.16), transparent 70%);
+    background:radial-gradient(circle, rgba(62,130,220,0.16), transparent 70%);
     pointer-events:none;
   }
   .eyebrow{
@@ -156,7 +129,7 @@
     backdrop-filter:blur(var(--glass-blur));
     -webkit-backdrop-filter:blur(var(--glass-blur));
     border-radius:var(--radius-lg);
-    box-shadow:var(--shadow);
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(210,225,255,0.16), inset 0 0 0 1px rgba(255,255,255,0.02);
     border:1px solid var(--border);
     padding:24px;
   }
@@ -211,7 +184,7 @@
   .plate-sub{
     text-align:center;font-size:8px;letter-spacing:2px;color:#555;padding-bottom:5px;font-weight:700;
   }
-  .plate-box:focus-within{box-shadow:0 3px 0 rgba(0,0,0,0.12), 0 0 0 3px rgba(0,133,66,0.25);}
+  .plate-box:focus-within{box-shadow:0 3px 0 rgba(0,0,0,0.12), 0 0 0 3px rgba(62,130,220,0.25);}
 
   .autocomplete-panel{
     position:relative;max-width:280px;
@@ -239,7 +212,7 @@
   .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
   @media (max-width:420px){.info-grid{grid-template-columns:1fr;}}
   .info-item{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;}
-  .info-item.auto-item{border-left:3px solid var(--verde);background:linear-gradient(90deg, rgba(47,169,188,0.10), transparent 60%), var(--paper);}
+  .info-item.auto-item{border-left:3px solid var(--verde);background:linear-gradient(90deg, rgba(62,130,220,0.10), transparent 60%), var(--paper);}
   .info-label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-600);margin-bottom:3px;font-weight:700;}
   .info-value{display:block;font-size:14px;font-weight:700;color:var(--ink);}
   .badge{
@@ -271,7 +244,7 @@
   /* ---------- compartilhar destacado ---------- */
   .share-highlight{
     margin-top:16px;padding:14px;border-radius:var(--radius-md);
-    background:linear-gradient(135deg, rgba(47,169,188,0.16), rgba(232,184,75,0.05));
+    background:linear-gradient(135deg, rgba(62,130,220,0.16), rgba(216,181,115,0.05));
     border:1px solid var(--border);
   }
   .share-highlight-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--verde-esc);margin:0 0 10px;}
@@ -312,7 +285,7 @@
     display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--radius-md);
     background:var(--card);overflow:hidden;transition:border-color .15s ease, box-shadow .15s ease, background-color .2s ease;
   }
-  .input-suffix:focus-within{border-color:var(--verde);box-shadow:0 0 0 3px rgba(0,133,66,0.14);}
+  .input-suffix:focus-within{border-color:var(--verde);box-shadow:0 0 0 3px rgba(62,130,220,0.14);}
   .input-suffix input, .input-suffix textarea{
     border:none;background:transparent;outline:none;padding:11px 10px;font-size:15px;
     font-family:var(--font-body);font-variant-numeric:tabular-nums;color:var(--ink);width:100%;min-width:0;
@@ -443,24 +416,6 @@
   @media (prefers-reduced-motion:reduce){
     #gaugeNeedle,.compare-bar-fill{transition:none;}
   }
-
-  /* ---------- mobile preview mode (moldura com iframe real) ---------- */
-  .mobile-preview-overlay{
-    position:fixed;inset:0;z-index:200;
-    background:rgba(0,0,0,0.75);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
-    padding:20px;
-  }
-  .mobile-preview-frame{
-    width:390px;max-width:90vw;height:min(844px, 85vh);
-    border:10px solid #0a0d10;border-radius:38px;
-    overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.6);
-    background:#000;
-  }
-  .mobile-preview-frame iframe{
-    width:100%;height:100%;border:none;display:block;
-  }
-  .mobile-preview-close{width:auto;padding:10px 20px;}
 </style>
 </head>
 <body>
@@ -581,8 +536,7 @@
           <p>Consulta por placa · rota com paradas · custo de viagem</p>
         </div>
         <div class="topbar-controls">
-          <button type="button" class="icon-btn" id="btnMobile" title="Visualizar como celular" aria-label="Visualizar como celular">📱</button>
-          <button type="button" class="icon-btn" id="btnTema" title="Alternar tema claro/escuro" aria-label="Alternar tema">🌙</button>
+          <button type="button" class="icon-btn" id="btnMobile" title="Abrir em janela de celular (redimensionável)" aria-label="Abrir em janela de celular">📱</button>
           <button type="button" class="icon-btn" id="btnFullscreen" title="Tela cheia" aria-label="Tela cheia">⛶</button>
           <div class="share-menu-wrap">
             <button type="button" class="icon-btn" id="btnCompartilharTopo" title="Compartilhar resumo" aria-label="Compartilhar resumo">📤</button>
@@ -690,7 +644,7 @@
       <div class="card-title-row"><span class="card-step">5</span><h2>Cálculo da viagem</h2></div>
     </div>
 
-    <div class="layout" style="margin-top:0;grid-template-columns:1fr 1fr;">
+    <div class="layout" style="margin-top:0;">
       <div>
         <div class="field">
           <label for="distancia">Distância percorrida</label>
@@ -750,16 +704,16 @@
           <svg id="gaugeSvg" viewBox="0 0 200 120" role="img" aria-hidden="true">
             <defs>
               <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#CDEBD8"/>
-                <stop offset="55%" stop-color="#008542"/>
-                <stop offset="100%" stop-color="#00351B"/>
+                <stop offset="0%" stop-color="#BFD6FF"/>
+                <stop offset="55%" stop-color="#3E82DC"/>
+                <stop offset="100%" stop-color="#050912"/>
               </linearGradient>
             </defs>
             <path d="M20,110 A80,80 0 0 1 180,110" fill="none" stroke="url(#gaugeGrad)" stroke-width="14" stroke-linecap="round"/>
-            <text x="14" y="108" font-size="10" fill="#7C8C82" font-family="sans-serif">E</text>
-            <text x="180" y="108" font-size="10" fill="#7C8C82" font-family="sans-serif" text-anchor="end">F</text>
-            <circle cx="100" cy="110" r="7" fill="#00351B"/>
-            <line id="gaugeNeedle" x1="100" y1="110" x2="100" y2="42" stroke="#00351B" stroke-width="4" stroke-linecap="round" transform="rotate(-90 100 110)"/>
+            <text x="14" y="108" font-size="10" fill="#6E7EA8" font-family="sans-serif">E</text>
+            <text x="180" y="108" font-size="10" fill="#6E7EA8" font-family="sans-serif" text-anchor="end">F</text>
+            <circle cx="100" cy="110" r="7" fill="#EEF3FE"/>
+            <line id="gaugeNeedle" x1="100" y1="110" x2="100" y2="42" stroke="#EEF3FE" stroke-width="4" stroke-linecap="round" transform="rotate(-90 100 110)"/>
           </svg>
           <div class="gauge-label" id="gaugeLabel">Informe a capacidade do tanque</div>
         </div>
@@ -1789,25 +1743,25 @@
     canvas.width = W; canvas.height = H;
     var ctx = canvas.getContext("2d");
 
-    ctx.fillStyle = "#04141A";
+    ctx.fillStyle = "#02040C";
     ctx.fillRect(0,0,W,H);
-    ctx.fillStyle = "#2FA9BC";
+    ctx.fillStyle = "#3E82DC";
     ctx.fillRect(0,0,W,6);
 
-    ctx.fillStyle = "#E8B84B";
+    ctx.fillStyle = "#D8B573";
     ctx.font = "bold 14px Arial";
     ctx.fillText("IURD · RIO DE JANEIRO — GESTÃO DE FROTA", padding, padding+8);
 
-    ctx.fillStyle = "#EAF4F6";
+    ctx.fillStyle = "#EEF3FE";
     ctx.font = "bold 26px Arial";
     ctx.fillText("Resumo da viagem", padding, padding+46);
 
     var y = padding + 96;
     linhas.forEach(function(par){
-      ctx.fillStyle = "#9FB9C0";
+      ctx.fillStyle = "#A7B6DE";
       ctx.font = "bold 11px Arial";
       ctx.fillText(String(par[0]).toUpperCase(), padding, y);
-      ctx.fillStyle = "#EAF4F6";
+      ctx.fillStyle = "#EEF3FE";
       ctx.font = "16px Arial";
       var texto = String(par[1]);
       if (ctx.measureText(texto).width > (W - padding*2)){
@@ -1818,7 +1772,7 @@
       y += lineH;
     });
 
-    ctx.fillStyle = "#6C8890";
+    ctx.fillStyle = "#6E7EA8";
     ctx.font = "11px Arial";
     ctx.fillText("Gerado em " + new Date().toLocaleString("pt-BR") + " — valores estimados.", padding, H-24);
 
@@ -1869,41 +1823,11 @@
   }
   document.getElementById("btnLimparTudo").addEventListener("click", limparTudo);
 
-  // ================= TEMA (claro/escuro) =================
-  var TEMA_KEY = "combustivel_frota_tema";
-  function aplicarTema(tema){
-    if (tema === "light"){
-      document.documentElement.setAttribute("data-theme", "light");
-      document.getElementById("btnTema").textContent = "☀";
-    } else {
-      document.documentElement.removeAttribute("data-theme");
-      document.getElementById("btnTema").textContent = "🌙";
-    }
-    void document.body.offsetHeight; // força reflow em navegadores que não repintam custom properties sozinhos
-    try { localStorage.setItem(TEMA_KEY, tema); } catch(e){}
-  }
-  document.getElementById("btnTema").addEventListener("click", function(){
-    var atual = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
-    aplicarTema(atual === "light" ? "dark" : "light");
-  });
-
   // ================= VISUALIZAR COMO CELULAR =================
-  var btnMobile = document.getElementById("btnMobile");
-  btnMobile.addEventListener("click", function(){
-    if (document.getElementById("mobilePreviewOverlay")) return;
-    var overlay = document.createElement("div");
-    overlay.id = "mobilePreviewOverlay";
-    overlay.className = "mobile-preview-overlay";
-    overlay.innerHTML =
-      '<div class="mobile-preview-frame"><iframe src="' + location.href.split("#")[0] + '"></iframe></div>' +
-      '<button type="button" class="btn-secondary mobile-preview-close" id="btnFecharMobile">Fechar pré-visualização</button>';
-    document.body.appendChild(overlay);
-    document.getElementById("btnFecharMobile").addEventListener("click", function(){
-      overlay.remove();
-    });
-    overlay.addEventListener("click", function(ev){
-      if (ev.target === overlay) overlay.remove();
-    });
+  document.getElementById("btnMobile").addEventListener("click", function(){
+    var url = location.href.split("#")[0];
+    var w = window.open(url, "previa_celular", "width=400,height=860,resizable=yes,scrollbars=yes");
+    if (!w) alert("O navegador bloqueou a janela nova. Libere pop-ups para este site e tente de novo.");
   });
 
   // ================= TELA CHEIA =================
@@ -2074,10 +1998,6 @@
   limparIdentificacao();
   renderHistorico();
   renderImportadas();
-
-  var temaSalvo = "dark";
-  try { temaSalvo = localStorage.getItem(TEMA_KEY) || "dark"; } catch(e){}
-  aplicarTema(temaSalvo);
 
   if (!checarBloqueioOffline()){
     var jaAutenticado = false;
