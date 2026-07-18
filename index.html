@@ -95,19 +95,31 @@
   }
   .topbar p{margin:0;color:var(--text-600);font-size:13px;}
   .topbar-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
-  .topbar-controls{display:flex;gap:7px;flex:0 0 auto;}
+  .topbar-controls{display:flex;gap:9px;flex:0 0 auto;flex-wrap:wrap;}
   .icon-btn{
-    width:36px;height:36px;border-radius:10px;flex:0 0 auto;
+    width:44px;height:44px;border-radius:12px;flex:0 0 auto;
     border:1px solid var(--border);
     background:linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.01)), var(--paper);
     color:var(--ink);
-    font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;
     line-height:1;transition:background-color .15s ease, border-color .15s ease, transform .1s ease;
     box-shadow:0 3px 8px rgba(0,4,16,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
   }
   .icon-btn:hover{border-color:var(--verde);}
   .icon-btn:active{transform:translateY(1px);}
-  @media (max-width:480px){ .topbar-controls{width:100%;justify-content:flex-start;} }
+  .icon-btn-destaque{
+    width:auto;padding:0 16px;gap:7px;border-color:var(--verde);
+    background:linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0)), var(--verde);
+    box-shadow:0 6px 18px rgba(0,166,81,0.4), inset 0 1px 0 rgba(255,255,255,0.35);
+    animation:pulseDestaque 2.6s ease-in-out infinite;
+  }
+  .icon-btn-destaque span{font-size:14px;font-weight:800;color:#04140C;white-space:nowrap;}
+  .icon-btn-destaque:hover{border-color:var(--verde-esc);background:linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0)), var(--verde-esc);}
+  @keyframes pulseDestaque{
+    0%, 100% { box-shadow:0 6px 18px rgba(0,166,81,0.4), inset 0 1px 0 rgba(255,255,255,0.35); }
+    50% { box-shadow:0 6px 22px rgba(0,166,81,0.7), inset 0 1px 0 rgba(255,255,255,0.35); }
+  }
+  @media (max-width:480px){ .topbar-controls{width:100%;justify-content:flex-start;} .icon-btn-destaque span{display:none;} .icon-btn-destaque{width:44px;padding:0;} }
   .topbar-meta{
     margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;
   }
@@ -620,7 +632,7 @@
             </div>
           </div>
           <button type="button" class="icon-btn" id="btnSolicitacoes" title="Minhas solicitações" aria-label="Minhas solicitações">📋</button>
-          <a href="painel-limite-cartao.html" target="_blank" rel="noopener" class="icon-btn" title="Abrir painel de limite de cartão" aria-label="Abrir painel de limite de cartão" style="text-decoration:none;">🪪</a>
+          <a href="painel-limite-cartao.html" target="_blank" rel="noopener" class="icon-btn icon-btn-destaque" title="Abrir painel de limite de cartão" aria-label="Abrir painel de limite de cartão" style="text-decoration:none;">🪪<span>Painel de limite</span></a>
           <button type="button" class="icon-btn" id="btnAdmin" title="Área do administrador" aria-label="Área do administrador">⚙</button>
           <button type="button" class="icon-btn" id="btnSair" title="Sair" aria-label="Sair" hidden>⏻</button>
         </div>
