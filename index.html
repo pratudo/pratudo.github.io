@@ -47,7 +47,10 @@
     -webkit-font-smoothing:antialiased;
     line-height:1.4;
     min-height:100vh;
+    -webkit-user-select:none;-moz-user-select:none;user-select:none;
   }
+  body.modo-admin{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
+  input, textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
   .app{max-width:1120px;margin:0 auto;padding:0 20px 64px;}
 
   /* ---------- header ---------- */
@@ -520,11 +523,11 @@
 
       <div id="adminPainel" hidden>
         <div class="addr-block">
-          <div class="addr-title" style="margin-bottom:10px;">Liberar edição de KM e consumo</div>
-          <p class="hint">Por padrão, distância (vem do cálculo automático da rota) e consumo médio (vem do modelo do veículo) ficam travados para todo mundo. Ligue aqui se precisar corrigir manualmente por algum motivo, nesta sessão do navegador. O preço do combustível já é livre para todos editarem.</p>
+          <div class="addr-title" style="margin-bottom:10px;">Liberar edição de KM, consumo e preço</div>
+          <p class="hint">Por padrão, distância (rota automática), consumo (12 km/L gasolina, 10 km/L diesel) e preço (R$ 6,70 gasolina, R$ 6,90 diesel) ficam travados para todo mundo. Ligue aqui pra corrigir manualmente nesta sessão. Entrar com a senha de administrador (em qualquer uma das telas) já libera tudo automaticamente.</p>
           <label class="checkbox-row" for="chkLiberarEdicao" style="margin:0;">
             <input type="checkbox" id="chkLiberarEdicao">
-            <span>Permitir editar KM e consumo manualmente agora</span>
+            <span>Permitir editar KM, consumo e preço manualmente agora</span>
           </label>
         </div>
 
@@ -622,7 +625,7 @@
         </div>
       </div>
       <div class="topbar-meta">
-        <span class="meta-chip">Combustível de referência: R$ 7,10/L</span>
+        <span class="meta-chip">Combustível de referência: R$ 6,70/L (diesel R$ 6,90/L)</span>
       </div>
     </div>
   </header>
@@ -744,10 +747,10 @@
         </div>
 
         <div class="field">
-          <label for="preco">Preço do combustível <span class="auto-badge" id="precoTipoBadge">sugerido</span></label>
-          <div class="input-suffix" id="precoWrap">
+          <label for="preco">Preço do combustível <span class="auto-badge" id="precoTipoBadge">fixo</span></label>
+          <div class="input-suffix campo-fixo" id="precoWrap">
             <span class="prefix">R$</span>
-            <input type="text" id="preco" value="7,10" inputmode="decimal">
+            <input type="text" id="preco" value="6,70" inputmode="decimal" readonly>
             <span>/L</span>
           </div>
         </div>
@@ -921,6 +924,17 @@
 
   var SITE_CONFIG = JSON.parse(document.getElementById("site-config").textContent);
 
+  // Bloqueia clique-direito e cópia para quem não é administrador.
+  // Aviso: isso não é segurança de verdade (dá pra contornar via ferramentas de navegador),
+  // é só uma barreira contra cópia casual.
+  document.addEventListener("contextmenu", function(ev){
+    if (!isAdmin) ev.preventDefault();
+  });
+  document.addEventListener("copy", function(ev){
+    if (!isAdmin) ev.preventDefault();
+  });
+
+
   var STORAGE_KEY = "combustivel_frota_historico_v2";
   var NOME_SOLICITANTE_KEY = "combustivel_frota_nome_solicitante";
   var DB = JSON.parse(document.getElementById("vehicle-data").textContent);
@@ -931,7 +945,7 @@
   DB.vehicles.forEach(function(v){ vehicleByPlate[normalizaPlaca(v[0])] = v; });
 
   var percursoAtual = "ida";
-  var edicaoAdminLiberada = false;
+  var isAdmin = false;
   var currentVehicle = null; // {placa, bloco, regiao, igreja, modeloIdx, ano}
   var lastResult = null;
 
@@ -1037,18 +1051,24 @@
     el.vehicleIconWrap.hidden = true;
   }
 
-  // Preco sugerido por combustivel — o valor inicial vem daqui, mas pode ser ajustado livremente.
-  // Obs.: não foi informado valor de Diesel; usei uma estimativa de mercado até confirmação.
-  var PRECOS_FIXOS = {"Gasolina": 7.10, "Etanol": 6.50, "Diesel": 6.20, "Flex": 7.10};
+  // Preço e consumo fixos por combustível — travados, só o administrador edita.
+  var PRECOS_FIXOS = {"Gasolina": 6.70, "Etanol": 6.70, "Diesel": 6.90, "Flex": 6.70};
+  var CONSUMOS_FIXOS = {"Gasolina": 12, "Etanol": 12, "Diesel": 10, "Flex": 12};
   var precoFuelTypeAtual = "Gasolina";
   function definirPrecoFixo(nomeCombustivel){
     var chave = PRECOS_FIXOS.hasOwnProperty(nomeCombustivel) ? nomeCombustivel : "Gasolina";
     precoFuelTypeAtual = chave;
-    el.precoTipoBadge.textContent = chave + " · sugerido";
-    if (el.preco.dataset.editadoManual !== "1"){
+    if (!isAdmin || el.preco.dataset.editadoManual !== "1"){
       el.preco.value = fmtNum(PRECOS_FIXOS[chave], 2);
       marcarAuto(el.preco, true);
     }
+    if (!isAdmin || el.consumoAtivo.dataset.editadoManual !== "1"){
+      el.consumoAtivo.value = fmtNum(CONSUMOS_FIXOS[chave], 0);
+    }
+    if (!el.fallbackManual.hidden && !el.consumoManual.value){
+      el.consumoManual.value = fmtNum(CONSUMOS_FIXOS[chave], 0);
+    }
+    atualizarBadgePreco();
     calcular();
   }
   function formataPlacaExibicao(raw){
@@ -1399,7 +1419,7 @@
 
     // Campo travado por padrão: o cálculo automático sempre vale, sem precisar de clique.
     // Só não sobrescreve se o administrador tiver liberado edição manual e já tiver digitado outro valor.
-    var respeitarValorManual = edicaoAdminLiberada && el.distancia.dataset.autoPreenchido !== "1" && el.distancia.value !== "";
+    var respeitarValorManual = isAdmin && el.distancia.dataset.autoPreenchido !== "1" && el.distancia.value !== "";
     if (!respeitarValorManual){
       el.distancia.value = distanciaAutoValor;
       el.distancia.dataset.autoPreenchido = "1";
@@ -1499,6 +1519,8 @@
       el.origemBlocoWrap.hidden = true;
       esconderIconeVeiculo();
       if (blocoOrigem) blocoOrigem.limpar();
+      el.preco.dataset.editadoManual = "0";
+      el.consumoAtivo.dataset.editadoManual = "0";
       definirPrecoFixo(el.tipoCombustivelManual.value);
       calcular();
       return;
@@ -1509,7 +1531,7 @@
     el.placaStatus.className = "status-line show status-ok";
     el.placaStatus.textContent = "Veículo encontrado na base.";
 
-    el.infoModelo.innerHTML = modelo[0] + (modelo[5] ? '<span class="badge badge-estimate">estimativa</span>' : '<span class="badge badge-official">INMETRO</span>');
+    el.infoModelo.textContent = modelo[0];
     el.infoMotor.textContent = modelo[1];
     el.infoCambio.textContent = modelo[2];
     el.infoCombAno.textContent = modelo[3] + (v[5] ? (" · " + v[5]) : "");
@@ -1520,7 +1542,8 @@
     el.autoCaption.hidden = false;
     mostrarIconeVeiculo(modelo[0]);
 
-    el.consumoAtivo.value = modelo[4] > 0 ? modelo[4] : "";
+    el.preco.dataset.editadoManual = "0";
+    el.consumoAtivo.dataset.editadoManual = "0";
     definirPrecoFixo(modelo[3]);
 
     el.origemFieldset.disabled = false;
@@ -1651,6 +1674,7 @@
     input.addEventListener("input", function(){
       if (input === el.distancia){ el.distancia.dataset.autoPreenchido = "0"; marcarAuto(el.distancia, false); }
       if (input === el.preco){ el.preco.dataset.editadoManual = "1"; marcarAuto(el.preco, false); }
+      if (input === el.consumoAtivo){ el.consumoAtivo.dataset.editadoManual = "1"; }
       calcular();
     });
   });
@@ -2084,7 +2108,11 @@
     var erroEl = document.getElementById("loginError");
     erroEl.hidden = true;
     sha256Hex(senha).then(function(hash){
-      if (hash === SITE_CONFIG.passwordHash){
+      if (hash === SITE_CONFIG.adminPasswordHash){
+        try { sessionStorage.setItem(AUTH_KEY, "1"); } catch(e){}
+        aplicarModoAdmin(true);
+        mostrarTela(null);
+      } else if (hash === SITE_CONFIG.passwordHash){
         try { sessionStorage.setItem(AUTH_KEY, "1"); } catch(e){}
         mostrarTela(null);
       } else {
@@ -2099,6 +2127,7 @@
   document.getElementById("btnSair").addEventListener("click", function(){
     try { sessionStorage.removeItem(AUTH_KEY); } catch(e){}
     document.getElementById("loginSenha").value = "";
+    aplicarModoAdmin(false);
     mostrarTela(checarBloqueioOffline() ? "offlineScreen" : "loginScreen");
   });
 
@@ -2120,6 +2149,7 @@
         document.getElementById("adminPainel").hidden = false;
         var offInput = document.getElementById("offlineAteInput");
         offInput.value = SITE_CONFIG.offlineUntil || "";
+        aplicarModoAdmin(true);
       } else {
         erroEl.textContent = "Senha incorreta.";
         erroEl.hidden = false;
@@ -2127,14 +2157,27 @@
     });
   });
 
+  function aplicarModoAdmin(ativo){
+    isAdmin = ativo;
+    el.distancia.readOnly = !isAdmin;
+    el.consumoAtivo.readOnly = !isAdmin;
+    el.preco.readOnly = !isAdmin;
+    document.getElementById("distanciaWrap").classList.toggle("campo-fixo", !isAdmin);
+    document.getElementById("consumoWrap").classList.toggle("campo-fixo", !isAdmin);
+    document.getElementById("precoWrap").classList.toggle("campo-fixo", !isAdmin);
+    document.getElementById("distanciaTravadaBadge").textContent = isAdmin ? "editável (admin)" : "travado";
+    document.getElementById("consumoTravadoBadge").textContent = isAdmin ? "editável (admin)" : "travado";
+    atualizarBadgePreco();
+    var chk = document.getElementById("chkLiberarEdicao");
+    if (chk) chk.checked = isAdmin;
+    document.body.classList.toggle("modo-admin", isAdmin);
+  }
+  function atualizarBadgePreco(){
+    el.precoTipoBadge.textContent = precoFuelTypeAtual + (isAdmin ? " · editável (admin)" : " · fixo");
+  }
+
   document.getElementById("chkLiberarEdicao").addEventListener("change", function(){
-    edicaoAdminLiberada = this.checked;
-    el.distancia.readOnly = !edicaoAdminLiberada;
-    el.consumoAtivo.readOnly = !edicaoAdminLiberada;
-    document.getElementById("distanciaWrap").classList.toggle("campo-fixo", !edicaoAdminLiberada);
-    document.getElementById("consumoWrap").classList.toggle("campo-fixo", !edicaoAdminLiberada);
-    document.getElementById("distanciaTravadaBadge").textContent = edicaoAdminLiberada ? "editável (admin)" : "travado";
-    document.getElementById("consumoTravadoBadge").textContent = edicaoAdminLiberada ? "editável (admin)" : "travado";
+    aplicarModoAdmin(this.checked);
   });
 
   document.getElementById("btnTrocarSenha").addEventListener("click", function(){
