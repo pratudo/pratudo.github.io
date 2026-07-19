@@ -24,11 +24,11 @@
     /* institucionais: usadas como preenchimento sólido (texto branco em cima) */
     --success:#007d5e; --success-bg:#007d5e;
     --warning:#0070b2; --warning-bg:#0070b2;
-    --danger:#a2252c; --danger-bg:#a2252c;
+    --danger:#643200; --danger-bg:#643200;
     /* variantes claras — só para texto solto sobre fundo escuro, onde a cor pura não teria contraste */
     --success-texto:#51A691;
     --warning-texto:#519DCA;
-    --danger-texto:#BF6A6F;
+    --danger-texto:#C9974D;
     --radius-lg:18px; --radius-md:11px;
     --shadow:0 24px 54px rgba(0,0,0,0.6);
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -64,21 +64,21 @@
     color:#fff;box-shadow:0 10px 26px rgba(0,112,178,0.35), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.15);
   }
   .btn-primary:hover{background:linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0)), var(--dourado-clara);}
-  .btn-primary:active{transform:translateY(1px);box-shadow:0 4px 12px rgba(201,162,39,0.24), inset 0 1px 0 rgba(255,255,255,0.3);}
+  .btn-primary:active{transform:translateY(1px);background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0)), var(--dourado);box-shadow:0 4px 12px rgba(0,112,178,0.30), inset 0 1px 0 rgba(255,255,255,0.3);}
   .btn-secondary{
     background:linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.01)), var(--card-solid);
     border-color:var(--border);color:var(--text-600);
     box-shadow:0 6px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.10);
   }
-  .btn-secondary:hover{border-color:var(--dourado);color:var(--ink);}
-  .btn-secondary:active{transform:translateY(1px);}
+  .btn-secondary:hover{border-color:var(--dourado);color:var(--ink);background:linear-gradient(180deg, rgba(0,112,178,0.14), rgba(255,255,255,0.01)), var(--card-solid);}
+  .btn-secondary:active{transform:translateY(1px);border-color:var(--dourado-clara);background:linear-gradient(180deg, rgba(0,112,178,0.26), rgba(255,255,255,0.01)), var(--card-solid);}
   .btn-destaque{
     background:linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0)), var(--aco);
     color:#fff;box-shadow:0 10px 26px rgba(86,80,128,0.40), inset 0 1px 0 rgba(255,255,255,0.35);
     font-size:14.5px;padding:11px 20px;
   }
   .btn-destaque:hover{background:linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0)), var(--aco-claro);}
-  .btn-destaque:active{transform:translateY(1px);}
+  .btn-destaque:active{transform:translateY(1px);background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0)), var(--aco);box-shadow:0 4px 12px rgba(86,80,128,0.34), inset 0 1px 0 rgba(255,255,255,0.25);}
   .badge{display:inline-block;font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;}
   .badge-danger{background:var(--danger-bg);color:#fff;}
   .badge-warning{background:var(--warning-bg);color:#fff;}
@@ -95,8 +95,8 @@
   .gate-link{background:none;border:none;color:var(--text-400);font-size:12.5px;cursor:pointer;text-decoration:underline;margin-top:10px;}
 
   /* kpis */
-  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(180px,1fr));gap:12px;}
-  .kpi{background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(180px,1fr));gap:12px;align-items:stretch;}
+  .kpi{background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;display:flex;flex-direction:column;justify-content:space-between;min-height:86px;box-sizing:border-box;}
   .kpi .label{font-size:11px;text-transform:uppercase;color:var(--text-400);font-weight:700;letter-spacing:.4px;}
   .kpi .value{font-size:22px;font-weight:800;margin-top:4px;color:var(--ink);}
   .kpi .sub{font-size:11.5px;color:var(--text-600);margin-top:2px;}
@@ -116,7 +116,7 @@
   th{background:var(--card-solid);color:var(--text-600);text-align:left;padding:9px 10px;font-size:10.5px;
     text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;}
   td{padding:8px 10px;border-top:1px solid var(--border);color:var(--ink);}
-  tr.alerta-critico td{background:rgba(162,37,44,0.10);}
+  tr.alerta-critico td{background:rgba(100,50,0,0.14);}
   tr.alerta-atencao td{background:rgba(0,112,178,0.09);}
   .muted{color:var(--text-400);}
   .num{text-align:right;font-variant-numeric:tabular-nums;}
@@ -141,25 +141,63 @@
   .print-only{display:none;}
 
   .charts-grid{display:grid;grid-template-columns:1fr 1.4fr;grid-template-rows:auto auto;gap:14px;}
-  .chart-box{background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;}
+  .chart-box{background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;position:relative;display:flex;flex-direction:column;}
+  .chart-box h3{margin:0 0 10px;flex:0 0 auto;}
   .chart-box-wide{grid-column:1 / -1;}
-  .chart-canvas-wrap{position:relative;height:240px;}
-  .chart-canvas-wrap-sm{height:200px;}
-  @media (max-width:780px){ .charts-grid{grid-template-columns:1fr;} }
+  .chart-canvas-wrap{position:relative;height:240px;flex:1 1 auto;min-height:0;}
+  .chart-canvas-wrap-sm{height:240px;}
+  @media (max-width:780px){ .charts-grid{grid-template-columns:1fr;} .chart-canvas-wrap{height:240px;} }
+
+  /* chips de filtro ativo — mostram o que os gráficos estão "conversando" agora e permitem limpar */
+  .chips-filtro{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-height:0;}
+  .chips-filtro:empty{display:none;}
+  .chip-filtro{
+    display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--ink);
+    background:linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02)), var(--dourado);
+    border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:5px 8px 5px 12px;
+    box-shadow:0 3px 8px rgba(0,112,178,0.30);animation:chipIn .15s ease;
+  }
+  .chip-filtro button{
+    all:unset;cursor:pointer;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,0.20);font-size:11px;line-height:1;transition:background .12s ease, transform .1s ease;
+  }
+  .chip-filtro button:hover{background:rgba(0,0,0,0.38);}
+  .chip-filtro button:active{transform:scale(0.88);background:rgba(0,0,0,0.5);}
+  @keyframes chipIn{ from{opacity:0;transform:translateY(-3px);} to{opacity:1;transform:translateY(0);} }
+
+  /* tooltip "mini dashboard" — aparece ao passar o mouse num gráfico, com texto curto + mini-barras relacionadas */
+  .mini-dash-tip{
+    position:fixed;z-index:200;pointer-events:none;width:230px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0)), var(--card-solid);
+    border:1px solid var(--border);border-radius:12px;padding:12px 13px;
+    box-shadow:0 16px 34px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.10);
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+    opacity:0;transform:translateY(4px) scale(.98);transition:opacity .12s ease, transform .12s ease;
+  }
+  .mini-dash-tip.show{opacity:1;transform:translateY(0) scale(1);}
+  .mini-dash-tip .mdt-title{font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:2px;}
+  .mini-dash-tip .mdt-texto{font-size:11px;line-height:1.4;color:var(--text-600);margin-bottom:9px;}
+  .mini-dash-tip .mdt-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+  .mini-dash-tip .mdt-row:last-child{margin-bottom:0;}
+  .mini-dash-tip .mdt-label{flex:0 0 74px;font-size:10px;color:var(--text-400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mini-dash-tip .mdt-bar-track{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,0.07);overflow:hidden;}
+  .mini-dash-tip .mdt-bar{height:100%;border-radius:4px;}
+  .mini-dash-tip .mdt-val{flex:0 0 auto;font-size:10px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;}
+  .mini-dash-tip .mdt-foot{margin-top:8px;padding-top:7px;border-top:1px solid var(--border);font-size:10px;color:var(--text-400);}
 
   .share-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px;}
   .share-label{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-400);font-weight:700;margin-right:2px;}
   .share-pill{
     display:flex;align-items:center;gap:5px;font-family:var(--font-body);
-    padding:8px 13px;border-radius:20px;border:1px solid var(--border);cursor:pointer;
+    padding:8px 13px;border-radius:20px;border:1.5px solid var(--border);cursor:pointer;
     background:linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)), var(--card-solid);
     box-shadow:0 4px 10px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.14);
     color:var(--ink);font-size:12.5px;font-weight:700;
-    transition:transform .1s ease, border-color .15s ease;
+    transition:transform .1s ease, border-color .15s ease, background .15s ease;
   }
   .share-pill span{font-size:11.5px;}
-  .share-pill:hover{border-color:var(--dourado);}
-  .share-pill:active{transform:translateY(1px);}
+  .share-pill:hover{border-color:var(--dourado);background:linear-gradient(180deg, rgba(0,112,178,0.16), rgba(255,255,255,0.02)), var(--card-solid);}
+  .share-pill:active{transform:translateY(1px);border-color:var(--dourado-clara);background:linear-gradient(180deg, rgba(0,112,178,0.30), rgba(255,255,255,0.02)), var(--card-solid);}
   @media (max-width:520px){ .share-pill span{display:none;} }
 
   @media print{
@@ -174,11 +212,12 @@
     .pr-table{width:100%;border-collapse:collapse;}
     .pr-table th{text-align:left;padding:6px 10px;background:#F0F4F1;width:200px;font-size:12px;border-bottom:1px solid #e2e2e2;color:#111;}
     .pr-table td{padding:6px 10px;border-bottom:1px solid #e2e2e2;font-size:12.5px;color:#111;}
-    .pr-alert{color:#a2252c;font-weight:700;}
+    .pr-alert{color:#643200;font-weight:700;}
   }
 </style>
 </head>
 <body>
+<div class="mini-dash-tip" id="miniDashTip"></div>
 
 <div id="loginScreen" class="gate-overlay">
   <div class="gate-card card">
@@ -234,8 +273,9 @@
 
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-        <div><h2>Visão geral (clique nos gráficos pra filtrar a tabela)</h2><p>Os cartões abaixo conversam entre si — clicar num bloco, status ou dia atualiza a tabela detalhada automaticamente.</p></div>
+        <div><h2>Visão geral (clique nos gráficos pra filtrar a tabela)</h2><p>Os cartões abaixo conversam entre si — clicar num bloco, status ou dia filtra os outros gráficos e a tabela detalhada, todos juntos. Passe o mouse pra ver o mini-painel de cada ponto.</p></div>
       </div>
+      <div class="chips-filtro" id="chipsFiltro" style="margin-top:10px;"></div>
       <div class="charts-grid" style="margin-top:16px;">
         <div class="chart-box">
           <h3>Por status</h3>
@@ -264,7 +304,7 @@
     </div>
 
     <div class="card" id="cardErros" hidden>
-      <h2 style="color:var(--danger);">🔴 Erros de dados detectados</h2>
+      <h2 style="color:var(--danger);">🟤 Erros de dados detectados</h2>
       <p>Linhas com o mesmo cartão e exatamente o mesmo minuto — parecem lançamento duplicado na fonte, não um evento legítimo repetido. Confira antes de somar nos totais.</p>
       <div class="tbl-wrap" style="margin-top:14px;">
         <table>
@@ -292,7 +332,7 @@
     </div>
 
     <div class="card" id="cardErrosKm" hidden>
-      <h2 style="color:var(--danger);">🔴 Leitura de odômetro suspeita</h2>
+      <h2 style="color:var(--danger);">🟤 Leitura de odômetro suspeita</h2>
       <p>KM rodado no ciclo acima de 5.000 km — fisicamente improvável para o período, muito provável que o condutor digitou o KM errado na hora de abastecer, não uso real. Lista focada só com esses casos (eles também aparecem, marcados, na tabela completa abaixo).</p>
       <div class="tbl-wrap" style="margin-top:14px;">
         <table>
@@ -304,12 +344,12 @@
 
     <div class="card" id="cardKm" hidden>
       <h2>KM rodado por veículo no ciclo</h2>
-      <p>Calculado a partir das últimas leituras de odômetro (15/06 a 14/07/2026). 🔵 Acima de 1.000 km no ciclo (dentro do fisicamente possível, mas exige justificativa). 🔴 Acima de 5.000 km (muito provável erro de digitação do condutor na hora de abastecer — confira antes de tratar como excesso real).</p>
+      <p>Calculado a partir das últimas leituras de odômetro (15/06 a 14/07/2026). 🔵 Acima de 1.000 km no ciclo (dentro do fisicamente possível, mas exige justificativa). 🟤 Acima de 5.000 km (muito provável erro de digitação do condutor na hora de abastecer — confira antes de tratar como excesso real).</p>
       <div class="filters" style="margin-top:12px;">
         <input type="text" id="fBuscaKm" placeholder="Buscar placa…">
         <select id="fStatusKm">
           <option value="">Status: todos</option>
-          <option value="erro">🔴 Provável erro de digitação</option>
+          <option value="erro">🟤 Provável erro de digitação</option>
           <option value="excesso">🔵 Acima de 1.000 km</option>
           <option value="ok">✅ Dentro do padrão</option>
         </select>
@@ -330,7 +370,7 @@
         <select id="fTipo"><option value="">Tipo: todos</option><option value="Alteração">Alteração</option><option value="Renovação">Renovação</option></select>
         <select id="fStatus">
           <option value="">Status: todos</option>
-          <option value="critico">🔴 Crítico (aumento sem justificativa)</option>
+          <option value="critico">🟤 Crítico (aumento sem justificativa)</option>
           <option value="excesso">🔵 Aumento (com justificativa)</option>
           <option value="ok">✅ Dentro do padrão</option>
         </select>
@@ -492,6 +532,7 @@
     renderKM();
     renderCharts();
     renderTabela();
+    renderChipsFiltro();
   }
 
   function renderKPIs(){
@@ -582,7 +623,7 @@
   }
 
   // ================= GRÁFICOS INTERATIVOS =================
-  var CHART_CORES = {critico:"#a2252c", excesso:"#0070b2", ok:"#007d5e", dourado:"#0070b2", aco:"#565080"};
+  var CHART_CORES = {critico:"#643200", excesso:"#0070b2", ok:"#007d5e", dourado:"#0070b2", aco:"#565080"};
   var chartInstances = {status:null, blocos:null, tempo:null};
   var chartsDisponiveis = typeof Chart !== "undefined";
   if (chartsDisponiveis){
@@ -590,12 +631,158 @@
     Chart.defaults.font.family = "-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
   }
 
+  // ================= FILTRO CRUZADO ENTRE OS GRÁFICOS =================
+  // Os 3 gráficos (status, blocos, dia) e a tabela lêem o MESMO estado de filtro.
+  // Status/bloco usam os próprios campos visíveis (fStatus/fBusca) como fonte da verdade;
+  // dia não tem campo visível, então usa esta variável dedicada.
+  var filtroDiaAtivo = null;
+
+  function statusFiltroAtivo(){ return document.getElementById("fStatus").value || null; }
+  function blocoFiltroAtivo(){
+    var v = document.getElementById("fBusca").value.trim();
+    return blocosUnicos.indexOf(v) !== -1 ? v : null;
+  }
+  // versão "dim" de uma cor hex sólida, pra destacar a fatia/barra selecionada e apagar as outras
+  function corDim(corHex, ativo){ return ativo ? corHex : corHex + "4D"; } // 4D hex ≈ 30% opacidade
+
+  function renderChipsFiltro(){
+    var wrap = document.getElementById("chipsFiltro");
+    if (!wrap) return;
+    var chips = [];
+    var st = statusFiltroAtivo();
+    var bl = blocoFiltroAtivo();
+    if (st){
+      var stLabel = st === "critico" ? "🟤 Crítico" : st === "excesso" ? "🔵 Aumento" : "✅ Dentro do padrão";
+      chips.push({label:"Status: " + stLabel, limpar:function(){ document.getElementById("fStatus").value = ""; }});
+    }
+    if (bl) chips.push({label:"Bloco: " + bl, limpar:function(){ document.getElementById("fBusca").value = ""; }});
+    if (filtroDiaAtivo) chips.push({label:"Dia: " + filtroDiaAtivo, limpar:function(){ filtroDiaAtivo = null; }});
+    wrap.innerHTML = chips.map(function(c, i){
+      return '<span class="chip-filtro" data-chip="' + i + '">' + c.label + '<button type="button" aria-label="Remover filtro" data-chip-clear="' + i + '">✕</button></span>';
+    }).join("");
+    wrap.querySelectorAll("[data-chip-clear]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var idx = Number(btn.getAttribute("data-chip-clear"));
+        chips[idx].limpar();
+        renderTabela(); renderCharts(); renderChipsFiltro();
+      });
+    });
+  }
+
   function aplicarFiltroDaTabela(campo, valor){
-    if (campo === "status") document.getElementById("fStatus").value = valor;
-    if (campo === "busca") document.getElementById("fBusca").value = valor;
+    if (campo === "status"){
+      var atualStatus = document.getElementById("fStatus").value;
+      document.getElementById("fStatus").value = (atualStatus === valor) ? "" : valor;
+    }
+    if (campo === "busca"){
+      var atualBusca = document.getElementById("fBusca").value.trim();
+      document.getElementById("fBusca").value = (atualBusca === valor) ? "" : valor;
+    }
+    if (campo === "dia"){
+      filtroDiaAtivo = (filtroDiaAtivo === valor) ? null : valor;
+    }
     renderTabela();
+    renderCharts();
+    renderChipsFiltro();
     var tbl = document.getElementById("tabelaBody");
     var cardEl = tbl && tbl.closest(".card"); if (cardEl && cardEl.scrollIntoView) cardEl.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  // ================= TOOLTIP "MINI DASHBOARD" =================
+  // Monta as mini-barras dentro do tooltip flutuante. itens = [[rótulo, valorParaAltura, textoExibido?]]
+  function montarMiniBarras(itens, cores){
+    var max = 0;
+    itens.forEach(function(it){ if (it[1] > max) max = it[1]; });
+    if (max <= 0) max = 1;
+    return itens.map(function(it, i){
+      var cor = Array.isArray(cores) ? cores[i] : cores;
+      var pct = Math.max(4, Math.round(100 * it[1] / max));
+      var texto = it.length > 2 ? it[2] : it[1];
+      return '<div class="mdt-row">' +
+        '<span class="mdt-label" title="' + it[0] + '">' + it[0] + '</span>' +
+        '<span class="mdt-bar-track"><span class="mdt-bar" style="width:' + pct + '%;background:' + cor + ';"></span></span>' +
+        '<span class="mdt-val">' + texto + '</span>' +
+        '</div>';
+    }).join("");
+  }
+
+  // Chamada pelo callback "external" do tooltip do Chart.js — em vez do balão padrão,
+  // mostra um mini-painel com texto curto + mini-barras relacionadas ao ponto sob o mouse.
+  function montarMiniDash(context, tipo, dados){
+    var tip = document.getElementById("miniDashTip");
+    if (!tip) return;
+    var modelo = context.tooltip;
+    if (!modelo || modelo.opacity === 0 || !modelo.dataPoints || !modelo.dataPoints.length){
+      tip.classList.remove("show");
+      return;
+    }
+    var idx = modelo.dataPoints[0].dataIndex;
+    var html = "";
+
+    if (tipo === "status"){
+      var chave = dados.statusKeys[idx];
+      var total = dados.rows.length;
+      var valor = dados.contagem[chave] || 0;
+      var pct = total ? Math.round(100 * valor / total) : 0;
+      var rowsDoStatus = dados.rows.filter(function(r){ return statusDe(r) === chave; });
+      var gruposBloco = agruparCargaExtra(rowsDoStatus, 4).slice(0, 3);
+      var itensStatus;
+      if (gruposBloco.length){
+        itensStatus = gruposBloco.map(function(g){ return [g[0], g[1], fmtBRL(g[1])]; });
+      } else {
+        var contPorBloco = {};
+        rowsDoStatus.forEach(function(r){ contPorBloco[r[4]] = (contPorBloco[r[4]] || 0) + 1; });
+        itensStatus = Object.keys(contPorBloco).map(function(k){ return [k, contPorBloco[k]]; })
+          .sort(function(a, b){ return b[1] - a[1]; }).slice(0, 3);
+      }
+      var maiorBloco = itensStatus.length ? itensStatus[0][0] : "—";
+      var rotulo = chave === "critico" ? "crítico" : chave === "excesso" ? "com aumento" : "dentro do padrão";
+      html = '<div class="mdt-title">' + valor + ' registro' + (valor === 1 ? '' : 's') + ' ' + rotulo + '</div>' +
+        '<div class="mdt-texto">' + pct + '% do total do ciclo atual. Maior concentração: <b>' + maiorBloco + '</b>.</div>' +
+        montarMiniBarras(itensStatus, CHART_CORES[chave]);
+    }
+
+    if (tipo === "bloco"){
+      var item = dados.blocosTop[idx];
+      var rowsDoBloco = dados.rows.filter(function(r){ return r[4] === item[0]; });
+      var st = {critico: 0, excesso: 0, ok: 0};
+      rowsDoBloco.forEach(function(r){ var s = statusDe(r); if (st[s] !== undefined) st[s]++; });
+      html = '<div class="mdt-title">' + item[0] + '</div>' +
+        '<div class="mdt-texto">' + fmtBRL(item[1]) + ' em carga extra, ' + item[2] + ' registro' + (item[2] === 1 ? '' : 's') + '.' +
+        (st.critico ? ' <b>' + st.critico + ' crítico' + (st.critico === 1 ? '' : 's') + '</b> sem justificativa.' : ' Nenhum crítico.') + '</div>' +
+        montarMiniBarras(
+          [["Crítico", st.critico], ["Aumento", st.excesso], ["Dentro do padrão", st.ok]],
+          [CHART_CORES.critico, CHART_CORES.excesso, CHART_CORES.ok]
+        );
+    }
+
+    if (tipo === "dia"){
+      var dia = dados.dias[idx];
+      var rowsDoDia = dados.rowsBase.filter(function(r){ return r[0].split(" ")[0] === dia; });
+      var st2 = {critico: 0, excesso: 0, ok: 0};
+      rowsDoDia.forEach(function(r){ var s = statusDe(r); if (st2[s] !== undefined) st2[s]++; });
+      var totalDia = dados.porDia[dia] || 0;
+      html = '<div class="mdt-title">' + dia + '</div>' +
+        '<div class="mdt-texto">' + totalDia + ' solicitaç' + (totalDia === 1 ? 'ão' : 'ões') + ' nesse dia' +
+        (st2.critico ? ', sendo <b>' + st2.critico + ' crítica' + (st2.critico === 1 ? '' : 's') + '</b>.' : ', nenhuma crítica.') + '</div>' +
+        montarMiniBarras(
+          [["Crítico", st2.critico], ["Aumento", st2.excesso], ["Dentro do padrão", st2.ok]],
+          [CHART_CORES.critico, CHART_CORES.excesso, CHART_CORES.ok]
+        );
+    }
+
+    tip.innerHTML = html;
+    tip.classList.add("show");
+
+    var canvasRect = context.chart.canvas.getBoundingClientRect();
+    var largura = tip.offsetWidth || 230;
+    var x = canvasRect.left + modelo.caretX + 14;
+    var y = canvasRect.top + modelo.caretY - 10;
+    if (x + largura > window.innerWidth - 10) x = canvasRect.left + modelo.caretX - largura - 14;
+    if (x < 8) x = 8;
+    if (y < 8) y = 8;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
   }
 
   function renderCharts(){
@@ -606,11 +793,27 @@
       });
       return;
     }
-    var rows = dadosAtuais().filter(function(r){ return r[1] === "Alteração"; });
+    var todas = dadosAtuais().filter(function(r){ return r[1] === "Alteração"; });
+    var fStatusAtivo = statusFiltroAtivo();
+    var fBlocoAtivo = blocoFiltroAtivo();
+    var fDiaAtivo = filtroDiaAtivo;
+
+    // Cada gráfico ignora o PRÓPRIO filtro (senão encolheria pra 1 item só) mas respeita
+    // os outros dois — é isso que faz os 3 gráficos "conversarem entre si" de verdade.
+    var rowsParaStatus = todas.filter(function(r){
+      return (!fBlocoAtivo || r[4] === fBlocoAtivo) && (!fDiaAtivo || r[0].split(" ")[0] === fDiaAtivo);
+    });
+    var rowsParaBlocos = todas.filter(function(r){
+      return (!fStatusAtivo || statusDe(r) === fStatusAtivo) && (!fDiaAtivo || r[0].split(" ")[0] === fDiaAtivo);
+    });
+    var rowsParaTempo = todas.filter(function(r){
+      return (!fStatusAtivo || statusDe(r) === fStatusAtivo) && (!fBlocoAtivo || r[4] === fBlocoAtivo);
+    });
 
     // ---- donut: status ----
+    var statusKeys = ["critico", "excesso", "ok"];
     var contagem = {critico:0, excesso:0, ok:0};
-    rows.forEach(function(r){ var st = statusDe(r); if (contagem[st]!==undefined) contagem[st]++; });
+    rowsParaStatus.forEach(function(r){ var st = statusDe(r); if (contagem[st]!==undefined) contagem[st]++; });
     var ctxStatus = document.getElementById("chartStatus").getContext("2d");
     if (chartInstances.status) chartInstances.status.destroy();
     chartInstances.status = new Chart(ctxStatus, {
@@ -618,25 +821,28 @@
       data: {
         labels: ["Crítico (sem justificativa)", "Aumento (com justificativa)", "Dentro do padrão"],
         datasets: [{ data: [contagem.critico, contagem.excesso, contagem.ok],
-          backgroundColor: [CHART_CORES.critico, CHART_CORES.excesso, CHART_CORES.ok],
+          backgroundColor: statusKeys.map(function(k){ return corDim(CHART_CORES[k], !fStatusAtivo || fStatusAtivo===k); }),
           borderColor: "#151210", borderWidth: 3, hoverOffset: 10 }]
       },
       options: {
         responsive: true, maintainAspectRatio: false, cutout: "62%",
-        plugins: { legend: { position: "bottom", labels: { boxWidth: 10, padding: 10, font: {size: 10.5} } },
-          tooltip: { callbacks: { label: function(c){ return c.label + ": " + c.parsed + " (" + (rows.length? Math.round(100*c.parsed/rows.length):0) + "%)"; } } } },
+        plugins: {
+          legend: { position: "bottom", labels: { boxWidth: 10, padding: 10, font: {size: 10.5} } },
+          tooltip: { enabled: false, external: function(context){
+            montarMiniDash(context, "status", {contagem: contagem, rows: rowsParaStatus, statusKeys: statusKeys});
+          } }
+        },
         onClick: function(evt, els){
           if (!els.length) return;
           var idx = els[0].index;
-          var status = idx===0 ? "critico" : idx===1 ? "excesso" : "ok";
-          aplicarFiltroDaTabela("status", status);
+          aplicarFiltroDaTabela("status", statusKeys[idx]);
         },
         onHover: function(evt, els){ evt.native.target.style.cursor = els.length ? "pointer" : "default"; }
       }
     });
 
     // ---- bar: maiores blocos ----
-    var blocosTop = agruparCargaExtra(rows, 4).slice(0,8);
+    var blocosTop = agruparCargaExtra(rowsParaBlocos, 4).slice(0,8);
     var ctxBlocos = document.getElementById("chartBlocos").getContext("2d");
     if (chartInstances.blocos) chartInstances.blocos.destroy();
     chartInstances.blocos = new Chart(ctxBlocos, {
@@ -644,14 +850,19 @@
       data: {
         labels: blocosTop.map(function(b){ return b[0]; }),
         datasets: [{ data: blocosTop.map(function(b){ return b[1]; }),
-          backgroundColor: CHART_CORES.dourado, borderRadius: 6, barThickness: 18,
+          backgroundColor: blocosTop.map(function(b){ return corDim(CHART_CORES.dourado, !fBlocoAtivo || fBlocoAtivo===b[0]); }),
+          borderRadius: 6, barThickness: 18,
           hoverBackgroundColor: "#519DCA" }]
       },
       options: {
         indexAxis: "y", responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false },
-          tooltip: { callbacks: { label: function(c){ return fmtBRL(c.parsed.x); } } },
-          datalabels: null },
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false, external: function(context){
+            montarMiniDash(context, "bloco", {blocosTop: blocosTop, rows: rowsParaBlocos});
+          } },
+          datalabels: null
+        },
         scales: { x: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { callback: function(v){ return fmtBRL(v); }, font:{size:10} } },
                   y: { grid: { display:false }, ticks: { font:{size:11} } } },
         onClick: function(evt, els){
@@ -677,9 +888,9 @@
       }]
     });
 
-    // ---- linha: solicitações ao longo do ciclo ----
+    // ---- barras: solicitações ao longo do ciclo ----
     var porDia = {};
-    rows.forEach(function(r){
+    rowsParaTempo.forEach(function(r){
       var dia = r[0].split(" ")[0];
       porDia[dia] = (porDia[dia]||0) + 1;
     });
@@ -694,14 +905,26 @@
       data: {
         labels: dias,
         datasets: [{ data: dias.map(function(d){ return porDia[d]; }),
-          backgroundColor: CHART_CORES.aco, borderRadius: 4, maxBarThickness: 26,
+          backgroundColor: dias.map(function(d){ return corDim(CHART_CORES.aco, !fDiaAtivo || fDiaAtivo===d); }),
+          borderRadius: 4, maxBarThickness: 26,
           hoverBackgroundColor: "#8079A8" }]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false, external: function(context){
+            montarMiniDash(context, "dia", {dias: dias, porDia: porDia, rowsBase: rowsParaTempo});
+          } }
+        },
         scales: { x: { grid: { display:false }, ticks: { font:{size:9.5}, maxRotation:45, minRotation:45 } },
-                  y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { precision:0, font:{size:10} } } }
+                  y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { precision:0, font:{size:10} } } },
+        onClick: function(evt, els){
+          if (!els.length) return;
+          var idx = els[0].index;
+          aplicarFiltroDaTabela("dia", dias[idx]);
+        },
+        onHover: function(evt, els){ evt.native.target.style.cursor = els.length ? "pointer" : "default"; }
       },
       plugins: [{
         id: "valueLabelsTop",
@@ -726,12 +949,12 @@
     return KM_RAW.filter(function(r){ return r[1] === blocoAtual; });
   }
   function badgeStatusKm(status){
-    if (status === "erro") return '<span class="badge badge-danger">🔴 provável erro de digitação</span>';
+    if (status === "erro") return '<span class="badge badge-danger">🟤 provável erro de digitação</span>';
     if (status === "excesso") return '<span class="badge badge-warning">🔵 acima de 1.000 km</span>';
     return '<span class="badge badge-ok">ok</span>';
   }
   function kmCelula(valor, status){
-    if (status === "erro") return '<span style="color:var(--danger-texto);font-weight:800;">🔴 ' + fmtNum(valor) + ' km</span>';
+    if (status === "erro") return '<span style="color:var(--danger-texto);font-weight:800;">🟤 ' + fmtNum(valor) + ' km</span>';
     if (status === "excesso") return '<span style="color:var(--warning-texto);font-weight:800;">🔵 ' + fmtNum(valor) + ' km</span>';
     return fmtNum(valor) + ' km';
   }
@@ -802,6 +1025,7 @@
     var filtrado = base.filter(function(r){
       if (fTipo && r[1] !== fTipo) return false;
       if (fStatus && statusDe(r) !== fStatus) return false;
+      if (filtroDiaAtivo && r[0].split(" ")[0] !== filtroDiaAtivo) return false;
       if (busca){
         var alvo = (r[7] + " " + r[4] + " " + r[6] + " " + r[15]).toLowerCase();
         if (alvo.indexOf(busca) === -1) return false;
@@ -825,9 +1049,10 @@
       "Mostrando " + Math.min(LIMITE, filtrado.length) + " de " + filtrado.length + " registros" + (filtrado.length>LIMITE ? " (refine a busca para ver mais específico, ou exporte para ver tudo)" : "") + ".";
   }
 
+  function renderTudoFiltravel(){ renderTabela(); renderCharts(); renderChipsFiltro(); }
   ["fBusca","fTipo","fStatus"].forEach(function(id){
-    document.getElementById(id).addEventListener("input", renderTabela);
-    document.getElementById(id).addEventListener("change", renderTabela);
+    document.getElementById(id).addEventListener("input", renderTudoFiltravel);
+    document.getElementById(id).addEventListener("change", renderTudoFiltravel);
   });
 
   // ================= EXPORTAR =================
