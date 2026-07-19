@@ -14,14 +14,14 @@
     --text-600:#B7AF9E;
     --text-400:#847C6C;
     --paper:#070B0C;
-    --paper-grad:radial-gradient(1100px 600px at 8% -10%, rgba(0,30,115,0.22), transparent 60%),
-                 radial-gradient(900px 700px at 105% 8%, rgba(0,112,178,0.15), transparent 55%),
-                 radial-gradient(800px 620px at 50% 115%, rgba(0,90,68,0.16), transparent 60%),
+    --paper-grad:radial-gradient(1100px 600px at 8% -10%, rgba(0,40,140,0.24), transparent 60%),
+                 radial-gradient(900px 700px at 105% 8%, rgba(0,150,190,0.17), transparent 55%),
+                 radial-gradient(800px 620px at 50% 115%, rgba(0,166,120,0.18), transparent 60%),
                  linear-gradient(180deg, #0B1210, #070B0C 55%, #04070A);
-    --card:linear-gradient(135deg, rgba(6,95,72,0.075), rgba(4,20,58,0.095));
+    --card:linear-gradient(135deg, rgba(20,170,140,0.11), rgba(70,140,255,0.10));
     --card-solid:#0E1412;
-    --border:rgba(180,215,205,0.14);
-    --glass-blur:22px;
+    --border:rgba(180,215,235,0.18);
+    --glass-blur:14px;
     /* institucionais: usadas como preenchimento sólido (texto branco em cima) */
     --success:#007d5e; --success-bg:#007d5e;
     --warning:#0070b2; --warning-bg:#0070b2;
@@ -144,13 +144,25 @@
   .footer-note{color:var(--text-400);font-size:11.5px;text-align:center;margin-top:20px;}
   .print-only{display:none;}
 
-  .charts-grid{display:grid;grid-template-columns:1fr 1.4fr;grid-template-rows:auto auto;gap:14px;}
+  .charts-grid{display:grid;grid-template-columns:1fr 1.4fr;grid-template-rows:auto auto auto;gap:14px;}
   .chart-box{background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;position:relative;display:flex;flex-direction:column;}
   .chart-box h3{margin:0 0 10px;flex:0 0 auto;}
   .chart-box-wide{grid-column:1 / -1;}
   .chart-canvas-wrap{position:relative;height:240px;flex:1 1 auto;min-height:0;}
   .chart-canvas-wrap-sm{height:240px;}
   @media (max-width:780px){ .charts-grid{grid-template-columns:1fr;} .chart-canvas-wrap{height:240px;} }
+
+  .insight-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .insight-card{
+    flex:1 1 160px;min-width:150px;background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);
+    padding:14px 15px;transition:border-color .15s ease, transform .1s ease, background .15s ease;
+  }
+  .insight-card.clicavel{cursor:pointer;}
+  .insight-card.clicavel:hover{border-color:var(--dourado);background:linear-gradient(180deg, rgba(0,112,178,0.12), rgba(255,255,255,0.01)), var(--card-solid);}
+  .insight-card.clicavel:active{transform:translateY(1px);}
+  .insight-card .ic-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-400);font-weight:700;}
+  .insight-card .ic-value{font-size:21px;font-weight:800;color:var(--ink);margin-top:5px;}
+  .insight-card .ic-sub{font-size:11px;color:var(--text-600);margin-top:3px;}
 
   /* chips de filtro ativo — mostram o que os gráficos estão "conversando" agora e permitem limpar */
   .chips-filtro{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-height:0;}
@@ -344,8 +356,12 @@
           <div class="chart-canvas-wrap"><canvas id="chartBlocos"></canvas></div>
         </div>
         <div class="chart-box chart-box-wide">
-          <h3>Solicitações ao longo do ciclo</h3>
-          <div class="chart-canvas-wrap"><canvas id="chartTempo"></canvas></div>
+          <h3>Tendência do ciclo</h3>
+          <div class="chart-canvas-wrap"><canvas id="chartTendencia"></canvas></div>
+        </div>
+        <div class="chart-box chart-box-wide">
+          <h3>Panorama por dia</h3>
+          <div class="insight-row" id="insightRow"></div>
         </div>
       </div>
     </div>
@@ -682,7 +698,7 @@
 
   // ================= GRÁFICOS INTERATIVOS =================
   var CHART_CORES = {critico:"#643200", excesso:"#0070b2", ok:"#007d5e", dourado:"#0070b2", aco:"#565080"};
-  var chartInstances = {status:null, blocos:null, tempo:null};
+  var chartInstances = {status:null, blocos:null, tendencia:null};
   var chartsDisponiveis = typeof Chart !== "undefined";
   if (chartsDisponiveis){
     Chart.defaults.color = "#B7AF9E";
@@ -889,10 +905,15 @@
 
   function renderCharts(){
     if (!chartsDisponiveis){
-      ["chartStatus","chartBlocos","chartTempo"].forEach(function(id){
+      ["chartStatus","chartBlocos","chartTendencia"].forEach(function(id){
         var c = document.getElementById(id);
         if (c && c.parentNode) c.parentNode.innerHTML = '<p class="muted" style="padding:20px 0;text-align:center;">Gráfico precisa de internet pra carregar a primeira vez.</p>';
       });
+      var todasSemChart = dadosAtuais().filter(function(r){ return r[1] === "Alteração"; });
+      var porDiaSemChart = {};
+      todasSemChart.forEach(function(r){ var d = r[0].split(" ")[0]; porDiaSemChart[d] = (porDiaSemChart[d]||0)+1; });
+      var diasSemChart = Object.keys(porDiaSemChart).sort();
+      renderInsights(diasSemChart, porDiaSemChart, todasSemChart);
       return;
     }
     var todas = dadosAtuais().filter(function(r){ return r[1] === "Alteração"; });
@@ -993,7 +1014,7 @@
       }]
     });
 
-    // ---- barras: solicitações ao longo do ciclo ----
+    // ---- linha: tendência do ciclo (substitui a barra por dia — menos repetitiva, mostra evolução) ----
     var porDia = {};
     rowsParaTempo.forEach(function(r){
       var dia = r[0].split(" ")[0];
@@ -1003,23 +1024,25 @@
       var pa = a.split("/"), pb = b.split("/");
       return new Date(pa[2],pa[1]-1,pa[0]) - new Date(pb[2],pb[1]-1,pb[0]);
     });
-    var ctxTempo = document.getElementById("chartTempo").getContext("2d");
-    if (chartInstances.tempo) chartInstances.tempo.destroy();
-    chartInstances.tempo = new Chart(ctxTempo, {
-      type: "bar",
+    var maxDiaTend = dias.reduce(function(m,d){ return Math.max(m, porDia[d]); }, 0);
+    var coresPontos = dias.map(function(d){
+      var temCritico = rowsParaTempo.some(function(r){ return r[0].split(" ")[0]===d && statusDe(r)==="critico"; });
+      var corBase = temCritico ? CHART_CORES.critico : escalaCondicional(porDia[d], maxDiaTend);
+      return corDim(corBase, !fDiaAtivo || fDiaAtivo===d);
+    });
+    var ctxTendencia = document.getElementById("chartTendencia").getContext("2d");
+    if (chartInstances.tendencia) chartInstances.tendencia.destroy();
+    chartInstances.tendencia = new Chart(ctxTendencia, {
+      type: "line",
       data: {
         labels: dias,
-        datasets: [{ data: dias.map(function(d){ return porDia[d]; }),
-          backgroundColor: (function(){
-            var maxDia = dias.reduce(function(m,d){ return Math.max(m, porDia[d]); }, 0);
-            return dias.map(function(d){
-              var temCritico = rowsParaTempo.some(function(r){ return r[0].split(" ")[0]===d && statusDe(r)==="critico"; });
-              var corBase = temCritico ? CHART_CORES.critico : escalaCondicional(porDia[d], maxDia);
-              return corDim(corBase, !fDiaAtivo || fDiaAtivo===d);
-            });
-          })(),
-          borderRadius: 4, maxBarThickness: 26,
-          hoverBackgroundColor: "#8079A8" }]
+        datasets: [{
+          data: dias.map(function(d){ return porDia[d]; }),
+          borderColor: "#0070b2", backgroundColor: "rgba(0,112,178,0.14)",
+          fill: true, tension: 0.35, borderWidth: 2.5,
+          pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: coresPontos,
+          pointBorderColor: "#0E1412", pointBorderWidth: 1.5
+        }]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
@@ -1030,28 +1053,90 @@
           } }
         },
         scales: { x: { grid: { display:false }, ticks: { font:{size:9.5}, maxRotation:45, minRotation:45 } },
-                  y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { precision:0, font:{size:10} } } },
+                  y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { precision:0, font:{size:10} }, beginAtZero:true } },
         onClick: function(evt, els){
           if (!els.length) return;
           var idx = els[0].index;
           aplicarFiltroDaTabela("dia", dias[idx]);
         },
         onHover: function(evt, els){ evt.native.target.style.cursor = els.length ? "pointer" : "default"; }
-      },
-      plugins: [{
-        id: "valueLabelsTop",
-        afterDatasetsDraw: function(chart){
-          var ctx = chart.ctx;
-          chart.data.datasets[0].data.forEach(function(val, i){
-            var meta = chart.getDatasetMeta(0).data[i];
-            if (!meta) return;
-            ctx.save();
-            ctx.fillStyle = "#F2EFE7"; ctx.font = "700 10px sans-serif"; ctx.textAlign = "center";
-            ctx.fillText(val, meta.x, meta.y - 6);
-            ctx.restore();
-          });
-        }
-      }]
+      }
+    });
+
+    // ---- cartões: panorama por dia (2º "gráfico" — em formato de cartão, também cross-filtra) ----
+    renderInsights(dias, porDia, rowsParaTempo);
+  }
+
+  // mini-dashboard genérico pra alvos que não são gráficos Chart.js (ex.: os cartões de insight) —
+  // reaproveita o MESMO elemento/CSS do tooltip dos gráficos, garantindo o mesmo tamanho em qualquer tela.
+  function mostrarMiniDashGenerico(elAlvo, html){
+    var tip = document.getElementById("miniDashTip");
+    if (!tip) return;
+    tip.innerHTML = html;
+    tip.classList.add("show");
+    var r = elAlvo.getBoundingClientRect();
+    var largura = tip.offsetWidth || 225;
+    var altura = tip.offsetHeight || 160;
+    var x = r.left, y = r.bottom + 8;
+    if (x + largura > window.innerWidth - 10) x = window.innerWidth - largura - 10;
+    if (y + altura > window.innerHeight - 10) y = r.top - altura - 8;
+    if (x < 8) x = 8;
+    if (y < 8) y = 8;
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+  }
+
+  function renderInsights(dias, porDia, rows){
+    var wrap = document.getElementById("insightRow");
+    if (!wrap) return;
+    if (!dias.length){ wrap.innerHTML = '<p class="muted" style="padding:6px 0;">Sem dados no recorte atual.</p>'; return; }
+
+    var fDiaAtual = filtroDiaAtivo;
+    var diaTop = dias.reduce(function(m,d){ return porDia[d] > porDia[m] ? d : m; }, dias[0]);
+    var totalGeral = dias.reduce(function(s,d){ return s + porDia[d]; }, 0);
+    var media = totalGeral / dias.length;
+
+    var meio = Math.ceil(dias.length / 2);
+    var primeiraMetade = dias.slice(0, meio).reduce(function(s,d){ return s + porDia[d]; }, 0);
+    var segundaMetade = dias.slice(meio).reduce(function(s,d){ return s + porDia[d]; }, 0);
+    var variacao = primeiraMetade ? Math.round(100 * (segundaMetade - primeiraMetade) / primeiraMetade) : (segundaMetade > 0 ? 100 : 0);
+    var seta = variacao > 0 ? "▲" : variacao < 0 ? "▼" : "→";
+    var corTendencia = variacao > 0 ? CHART_CORES.critico : variacao < 0 ? CHART_CORES.ok : CHART_CORES.excesso;
+
+    var diasComCritico = dias.filter(function(d){
+      return rows.some(function(r){ return r[0].split(" ")[0] === d && statusDe(r) === "critico"; });
+    });
+
+    var cartoes = [
+      { chave:"top", clicavel:true,
+        label:"Dia mais movimentado", valor: diaTop, sub: fmtNum(porDia[diaTop]) + " solicitação" + (porDia[diaTop]===1?"":"ões"),
+        dica:"Clique pra filtrar por esse dia. Representa " + (totalGeral ? Math.round(100*porDia[diaTop]/totalGeral) : 0) + "% do total do recorte atual." },
+      { chave:"media", clicavel:false,
+        label:"Média por dia", valor: media.toFixed(1).replace(".", ","), sub: dias.length + " dia" + (dias.length===1?"":"s") + " com movimento",
+        dica:"Total de solicitações (" + fmtNum(totalGeral) + ") dividido pelos dias com pelo menos um registro." },
+      { chave:"tendencia", clicavel:false,
+        label:"Tendência no ciclo", valor: seta + " " + Math.abs(variacao) + "%", sub: variacao >= 0 ? "mais movimento na 2ª metade" : "menos movimento na 2ª metade",
+        dica:"Compara a 1ª metade do ciclo (" + fmtNum(primeiraMetade) + " solicitações) com a 2ª metade (" + fmtNum(segundaMetade) + ")." },
+      { chave:"criticos", clicavel:false,
+        label:"Dias com crítico", valor: diasComCritico.length + " de " + dias.length, sub: diasComCritico.length ? diasComCritico.slice(0,3).join(", ") : "nenhum dia crítico",
+        dica:"Dias do recorte atual com pelo menos um registro crítico (aumento sem justificativa)." }
+    ];
+
+    wrap.innerHTML = cartoes.map(function(c){
+      var destaque = c.chave === "top" && fDiaAtual === diaTop;
+      return '<div class="insight-card' + (c.clicavel ? ' clicavel' : '') + '"' + (destaque ? ' style="border-color:var(--dourado);"' : '') + '>' +
+        '<div class="ic-label">' + c.label + '</div>' +
+        '<div class="ic-value"' + (c.chave === "tendencia" ? ' style="color:' + corTendencia + ';"' : '') + '>' + c.valor + '</div>' +
+        '<div class="ic-sub">' + c.sub + '</div>' +
+        '</div>';
+    }).join("");
+
+    wrap.querySelectorAll(".insight-card").forEach(function(el, i){
+      var c = cartoes[i];
+      if (c.clicavel) el.addEventListener("click", function(){ aplicarFiltroDaTabela("dia", diaTop); });
+      el.addEventListener("mouseenter", function(){
+        mostrarMiniDashGenerico(el, '<div class="mdt-title">' + c.label + '</div><div class="mdt-texto">' + c.dica + '</div>');
+      });
+      el.addEventListener("mouseleave", function(){ document.getElementById("miniDashTip").classList.remove("show"); });
     });
   }
 
@@ -1161,8 +1246,18 @@
       "Mostrando " + Math.min(LIMITE, filtrado.length) + " de " + filtrado.length + " registros" + (filtrado.length>LIMITE ? " (refine a busca para ver mais específico, ou exporte para ver tudo)" : "") + ".";
   }
 
+  function debounce(fn, atraso){
+    var t;
+    return function(){
+      clearTimeout(t);
+      t = setTimeout(fn, atraso);
+    };
+  }
   function renderTudoFiltravel(){ renderTabela(); renderCharts(); renderChipsFiltro(); }
-  ["fBusca","fTipo","fStatus"].forEach(function(id){
+  var renderTudoFiltravelAtrasado = debounce(renderTudoFiltravel, 200);
+  document.getElementById("fBusca").addEventListener("input", renderTudoFiltravelAtrasado);
+  document.getElementById("fBusca").addEventListener("change", renderTudoFiltravel);
+  ["fTipo","fStatus"].forEach(function(id){
     document.getElementById(id).addEventListener("input", renderTudoFiltravel);
     document.getElementById(id).addEventListener("change", renderTudoFiltravel);
   });
