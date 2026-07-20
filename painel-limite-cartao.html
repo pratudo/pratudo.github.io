@@ -14,10 +14,10 @@
     --text-600:#B7AF9E;
     --text-400:#847C6C;
     --paper:#070B16;
-    --paper-grad:radial-gradient(1100px 600px at 8% -10%, rgba(0,30,115,0.28), transparent 60%),
-                 radial-gradient(900px 700px at 105% 8%, rgba(0,112,178,0.20), transparent 55%),
-                 linear-gradient(180deg, #0B1120, #070B16 55%, #04070E);
-    --card:rgba(180,205,255,0.055);
+    --paper-grad:radial-gradient(1100px 600px at 8% -10%, rgba(0,30,115,0.34), transparent 60%),
+                 radial-gradient(900px 700px at 105% 8%, rgba(0,112,178,0.26), transparent 55%),
+                 linear-gradient(180deg, #0E1730, #0A1128 55%, #0A1128);
+    --card:rgba(30,55,130,0.30);
     --card-solid:#101A30;
     --border:rgba(180,195,220,0.16);
     --glass-blur:22px;
@@ -114,6 +114,7 @@
   .tbl-wrap{overflow-x:auto;border-radius:var(--radius-md);border:1px solid var(--border);}
   table{width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;}
   th{background:var(--card-solid);color:var(--text-600);text-align:left;padding:9px 10px;font-size:10.5px;
+    white-space:normal;vertical-align:bottom;line-height:1.25;
     text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;}
   td{padding:8px 10px;border-top:1px solid var(--border);color:var(--ink);}
   tr.alerta-critico td{background:rgba(162,37,44,0.10);}
@@ -132,6 +133,7 @@
   .just-tip-title{display:block;font-weight:800;color:var(--dourado-clara);margin-bottom:6px;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;}
   .just-tip-row{display:block;margin-top:3px;}
   .just-wrap:hover .just-tip, .just-wrap:focus .just-tip{display:block;}
+  #tabelaBody tr:hover, #alertasBody tr:hover, #tabelaKmBody tr:hover{background:rgba(180,205,255,0.06);}
 
   .rank-row{display:flex;flex-direction:column;gap:4px;padding:8px 0;}
   .rank-row-label{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;}
@@ -910,7 +912,7 @@
       var placaCel = '<td>' + r[7];
       if (d.temJustificativa){
         placaCel += '<span class="just-wrap">' +
-          '<span class="just-icon">💬</span>' +
+          '<span class="just-icon">⚠️</span>' +
           '<span class="just-tip">' +
             '<span class="just-tip-title">Justificativa da ação</span>' +
             '<span class="just-tip-row"><b>Solicitante:</b> ' + escapeHtml(r[15] || "—") + '</span>' +
