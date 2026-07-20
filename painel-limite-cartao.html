@@ -13,12 +13,12 @@
     --ink:#F2EFE7;
     --text-600:#B7AF9E;
     --text-400:#847C6C;
-    --paper:#0A0908;
-    --paper-grad:radial-gradient(1100px 600px at 8% -10%, rgba(0,30,115,0.20), transparent 60%),
-                 radial-gradient(900px 700px at 105% 8%, rgba(0,112,178,0.14), transparent 55%),
-                 linear-gradient(180deg, #100E0A, #0A0908 55%, #060504);
-    --card:rgba(255,245,222,0.045);
-    --card-solid:#151210;
+    --paper:#070B16;
+    --paper-grad:radial-gradient(1100px 600px at 8% -10%, rgba(0,30,115,0.28), transparent 60%),
+                 radial-gradient(900px 700px at 105% 8%, rgba(0,112,178,0.20), transparent 55%),
+                 linear-gradient(180deg, #0B1120, #070B16 55%, #04070E);
+    --card:rgba(180,205,255,0.055);
+    --card-solid:#101A30;
     --border:rgba(180,195,220,0.16);
     --glass-blur:22px;
     /* institucionais: usadas como preenchimento sólido (texto branco em cima) */
@@ -120,6 +120,18 @@
   tr.alerta-atencao td{background:rgba(0,112,178,0.09);}
   .muted{color:var(--text-400);}
   .num{text-align:right;font-variant-numeric:tabular-nums;}
+  .just-wrap{position:relative;display:inline-block;margin-left:6px;}
+  .just-icon{cursor:default;font-size:12px;opacity:0.9;}
+  .just-tip{
+    display:none;position:absolute;left:0;bottom:calc(100% + 8px);z-index:20;
+    width:240px;white-space:normal;font-size:12px;line-height:1.5;
+    background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);
+    backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+    box-shadow:var(--shadow);padding:10px 12px;color:var(--ink);
+  }
+  .just-tip-title{display:block;font-weight:800;color:var(--dourado-clara);margin-bottom:6px;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;}
+  .just-tip-row{display:block;margin-top:3px;}
+  .just-wrap:hover .just-tip, .just-wrap:focus .just-tip{display:block;}
 
   .rank-row{display:flex;flex-direction:column;gap:4px;padding:8px 0;}
   .rank-row-label{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;}
@@ -307,18 +319,6 @@
       </div>
     </div>
 
-    <div class="card" id="cardPermissoes" hidden>
-      <h2>Permissões por bloco</h2>
-      <p>Controla o que cada bloco pode fazer no painel de rotas/combustível. Por padrão nada muda — só passa a valer quando você desmarcar algo aqui. Marcado = liberado.</p>
-      <div class="tbl-wrap" style="margin-top:14px;">
-        <table>
-          <thead><tr><th>Bloco</th><th>Acesso liberado</th><th>Editar KM</th><th>Editar preço</th><th>Corrigir endereço</th><th>Salvar relatório</th><th>Compartilhar relatório</th></tr></thead>
-          <tbody id="permissoesBody"></tbody>
-        </table>
-      </div>
-      <p class="muted" id="permissoesStatus" style="margin-top:10px;"></p>
-    </div>
-
     <div class="card" id="cardRankPlacas" hidden>
       <h2>Maiores placas (carga extra concedida por veículo)</h2>
       <p>Quanto cada placa recebeu de carga extra somada no ciclo, e quantas vezes precisou de ajuste.</p>
@@ -330,7 +330,7 @@
       <p>KM rodado no ciclo acima de 5.000 km — fisicamente improvável para o período, muito provável que o condutor digitou o KM errado na hora de abastecer, não uso real. Lista focada só com esses casos (eles também aparecem, marcados, na tabela completa abaixo).</p>
       <div class="tbl-wrap" style="margin-top:14px;">
         <table>
-          <thead><tr><th>Placa</th><th>Bloco</th><th>KM início</th><th>KM fim</th><th>KM rodado (suspeito)</th></tr></thead>
+          <thead><tr><th>Placa</th><th>Bloco</th><th class="num">KM início</th><th class="num">KM fim</th><th class="num">KM rodado (suspeito)</th></tr></thead>
           <tbody id="errosKmBody"></tbody>
         </table>
       </div>
@@ -350,7 +350,7 @@
       </div>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>Placa</th><th>Bloco</th><th>Região</th><th>Igreja</th><th>KM início</th><th>KM fim</th><th>KM rodado</th><th>Status</th></tr></thead>
+          <thead><tr><th>Placa</th><th>Bloco</th><th>Região</th><th>Igreja</th><th class="num">KM início</th><th class="num">KM fim</th><th class="num">KM rodado</th><th>Status</th></tr></thead>
           <tbody id="tabelaKmBody"></tbody>
         </table>
       </div>
@@ -371,11 +371,23 @@
       </div>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>Data</th><th>Tipo</th><th>Bloco</th><th>Região</th><th>Igreja</th><th>Placa</th><th>Anterior</th><th>Novo</th><th>Aumento</th><th>Solicitante</th><th>Justificativa</th><th>Status</th></tr></thead>
+          <thead><tr><th>Data</th><th>Tipo</th><th>Bloco</th><th>Região</th><th>Igreja</th><th>Placa</th><th>Anterior</th><th>Novo</th><th>Aumento</th><th>Status</th></tr></thead>
           <tbody id="tabelaBody"></tbody>
         </table>
       </div>
       <p id="tabelaContagem" style="margin-top:10px;"></p>
+    </div>
+
+    <div class="card" id="cardPermissoes" hidden>
+      <h2>Permissões por bloco</h2>
+      <p>Controla o que cada bloco pode fazer no painel de rotas/combustível. Por padrão nada muda — só passa a valer quando você desmarcar algo aqui. Marcado = liberado.</p>
+      <div class="tbl-wrap" style="margin-top:14px;">
+        <table>
+          <thead><tr><th>Bloco</th><th>Acesso liberado</th><th>Editar KM</th><th>Editar preço</th><th>Corrigir endereço</th><th>Salvar relatório</th><th>Compartilhar relatório</th></tr></thead>
+          <tbody id="permissoesBody"></tbody>
+        </table>
+      </div>
+      <p class="muted" id="permissoesStatus" style="margin-top:10px;"></p>
     </div>
 
     <p class="footer-note">Cartão nunca é exibido por completo — só os últimos 4 dígitos. KM calculado a partir do relatório de últimas quilometragens, mesmo ciclo (15/06–14/07).</p>
@@ -427,6 +439,11 @@
     return "R$ " + (v||0).toLocaleString("pt-BR", {minimumFractionDigits:2, maximumFractionDigits:2});
   }
   function fmtNum(v){ return (v||0).toLocaleString("pt-BR"); }
+  function escapeHtml(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
+    });
+  }
 
   function deriva(row){
     // Compara cada cartão com o próprio limite anterior dele — os limites variam entre cartões,
@@ -696,7 +713,7 @@
         labels: ["Crítico (sem justificativa)", "Aumento (com justificativa)", "Dentro do padrão"],
         datasets: [{ data: [contagem.critico, contagem.excesso, contagem.ok],
           backgroundColor: [CHART_CORES.critico, CHART_CORES.excesso, CHART_CORES.ok],
-          borderColor: "#151210", borderWidth: 3, hoverOffset: 10 }]
+          borderColor: "#101A30", borderWidth: 3, hoverOffset: 10 }]
       },
       options: {
         responsive: true, maintainAspectRatio: false, cutout: "62%",
@@ -890,11 +907,22 @@
     body.innerHTML = filtrado.slice(0, LIMITE).map(function(r){
       var d = deriva(r);
       var st = statusDe(r);
+      var placaCel = '<td>' + r[7];
+      if (d.temJustificativa){
+        placaCel += '<span class="just-wrap">' +
+          '<span class="just-icon">💬</span>' +
+          '<span class="just-tip">' +
+            '<span class="just-tip-title">Justificativa da ação</span>' +
+            '<span class="just-tip-row"><b>Solicitante:</b> ' + escapeHtml(r[15] || "—") + '</span>' +
+            '<span class="just-tip-row"><b>Justificativa:</b> ' + escapeHtml(r[16]) + '</span>' +
+          '</span>' +
+        '</span>';
+      }
+      placaCel += '</td>';
       return '<tr' + (st==='critico' ? ' class="alerta-critico"' : '') + '>' +
-        '<td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[4] + '</td><td>' + r[5] + '</td><td>' + r[6] + '</td><td>' + r[7] + '</td>' +
+        '<td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[4] + '</td><td>' + r[5] + '</td><td>' + r[6] + '</td>' + placaCel +
         '<td class="num">' + fmtBRL(r[11]) + '</td><td class="num">' + fmtBRL(r[12]) + '</td>' +
         '<td class="num">' + (d.cargaExtra ? fmtBRL(d.cargaExtra) : '—') + '</td>' +
-        '<td>' + r[15] + '</td><td class="muted">' + (r[16]==="NÃO CONSTA" ? "—" : r[16]) + '</td>' +
         '<td>' + badgeStatus(st) + '</td></tr>';
     }).join("");
     document.getElementById("tabelaContagem").textContent =
