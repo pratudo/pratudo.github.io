@@ -137,6 +137,9 @@
   .bloco-picker select{width:100%;padding:12px;border-radius:var(--radius-md);border:1px solid var(--border);
     background:var(--card-solid);color:var(--ink);font-size:14px;}
 
+  #permissoesBody td{text-align:center;}
+  #permissoesBody td:first-child{text-align:left;font-weight:700;color:var(--ink);}
+  #permissoesBody input[type="checkbox"]{width:18px;height:18px;accent-color:var(--dourado);cursor:pointer;}
   .footer-note{color:var(--text-400);font-size:11.5px;text-align:center;margin-top:20px;}
   .print-only{display:none;}
 
@@ -182,9 +185,9 @@
 
 <div id="loginScreen" class="gate-overlay">
   <div class="gate-card card">
-    <h1>Painel de Limite de Cartão</h1>
-    <p>IURD — Rio de Janeiro · Ciclo 15/06/2026 a 14/07/2026</p>
-    <div class="bloco-picker" style="margin:16px auto;">
+    <h1 id="loginTitulo">Painel de Limite de Cartão</h1>
+    <p id="loginSub">IURD — Rio de Janeiro · Ciclo 15/06/2026 a 14/07/2026</p>
+    <div class="bloco-picker" id="blocoPickerWrap" style="margin:16px auto;">
       <select id="loginPerfil">
         <option value="">Selecione seu bloco…</option>
         <option value="ABOLICAO">ABOLICAO</option>
@@ -210,13 +213,13 @@
         <option value="RECREIO">RECREIO</option>
         <option value="SANTA CRUZ I">SANTA CRUZ I</option>
         <option value="TAQUARA">TAQUARA</option>
-        <option value="__admin__">Administrador</option>
       </select>
     </div>
     <input type="password" id="loginSenha" placeholder="Senha de acesso" maxlength="30" autocomplete="off">
     <div id="loginError" class="badge badge-danger" hidden style="display:block;margin-bottom:10px;">Senha incorreta.</div>
     <div id="loginCarregando" class="hint" hidden style="margin-bottom:10px;">Entrando…</div>
     <button type="button" class="btn btn-primary" style="width:100%;" id="btnEntrar">Entrar</button>
+    <button type="button" class="gate-link" id="btnPortalAdm">Portal ADM</button>
   </div>
 </div>
 
@@ -301,6 +304,18 @@
         <h2>Maiores solicitantes</h2>
         <div id="rankSolicitantes" style="margin-top:10px;"></div>
       </div>
+    </div>
+
+    <div class="card" id="cardPermissoes" hidden>
+      <h2>Permissões por bloco</h2>
+      <p>Controla o que cada bloco pode fazer no painel de rotas/combustível. Por padrão nada muda — só passa a valer quando você desmarcar algo aqui. Marcado = liberado.</p>
+      <div class="tbl-wrap" style="margin-top:14px;">
+        <table>
+          <thead><tr><th>Bloco</th><th>Acesso liberado</th><th>Editar KM</th><th>Editar preço</th><th>Corrigir endereço</th><th>Salvar relatório</th><th>Compartilhar relatório</th></tr></thead>
+          <tbody id="permissoesBody"></tbody>
+        </table>
+      </div>
+      <p class="muted" id="permissoesStatus" style="margin-top:10px;"></p>
     </div>
 
     <div class="card" id="cardRankPlacas" hidden>
@@ -458,14 +473,25 @@
     });
   }
 
+  var modoAdmin = false;
+  document.getElementById("btnPortalAdm").addEventListener("click", function(){
+    modoAdmin = !modoAdmin;
+    document.getElementById("blocoPickerWrap").hidden = modoAdmin;
+    document.getElementById("loginTitulo").textContent = modoAdmin ? "Portal ADM" : "Painel de Limite de Cartão";
+    document.getElementById("loginSub").textContent = modoAdmin ? "Acesso restrito ao administrador" : "IURD — Rio de Janeiro · Ciclo 15/06/2026 a 14/07/2026";
+    document.getElementById("btnPortalAdm").textContent = modoAdmin ? "‹ Voltar para blocos" : "Portal ADM";
+    document.getElementById("loginPerfil").value = "";
+    document.getElementById("loginError").hidden = true;
+  });
+
   document.getElementById("btnEntrar").addEventListener("click", function(){
     var perfil = document.getElementById("loginPerfil").value;
     var senha = document.getElementById("loginSenha").value;
     document.getElementById("loginError").hidden = true;
-    if (!perfil){ mostrarErroLogin("Escolha o seu bloco (ou Administrador) na lista."); return; }
+    if (!modoAdmin && !perfil){ mostrarErroLogin("Escolha o seu bloco na lista."); return; }
     if (!senha){ mostrarErroLogin("Digite a senha."); return; }
     document.getElementById("loginCarregando").hidden = false;
-    if (perfil === "__admin__"){
+    if (modoAdmin){
       tentarLogin("admin.principal@paineliurd.app", senha, "admin.auxiliar@paineliurd.app");
     } else {
       var email = BLOCO_EMAIL[perfil];
@@ -527,12 +553,13 @@
     document.getElementById("modoLabel").textContent = isAdmin ? "Painel do administrador" : "Painel do solicitante";
     document.getElementById("tituloPainel").textContent = isAdmin ? "Visão consolidada" : blocoAtual;
     document.getElementById("rankingsWrap").hidden = !isAdmin;
+    document.getElementById("cardPermissoes").hidden = !isAdmin;
     document.getElementById("cardRankPlacas").hidden = false;
     document.getElementById("mainContent").hidden = false;
     renderKPIs();
     renderAlertas();
     renderErros();
-    if (isAdmin){ renderRanking(); }
+    if (isAdmin){ renderRanking(); carregarPermissoes(); }
     renderRankingPlacas();
     renderKM();
     renderCharts();
@@ -982,6 +1009,84 @@
       a.href = url; a.download = "resumo_limite_cartao.png";
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    });
+  }
+
+  // ================= PERMISSÕES POR BLOCO (Portal ADM) =================
+  var BLOCOS_LISTA = Object.keys(BLOCO_EMAIL).sort();
+  var PERMISSOES_CAMPOS = [
+    {key:"editarKm", label:"Editar KM"},
+    {key:"editarPreco", label:"Editar preço"},
+    {key:"corrigirEndereco", label:"Corrigir endereço"},
+    {key:"salvarRelatorio", label:"Salvar relatório"},
+    {key:"compartilharRelatorio", label:"Compartilhar relatório"}
+  ];
+
+  function permissoesPadrao(){
+    return {bloqueado:false, editarKm:true, editarPreco:true, corrigirEndereco:true, salvarRelatorio:true, compartilharRelatorio:true};
+  }
+
+  function carregarPermissoes(){
+    var tbody = document.getElementById("permissoesBody");
+    tbody.innerHTML = "<tr><td colspan=\"7\" class=\"muted\">Carregando…</td></tr>";
+    var promessas = BLOCOS_LISTA.map(function(bloco){
+      return db.collection("permissoes").doc(bloco).get().then(function(doc){
+        var padrao = permissoesPadrao();
+        var salvo = doc.exists ? doc.data() : {};
+        var dados = {};
+        Object.keys(padrao).forEach(function(k){ dados[k] = (salvo[k] !== undefined) ? salvo[k] : padrao[k]; });
+        return {bloco: bloco, dados: dados};
+      });
+    });
+    Promise.all(promessas).then(function(lista){
+      renderPermissoes(lista);
+    }).catch(function(err){
+      tbody.innerHTML = "<tr><td colspan=\"7\" class=\"muted\">Não consegui carregar: " + err.message + "</td></tr>";
+    });
+  }
+
+  function renderPermissoes(lista){
+    var tbody = document.getElementById("permissoesBody");
+    tbody.innerHTML = "";
+    lista.forEach(function(item){
+      var tr = document.createElement("tr");
+
+      var tdBloco = document.createElement("td");
+      tdBloco.textContent = item.bloco;
+      tr.appendChild(tdBloco);
+
+      var tdAcesso = document.createElement("td");
+      var cbAcesso = document.createElement("input");
+      cbAcesso.type = "checkbox";
+      cbAcesso.checked = !item.dados.bloqueado;
+      cbAcesso.title = "Desmarcar bloqueia o bloco inteiro";
+      cbAcesso.addEventListener("change", function(){ salvarPermissao(item.bloco, "bloqueado", !cbAcesso.checked); });
+      tdAcesso.appendChild(cbAcesso);
+      tr.appendChild(tdAcesso);
+
+      PERMISSOES_CAMPOS.forEach(function(campo){
+        var td = document.createElement("td");
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = item.dados[campo.key] !== false;
+        cb.addEventListener("change", function(){ salvarPermissao(item.bloco, campo.key, cb.checked); });
+        td.appendChild(cb);
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  function salvarPermissao(bloco, campo, valor){
+    var status = document.getElementById("permissoesStatus");
+    status.textContent = "Salvando " + bloco + "…";
+    var dados = {};
+    dados[campo] = valor;
+    db.collection("permissoes").doc(bloco).set(dados, {merge:true}).then(function(){
+      status.textContent = "Salvo: " + bloco + " · " + new Date().toLocaleTimeString("pt-BR");
+    }).catch(function(err){
+      status.textContent = "Erro ao salvar " + bloco + ": " + err.message;
     });
   }
 
