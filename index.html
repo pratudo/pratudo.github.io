@@ -85,6 +85,8 @@
     color:var(--amarelo-esc);
     margin:0 0 6px;
   }
+  .session-countdown{font-size:11px;color:var(--text-400);font-variant-numeric:tabular-nums;margin:2px 0 0;}
+  .session-countdown.perto{color:#e0665f;font-weight:700;}
   .topbar h1{
     font-family:var(--font-head);
     font-weight:800;
@@ -657,6 +659,7 @@
           <p class="eyebrow">IURD · Base Estado — Rio de Janeiro</p>
           <h1>Combustíveis — Cálculo de Rotas</h1>
           <p>Consulta por placa · rota com paradas · custo de viagem</p>
+          <p class="session-countdown" id="sessaoCountdown"></p>
         </div>
         <div class="topbar-controls">
           <button type="button" class="action-card" id="btnMobile" title="Abrir em janela de celular (redimensionável)" aria-label="Abrir em janela de celular"><span class="ic">📱</span><span class="lb">Celular</span></button>
@@ -692,7 +695,8 @@
       </div>
 
       <div class="plate-field">
-        <label for="placaInput">Digite a placa</label>
+        <label for="placaInput">Digite a placa <span style="opacity:.5; font-weight:400;">(atalho: Ctrl+K)</span></label>
+        <p id="dadosStatus" class="muted" style="font-size:11px; margin:2px 0 8px;"></p>
         <div class="plate-row">
           <div class="autocomplete-panel">
             <div class="plate-box">
@@ -981,6 +985,7 @@
   };
   firebase.initializeApp(firebaseConfig);
   var authFB = firebase.auth();
+  authFB.setPersistence(firebase.auth.Auth.Persistence.SESSION);
   var dbFB = firebase.firestore();
   try { authFB.setPersistence(firebase.auth.Auth.Persistence.SESSION); } catch(e){}
 
@@ -2188,7 +2193,22 @@
     } catch(e){ /* sem sessionStorage disponível — segue sem cache, sem problema */ }
   }
 
-  function aplicarDados(veiculosDoc, enderecosDoc){
+  function atualizarIndicadorDados(veiculosCount, deCache){
+    var el = document.getElementById("dadosStatus");
+    if (!el) return;
+    var quando = deCache ? "cache desta aba" : "agora mesmo";
+    el.innerHTML = veiculosCount + " veículos carregados (" + quando + ") · " +
+      '<a href="#" id="btnForcarAtualizacao" style="color:inherit; text-decoration:underline;">atualizar agora</a>';
+    var btn = document.getElementById("btnForcarAtualizacao");
+    if (btn) btn.addEventListener("click", function(ev){
+      ev.preventDefault();
+      try { sessionStorage.removeItem("cache_dados_veiculos"); sessionStorage.removeItem("cache_dados_enderecos"); } catch(e){}
+      el.textContent = "Atualizando…";
+      carregarDadosEContinuar();
+    });
+  }
+
+  function aplicarDados(veiculosDoc, enderecosDoc, deCache){
     DB.vehicles = JSON.parse(veiculosDoc.vehiclesJson);
     DB.models = JSON.parse(veiculosDoc.modelsJson);
     vehicleByPlate = {};
@@ -2196,12 +2216,13 @@
     ENDERECOS_BASE = {};
     Object.keys(enderecosDoc.seed).forEach(function(k){ ENDERECOS_BASE[k.toLowerCase()] = enderecosDoc.seed[k]; });
     atualizarIgrejasConhecidas();
+    atualizarIndicadorDados(DB.vehicles.length, !!deCache);
     mostrarTela(null);
   }
 
   function carregarDadosEContinuar(){
     var cache = lerCacheDados();
-    if (cache){ aplicarDados(cache.veiculosDoc, cache.enderecosDoc); return; }
+    if (cache){ aplicarDados(cache.veiculosDoc, cache.enderecosDoc, true); return; }
     Promise.all([
       dbFB.collection("dados").doc("veiculos").get(),
       dbFB.collection("dados").doc("enderecos").get()
@@ -2209,10 +2230,153 @@
       var veiculosDoc = res[0].data();
       var enderecosDoc = res[1].data();
       salvarCacheDados(veiculosDoc, enderecosDoc);
-      aplicarDados(veiculosDoc, enderecosDoc);
+      aplicarDados(veiculosDoc, enderecosDoc, false);
     }).catch(function(err){
       alert("Não consegui carregar os dados: " + err.message);
     });
+  }
+
+  // ================= SESSÃO ÚNICA POR BLOCO =================
+  var HEARTBEAT_MS = 20000;
+  var HEARTBEAT_VALIDO_MS = 45000;
+  var meuSessionId = null;
+  var heartbeatInterval = null;
+  var sessaoListenerUnsub = null;
+
+  function gerarSessionId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 10); }
+
+  function pararMonitorSessao(){
+    if (heartbeatInterval){ clearInterval(heartbeatInterval); heartbeatInterval = null; }
+    if (sessaoListenerUnsub){ sessaoListenerUnsub(); sessaoListenerUnsub = null; }
+  }
+
+  function verificarESessaoUnica(bloco){
+    var ref = dbFB.collection("sessoes_ativas").doc(bloco);
+    return ref.get().then(function(doc){
+      var agora = Date.now();
+      if (!doc.exists) return {permitido:true};
+      var d = doc.data();
+      var bloqueadoAte = d.bloqueadoAte && d.bloqueadoAte.toMillis ? d.bloqueadoAte.toMillis() : 0;
+      if (bloqueadoAte > agora){
+        return {permitido:false, motivo:"bloqueado", minutos: Math.ceil((bloqueadoAte - agora) / 60000)};
+      }
+      var chaveLocal = "sessao_" + bloco.replace(/\s+/g,"_");
+      var sessaoLocalSalva = null;
+      try { sessaoLocalSalva = localStorage.getItem(chaveLocal); } catch(e){}
+      if (sessaoLocalSalva && d.sessionId === sessaoLocalSalva){
+        return {permitido:true};
+      }
+      var heartbeatMs = d.ultimoHeartbeat && d.ultimoHeartbeat.toMillis ? d.ultimoHeartbeat.toMillis() : 0;
+      if (agora - heartbeatMs < HEARTBEAT_VALIDO_MS){
+        var novaTentativas = (d.tentativasConflito || 0) + 1;
+        var update = {tentativasConflito: novaTentativas};
+        var vaiBloquear = novaTentativas >= 3;
+        if (vaiBloquear){
+          var horas = 1 + Math.max(0, novaTentativas - 3) * 3;
+          update.bloqueadoAte = firebase.firestore.Timestamp.fromMillis(agora + horas*3600000);
+        }
+        return ref.set(update, {merge:true}).then(function(){
+          if (vaiBloquear){
+            return {permitido:false, motivo:"bloqueado", minutos: Math.ceil((update.bloqueadoAte.toMillis()-agora)/60000)};
+          }
+          return {permitido:false, motivo:"conflito", tentativas:novaTentativas};
+        });
+      }
+      return {permitido:true};
+    });
+  }
+
+  function registrarSessao(bloco){
+    meuSessionId = gerarSessionId();
+    var chaveLocal = "sessao_" + bloco.replace(/\s+/g,"_");
+    try { localStorage.setItem(chaveLocal, meuSessionId); } catch(e){}
+    var ref = dbFB.collection("sessoes_ativas").doc(bloco);
+    ref.set({
+      sessionId: meuSessionId,
+      ultimoHeartbeat: firebase.firestore.FieldValue.serverTimestamp(),
+      dispositivo: (navigator.userAgent || "").slice(0,80),
+      tentativasConflito: 0,
+      bloqueadoAte: null
+    });
+    heartbeatInterval = setInterval(function(){
+      ref.set({ultimoHeartbeat: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+    }, HEARTBEAT_MS);
+    sessaoListenerUnsub = ref.onSnapshot(function(doc){
+      if (doc.exists && doc.data().sessionId !== meuSessionId){
+        pararMonitorSessao();
+        alert("Sua sessão foi encerrada porque este bloco entrou em outro aparelho.");
+        authFB.signOut();
+      }
+    });
+  }
+
+  function liberarSessaoAtual(){
+    if (!blocoAtual || !meuSessionId) return;
+    dbFB.collection("sessoes_ativas").doc(blocoAtual).set({sessionId: null}, {merge:true}).catch(function(){});
+  }
+
+  // ================= TEMPO DE SESSÃO (30 min de inatividade, ou fechar o navegador) =================
+  var SESSAO_MAX_MS = 30 * 60 * 1000;
+  var ATIVIDADE_KEY = "paineliurd_ultima_atividade";
+  function marcarAtividade(){
+    try { localStorage.setItem(ATIVIDADE_KEY, String(Date.now())); } catch(e){}
+  }
+  ["click","keydown","mousemove","touchstart","scroll"].forEach(function(ev){
+    document.addEventListener(ev, marcarAtividade, {passive:true});
+  });
+  marcarAtividade();
+
+  document.addEventListener("keydown", function(ev){
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "k"){
+      ev.preventDefault();
+      var campo = document.getElementById("placaInput");
+      if (campo){ campo.focus(); campo.select(); }
+    }
+  });
+  setInterval(function(){
+    var el = document.getElementById("sessaoCountdown");
+    var ultima = 0;
+    try { ultima = parseInt(localStorage.getItem(ATIVIDADE_KEY) || "0", 10); } catch(e){}
+    var restanteMs = SESSAO_MAX_MS - (Date.now() - ultima);
+    if (!authFB.currentUser){ if (el) el.textContent = ""; return; }
+    if (restanteMs <= 0){
+      pararMonitorSessao();
+      liberarSessaoAtual();
+      authFB.signOut();
+      return;
+    }
+    if (el){
+      var m = Math.floor(restanteMs/60000), s = Math.floor((restanteMs%60000)/1000);
+      el.textContent = "Sessão expira em " + m + ":" + (s<10?"0":"")+s;
+      el.classList.toggle("perto", restanteMs < 5*60000);
+    }
+  }, 1000);
+
+  function processarLoginOk(tokenResult){
+    isAdmin = !!tokenResult.claims.admin;
+    blocoAtual = tokenResult.claims.bloco || null;
+    if (blocoAtual && !isAdmin){
+      verificarESessaoUnica(blocoAtual).then(function(res){
+        if (!res.permitido){
+          pararMonitorSessao();
+          authFB.signOut();
+          var erroEl = document.getElementById("loginError");
+          erroEl.textContent = res.motivo === "bloqueado"
+            ? "Bloqueado por segurança — tente de novo em " + res.minutos + " min, ou peça pro administrador desbloquear."
+            : "Este bloco já está em uso em outro aparelho agora. Mais tentativas assim vão bloquear o acesso temporariamente.";
+          erroEl.hidden = false;
+          return;
+        }
+        registrarSessao(blocoAtual);
+        marcarAtividade();
+        aplicarModoAdmin(isAdmin);
+        carregarDadosEContinuar();
+      });
+    } else {
+      marcarAtividade();
+      aplicarModoAdmin(isAdmin);
+      carregarDadosEContinuar();
+    }
   }
 
   function tentarLogin(){
@@ -2226,12 +2390,12 @@
       authFB.signInWithEmailAndPassword(email, senha).then(function(cred){
         return cred.user.getIdTokenResult();
       }).then(function(tokenResult){
-        isAdmin = !!tokenResult.claims.admin;
-        blocoAtual = tokenResult.claims.bloco || null;
-        aplicarModoAdmin(isAdmin);
-        carregarDadosEContinuar();
+        processarLoginOk(tokenResult);
       }).catch(function(err){
-        if (fallback1){
+        if (err.code === "auth/too-many-requests"){
+          erroEl.textContent = "Muitas tentativas erradas — o Firebase bloqueou essa conta por alguns minutos, por segurança.";
+          erroEl.hidden = false;
+        } else if (fallback1){
           tentativa(fallback1, fallback2, null);
         } else {
           erroEl.textContent = "Senha incorreta.";
@@ -2249,6 +2413,8 @@
   document.getElementById("loginSenha").addEventListener("keydown", function(ev){ if (ev.key === "Enter") tentarLogin(); });
 
   document.getElementById("btnSair").addEventListener("click", function(){
+    liberarSessaoAtual();
+    pararMonitorSessao();
     authFB.signOut().then(function(){
       document.getElementById("loginSenha").value = "";
       aplicarModoAdmin(false);
@@ -2365,12 +2531,10 @@
     authFB.onAuthStateChanged(function(user){
       if (user){
         user.getIdTokenResult().then(function(tokenResult){
-          isAdmin = !!tokenResult.claims.admin;
-          blocoAtual = tokenResult.claims.bloco || null;
-          aplicarModoAdmin(isAdmin);
-          carregarDadosEContinuar();
+          processarLoginOk(tokenResult);
         });
       } else {
+        pararMonitorSessao();
         mostrarTela("loginScreen");
       }
     });
