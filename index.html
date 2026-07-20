@@ -2116,8 +2116,8 @@
     ]).then(function(res){
       var veiculosDoc = res[0].data();
       var enderecosDoc = res[1].data();
-      DB.vehicles = veiculosDoc.vehicles;
-      DB.models = veiculosDoc.models;
+      DB.vehicles = JSON.parse(veiculosDoc.vehiclesJson);
+      DB.models = JSON.parse(veiculosDoc.modelsJson);
       vehicleByPlate = {};
       DB.vehicles.forEach(function(v){ vehicleByPlate[normalizaPlaca(v[0])] = v; });
       ENDERECOS_BASE = {};
