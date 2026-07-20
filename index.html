@@ -95,31 +95,44 @@
   }
   .topbar p{margin:0;color:var(--text-600);font-size:13px;}
   .topbar-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
-  .topbar-controls{display:flex;gap:9px;flex:0 0 auto;flex-wrap:wrap;}
-  .icon-btn{
-    width:44px;height:44px;border-radius:12px;flex:0 0 auto;
+  .topbar-controls{display:flex;gap:8px;flex:0 0 auto;flex-wrap:wrap;}
+  .action-card{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    min-width:60px;flex:0 0 auto;
+    padding:9px 10px 7px;border-radius:13px;
     border:1px solid var(--border);
-    background:linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.01)), var(--paper);
-    color:var(--ink);
-    font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-    line-height:1;transition:background-color .15s ease, border-color .15s ease, transform .1s ease;
-    box-shadow:0 3px 8px rgba(0,4,16,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.02) 45%, rgba(255,255,255,0) 75%),
+      linear-gradient(135deg, rgba(62,130,220,0.16), rgba(0,166,81,0.10)),
+      var(--card-solid);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    color:var(--ink);text-decoration:none;cursor:pointer;
+    box-shadow:0 10px 22px rgba(0,4,16,0.45), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.25);
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
   }
-  .icon-btn:hover{border-color:var(--verde);}
-  .icon-btn:active{transform:translateY(1px);}
-  .icon-btn-destaque{
-    width:auto;padding:0 16px;gap:7px;border-color:var(--verde);
-    background:linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0)), var(--verde);
-    box-shadow:0 6px 18px rgba(0,166,81,0.4), inset 0 1px 0 rgba(255,255,255,0.35);
+  .action-card .ic{font-size:19px;line-height:1;}
+  .action-card .lb{font-size:10px;font-weight:700;letter-spacing:.2px;color:var(--text-600);text-align:center;white-space:nowrap;}
+  .action-card:hover{border-color:var(--verde);transform:translateY(-2px);box-shadow:0 14px 26px rgba(0,4,16,0.5), inset 0 1px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(0,0,0,0.25);}
+  .action-card:active{transform:translateY(0) scale(.97);}
+  .action-card.destaque{
+    border-color:var(--verde);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0) 60%),
+      linear-gradient(160deg, var(--verde-esc), var(--verde));
+    box-shadow:0 10px 24px rgba(0,166,81,0.45), inset 0 1px 0 rgba(255,255,255,0.4);
     animation:pulseDestaque 2.6s ease-in-out infinite;
   }
-  .icon-btn-destaque span{font-size:14px;font-weight:800;color:#04140C;white-space:nowrap;}
-  .icon-btn-destaque:hover{border-color:var(--verde-esc);background:linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0)), var(--verde-esc);}
+  .action-card.destaque .lb{color:#04140C;}
+  .action-card.destaque:hover{background:linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0) 60%), linear-gradient(160deg, var(--verde-esc), var(--verde-esc));}
   @keyframes pulseDestaque{
-    0%, 100% { box-shadow:0 6px 18px rgba(0,166,81,0.4), inset 0 1px 0 rgba(255,255,255,0.35); }
-    50% { box-shadow:0 6px 22px rgba(0,166,81,0.7), inset 0 1px 0 rgba(255,255,255,0.35); }
+    0%, 100% { box-shadow:0 10px 24px rgba(0,166,81,0.4), inset 0 1px 0 rgba(255,255,255,0.4); }
+    50% { box-shadow:0 10px 28px rgba(0,166,81,0.7), inset 0 1px 0 rgba(255,255,255,0.4); }
   }
-  @media (max-width:480px){ .topbar-controls{width:100%;justify-content:flex-start;} .icon-btn-destaque span{display:none;} .icon-btn-destaque{width:44px;padding:0;} }
+  @media (max-width:640px){
+    .topbar-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;}
+    .action-card{min-width:0;width:100%;padding:10px 4px 8px;}
+    .action-card .lb{font-size:9px;white-space:normal;line-height:1.15;}
+  }
   .topbar-meta{
     margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;
   }
@@ -594,15 +607,15 @@
     <div class="topbar-inner">
       <div class="topbar-top">
         <div class="topbar-titles">
-          <p class="eyebrow">IURD · Rio de Janeiro — Gestão de Frota</p>
-          <h1>Sistema de Cálculo de Combustível</h1>
+          <p class="eyebrow">IURD · Base Estado — Rio de Janeiro</p>
+          <h1>Combustíveis — Cálculo de Rotas</h1>
           <p>Consulta por placa · rota com paradas · custo de viagem</p>
         </div>
         <div class="topbar-controls">
-          <button type="button" class="icon-btn" id="btnMobile" title="Abrir em janela de celular (redimensionável)" aria-label="Abrir em janela de celular">📱</button>
-          <button type="button" class="icon-btn" id="btnFullscreen" title="Tela cheia" aria-label="Tela cheia">⛶</button>
+          <button type="button" class="action-card" id="btnMobile" title="Abrir em janela de celular (redimensionável)" aria-label="Abrir em janela de celular"><span class="ic">📱</span><span class="lb">Celular</span></button>
+          <button type="button" class="action-card" id="btnFullscreen" title="Tela cheia" aria-label="Tela cheia"><span class="ic">⛶</span><span class="lb">Tela cheia</span></button>
           <div class="share-menu-wrap">
-            <button type="button" class="icon-btn" id="btnCompartilharTopo" title="Compartilhar resumo" aria-label="Compartilhar resumo">📤</button>
+            <button type="button" class="action-card" id="btnCompartilharTopo" title="Compartilhar resumo" aria-label="Compartilhar resumo"><span class="ic">📤</span><span class="lb">Compartilhar</span></button>
             <div class="share-dropdown" id="shareDropdownTopo" hidden>
               <button type="button" class="share-dropdown-item" data-share="whatsapp">💬 WhatsApp</button>
               <button type="button" class="share-dropdown-item" data-share="txt">📄 Arquivo TXT</button>
@@ -610,10 +623,10 @@
               <button type="button" class="share-dropdown-item" data-share="png">🖼 Imagem PNG</button>
             </div>
           </div>
-          <button type="button" class="icon-btn" id="btnSolicitacoes" title="Minhas solicitações" aria-label="Minhas solicitações">📋</button>
-          <a href="painel-limite-cartao.html" target="_blank" rel="noopener" class="icon-btn icon-btn-destaque" title="Abrir painel de limite de cartão" aria-label="Abrir painel de limite de cartão" style="text-decoration:none;">🪪<span>Painel de limite</span></a>
-          <button type="button" class="icon-btn" id="btnAdmin" title="Área do administrador" aria-label="Área do administrador">⚙</button>
-          <button type="button" class="icon-btn" id="btnSair" title="Sair" aria-label="Sair" hidden>⏻</button>
+          <button type="button" class="action-card" id="btnSolicitacoes" title="Minhas solicitações" aria-label="Minhas solicitações"><span class="ic">📋</span><span class="lb">Solicitações</span></button>
+          <a href="painel-limite-cartao.html" target="_blank" rel="noopener" class="action-card destaque" title="Abrir painel de limite de cartão" aria-label="Abrir painel de limite de cartão"><span class="ic">🪪</span><span class="lb">Limite cartão</span></a>
+          <button type="button" class="action-card" id="btnAdmin" title="Área do administrador" aria-label="Área do administrador"><span class="ic">⚙</span><span class="lb">Admin</span></button>
+          <button type="button" class="action-card" id="btnSair" title="Sair" aria-label="Sair" hidden><span class="ic">⏻</span><span class="lb">Sair</span></button>
         </div>
       </div>
       <div class="topbar-meta">
@@ -2058,6 +2071,7 @@
 
   // ================= TELA CHEIA =================
   var btnFullscreen = document.getElementById("btnFullscreen");
+  var btnFullscreenIcon = btnFullscreen.querySelector(".ic");
   btnFullscreen.addEventListener("click", function(){
     if (!document.fullscreenElement){
       (document.documentElement.requestFullscreen || function(){}).call(document.documentElement);
@@ -2066,7 +2080,7 @@
     }
   });
   document.addEventListener("fullscreenchange", function(){
-    btnFullscreen.textContent = document.fullscreenElement ? "⤢" : "⛶";
+    btnFullscreenIcon.textContent = document.fullscreenElement ? "⤢" : "⛶";
     btnFullscreen.title = document.fullscreenElement ? "Sair da tela cheia" : "Tela cheia";
   });
 
@@ -2102,8 +2116,8 @@
     ]).then(function(res){
       var veiculosDoc = res[0].data();
       var enderecosDoc = res[1].data();
-      DB.vehicles = JSON.parse(veiculosDoc.vehiclesJson);
-      DB.models = JSON.parse(veiculosDoc.modelsJson);
+      DB.vehicles = veiculosDoc.vehicles;
+      DB.models = veiculosDoc.models;
       vehicleByPlate = {};
       DB.vehicles.forEach(function(v){ vehicleByPlate[normalizaPlaca(v[0])] = v; });
       ENDERECOS_BASE = {};
