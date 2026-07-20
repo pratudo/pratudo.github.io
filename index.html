@@ -123,6 +123,8 @@
     animation:pulseDestaque 2.6s ease-in-out infinite;
   }
   .action-card.destaque .lb{color:#04140C;}
+  .dot-sessao{position:absolute;top:-2px;right:-4px;width:8px;height:8px;border-radius:50%;background:#3ee87a;border:1.5px solid #04140C;}
+  .action-card .ic{position:relative;display:inline-block;}
   .action-card.destaque:hover{background:linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0) 60%), linear-gradient(160deg, var(--verde-esc), var(--verde-esc));}
   .action-card.admin-view{
     border-color:rgba(190,200,220,0.32);
@@ -669,7 +671,7 @@
             </div>
           </div>
           <button type="button" class="action-card" id="btnSolicitacoes" title="Minhas solicitações" aria-label="Minhas solicitações"><span class="ic">📋</span><span class="lb">Solicitações</span></button>
-          <a href="painel-limite-cartao.html" target="_blank" rel="noopener" class="action-card destaque" title="Abrir painel de limite de cartão" aria-label="Abrir painel de limite de cartão"><span class="ic">🪪</span><span class="lb">Detalhamento</span></a>
+          <a href="painel-limite-cartao.html" target="_blank" rel="noopener" class="action-card destaque" title="Abrir Detalhamento — já entra direto, sem pedir senha de novo" aria-label="Abrir Detalhamento"><span class="ic">🪪<span class="dot-sessao"></span></span><span class="lb">Detalhamento</span></a>
           <button type="button" class="action-card" id="btnAdmin" title="Área do administrador" aria-label="Área do administrador"><span class="ic">⚙</span><span class="lb">Admin</span></button>
           <a href="painel-limite-cartao.html?modo=admin" target="_blank" rel="noopener" class="action-card admin-view" id="btnVerTodosBlocos" title="Ver todos os blocos, sem restrição (Portal ADM)" aria-label="Ver todos os blocos" hidden><span class="ic">🗂</span><span class="lb">Todos os blocos</span></a>
           <button type="button" class="action-card" id="btnSair" title="Sair" aria-label="Sair" hidden><span class="ic">⏻</span><span class="lb">Sair</span></button>
@@ -2168,21 +2170,46 @@
     }).catch(function(){ callback(false); });
   }
 
+  var CACHE_IDADE_MAX = 30 * 60 * 1000; // 30 minutos
+  function lerCacheDados(){
+    try {
+      var v = sessionStorage.getItem("cache_dados_veiculos");
+      var e = sessionStorage.getItem("cache_dados_enderecos");
+      if (!v || !e) return null;
+      var vObj = JSON.parse(v), eObj = JSON.parse(e);
+      if (Date.now() - vObj.ts > CACHE_IDADE_MAX) return null;
+      return {veiculosDoc: vObj.dados, enderecosDoc: eObj.dados};
+    } catch(e){ return null; }
+  }
+  function salvarCacheDados(veiculosDoc, enderecosDoc){
+    try {
+      sessionStorage.setItem("cache_dados_veiculos", JSON.stringify({dados: veiculosDoc, ts: Date.now()}));
+      sessionStorage.setItem("cache_dados_enderecos", JSON.stringify({dados: enderecosDoc, ts: Date.now()}));
+    } catch(e){ /* sem sessionStorage disponível — segue sem cache, sem problema */ }
+  }
+
+  function aplicarDados(veiculosDoc, enderecosDoc){
+    DB.vehicles = JSON.parse(veiculosDoc.vehiclesJson);
+    DB.models = JSON.parse(veiculosDoc.modelsJson);
+    vehicleByPlate = {};
+    DB.vehicles.forEach(function(v){ vehicleByPlate[normalizaPlaca(v[0])] = v; });
+    ENDERECOS_BASE = {};
+    Object.keys(enderecosDoc.seed).forEach(function(k){ ENDERECOS_BASE[k.toLowerCase()] = enderecosDoc.seed[k]; });
+    atualizarIgrejasConhecidas();
+    mostrarTela(null);
+  }
+
   function carregarDadosEContinuar(){
+    var cache = lerCacheDados();
+    if (cache){ aplicarDados(cache.veiculosDoc, cache.enderecosDoc); return; }
     Promise.all([
       dbFB.collection("dados").doc("veiculos").get(),
       dbFB.collection("dados").doc("enderecos").get()
     ]).then(function(res){
       var veiculosDoc = res[0].data();
       var enderecosDoc = res[1].data();
-      DB.vehicles = JSON.parse(veiculosDoc.vehiclesJson);
-      DB.models = JSON.parse(veiculosDoc.modelsJson);
-      vehicleByPlate = {};
-      DB.vehicles.forEach(function(v){ vehicleByPlate[normalizaPlaca(v[0])] = v; });
-      ENDERECOS_BASE = {};
-      Object.keys(enderecosDoc.seed).forEach(function(k){ ENDERECOS_BASE[k.toLowerCase()] = enderecosDoc.seed[k]; });
-      atualizarIgrejasConhecidas();
-      mostrarTela(null);
+      salvarCacheDados(veiculosDoc, enderecosDoc);
+      aplicarDados(veiculosDoc, enderecosDoc);
     }).catch(function(err){
       alert("Não consegui carregar os dados: " + err.message);
     });
