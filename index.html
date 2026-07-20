@@ -124,6 +124,15 @@
   }
   .action-card.destaque .lb{color:#04140C;}
   .action-card.destaque:hover{background:linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0) 60%), linear-gradient(160deg, var(--verde-esc), var(--verde-esc));}
+  .action-card.admin-view{
+    border-color:rgba(190,200,220,0.32);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02) 45%, rgba(255,255,255,0) 75%),
+      rgba(150,160,180,0.14);
+  }
+  .action-card.admin-view .ic{filter:grayscale(1) brightness(1.3);}
+  .action-card.admin-view .lb{color:var(--text-600);}
+  .action-card.admin-view:hover{border-color:rgba(210,220,240,0.55);}
   @keyframes pulseDestaque{
     0%, 100% { box-shadow:0 10px 24px rgba(0,166,81,0.4), inset 0 1px 0 rgba(255,255,255,0.4); }
     50% { box-shadow:0 10px 28px rgba(0,166,81,0.7), inset 0 1px 0 rgba(255,255,255,0.4); }
@@ -523,6 +532,37 @@
       <h1>Acesso restrito</h1>
       <p class="hint">Digite a senha de acesso para entrar.</p>
       <div class="field">
+        <label for="loginPerfil">Seu bloco</label>
+        <div class="input-suffix">
+          <select id="loginPerfil">
+            <option value="">Acesso geral (qualquer veículo)</option>
+            <option value="ABOLICAO">ABOLICAO</option>
+            <option value="ADMRJ">ADMRJ</option>
+            <option value="ALCANTARA">ALCANTARA</option>
+            <option value="BARRA MANSA">BARRA MANSA</option>
+            <option value="BOTAFOGO">BOTAFOGO</option>
+            <option value="CABO FRIO">CABO FRIO</option>
+            <option value="CAMPO GRANDE">CAMPO GRANDE</option>
+            <option value="CAMPOS">CAMPOS</option>
+            <option value="CATEDRAL">CATEDRAL</option>
+            <option value="CATEDRAL I">CATEDRAL I</option>
+            <option value="CATEDRAL II">CATEDRAL II</option>
+            <option value="CATEDRAL III">CATEDRAL III</option>
+            <option value="CAXIAS">CAXIAS</option>
+            <option value="LOTE XV">LOTE XV</option>
+            <option value="MACAE">MACAE</option>
+            <option value="NITEROI">NITEROI</option>
+            <option value="NOVA IGUACU">NOVA IGUACU</option>
+            <option value="PETROPOLIS">PETROPOLIS</option>
+            <option value="PIABETA">PIABETA</option>
+            <option value="REALENGO">REALENGO</option>
+            <option value="RECREIO">RECREIO</option>
+            <option value="SANTA CRUZ I">SANTA CRUZ I</option>
+            <option value="TAQUARA">TAQUARA</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
         <label for="loginSenha">Senha</label>
         <div class="input-suffix"><input type="password" id="loginSenha" placeholder="••••" autocomplete="current-password"></div>
       </div>
@@ -557,8 +597,8 @@
         </div>
 
         <div class="addr-block">
-          <div class="addr-title" style="margin-bottom:10px;">Senhas de acesso</div>
-          <p class="hint">As senhas agora ficam guardadas no Firebase, não neste arquivo — trocar senha ou criar um novo acesso precisa ser feito de lá (peça ajuda se precisar mudar alguma).</p>
+          <div class="addr-title" style="margin-bottom:10px;">Contas de acesso</div>
+          <p class="hint">Mesmas contas de bloco do Portal ADM (painel de limite de cartão) — gerenciadas por lá.</p>
         </div>
 
         <div class="addr-block">
@@ -626,6 +666,7 @@
           <button type="button" class="action-card" id="btnSolicitacoes" title="Minhas solicitações" aria-label="Minhas solicitações"><span class="ic">📋</span><span class="lb">Solicitações</span></button>
           <a href="painel-limite-cartao.html" target="_blank" rel="noopener" class="action-card destaque" title="Abrir painel de limite de cartão" aria-label="Abrir painel de limite de cartão"><span class="ic">🪪</span><span class="lb">Limite cartão</span></a>
           <button type="button" class="action-card" id="btnAdmin" title="Área do administrador" aria-label="Área do administrador"><span class="ic">⚙</span><span class="lb">Admin</span></button>
+          <a href="painel-limite-cartao.html?modo=admin" target="_blank" rel="noopener" class="action-card admin-view" id="btnVerTodosBlocos" title="Ver todos os blocos, sem restrição (Portal ADM)" aria-label="Ver todos os blocos" hidden><span class="ic">🗂</span><span class="lb">Todos os blocos</span></a>
           <button type="button" class="action-card" id="btnSair" title="Sair" aria-label="Sair" hidden><span class="ic">⏻</span><span class="lb">Sair</span></button>
         </div>
       </div>
@@ -958,8 +999,21 @@
 
   var percursoAtual = "ida";
   var isAdmin = false;
+  var blocoAtual = null;
   var currentVehicle = null; // {placa, bloco, regiao, igreja, modeloIdx, ano}
   var lastResult = null;
+
+  // Mesmas contas de bloco usadas no painel de limite de cartão — uma senha só por bloco, vale nos dois painéis.
+  var BLOCO_EMAIL = {
+    "LOTE XV": "lotexv@paineliurd.app", "CAMPOS": "campos@paineliurd.app", "CAXIAS": "caxias@paineliurd.app",
+    "MACAE": "macae@paineliurd.app", "PETROPOLIS": "petropolis@paineliurd.app", "CAMPO GRANDE": "campogrande@paineliurd.app",
+    "CABO FRIO": "cabofrio@paineliurd.app", "CATEDRAL I": "catedral1@paineliurd.app", "ABOLICAO": "abolicao@paineliurd.app",
+    "ALCANTARA": "alcantara@paineliurd.app", "NOVA IGUACU": "novaiguacu@paineliurd.app", "CATEDRAL III": "catedral3@paineliurd.app",
+    "SANTA CRUZ I": "santacruz1@paineliurd.app", "NITEROI": "niteroi@paineliurd.app", "CATEDRAL II": "catedral2@paineliurd.app",
+    "PIABETA": "piabeta@paineliurd.app", "BOTAFOGO": "botafogo@paineliurd.app", "TAQUARA": "taquara@paineliurd.app",
+    "CATEDRAL": "catedral@paineliurd.app", "BARRA MANSA": "barramansa@paineliurd.app", "REALENGO": "realengo@paineliurd.app",
+    "RECREIO": "recreio@paineliurd.app", "ADMRJ": "admrj@paineliurd.app"
+  };
 
   var el = {
     placaInput: document.getElementById("placaInput"),
@@ -2131,6 +2185,7 @@
 
   function tentarLogin(){
     var senha = document.getElementById("loginSenha").value;
+    var perfil = document.getElementById("loginPerfil").value;
     var erroEl = document.getElementById("loginError");
     erroEl.hidden = true;
     if (!senha){ erroEl.textContent = "Digite a senha."; erroEl.hidden = false; return; }
@@ -2140,6 +2195,7 @@
         return cred.user.getIdTokenResult();
       }).then(function(tokenResult){
         isAdmin = !!tokenResult.claims.admin;
+        blocoAtual = tokenResult.claims.bloco || null;
         aplicarModoAdmin(isAdmin);
         carregarDadosEContinuar();
       }).catch(function(err){
@@ -2151,7 +2207,11 @@
         }
       });
     }
-    tentativa("geral@paineliurd.app", "admin@paineliurd.app", "adminaux@paineliurd.app");
+    if (perfil && BLOCO_EMAIL[perfil]){
+      tentativa(BLOCO_EMAIL[perfil], null, null);
+    } else {
+      tentativa("geral@paineliurd.app", "admin@paineliurd.app", "adminaux@paineliurd.app");
+    }
   }
   document.getElementById("btnEntrar").addEventListener("click", tentarLogin);
   document.getElementById("loginSenha").addEventListener("keydown", function(ev){ if (ev.key === "Enter") tentarLogin(); });
@@ -2223,6 +2283,7 @@
     var chk = document.getElementById("chkLiberarEdicao");
     if (chk) chk.checked = isAdmin;
     document.body.classList.toggle("modo-admin", isAdmin);
+    document.getElementById("btnVerTodosBlocos").hidden = !isAdmin;
   }
   function atualizarBadgePreco(){
     el.precoTipoBadge.textContent = precoFuelTypeAtual + (isAdmin ? " · editável (admin)" : " · fixo");
@@ -2273,6 +2334,7 @@
       if (user){
         user.getIdTokenResult().then(function(tokenResult){
           isAdmin = !!tokenResult.claims.admin;
+          blocoAtual = tokenResult.claims.bloco || null;
           aplicarModoAdmin(isAdmin);
           carregarDadosEContinuar();
         });
