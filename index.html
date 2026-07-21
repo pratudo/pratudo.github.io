@@ -50,6 +50,27 @@
     -webkit-user-select:none;-moz-user-select:none;user-select:none;
   }
   body.modo-admin{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
+
+  /* ---------- widget data/hora/clima ---------- */
+  .clima-widget{
+    display:flex;align-items:center;gap:10px;
+    padding:8px 14px;border-radius:14px;
+    background:linear-gradient(150deg, rgba(0,166,81,0.16), rgba(0,112,178,0.12) 65%), linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02));
+    border:1px solid rgba(160,220,200,0.25);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    box-shadow:0 10px 24px rgba(0,4,16,0.4), inset 0 1px 0 rgba(255,255,255,0.22);
+  }
+  .cw-icone{
+    font-size:30px;line-height:1;
+    filter:drop-shadow(0 4px 8px rgba(0,0,0,0.45)) drop-shadow(0 0 12px rgba(255,220,120,0.25));
+    animation:cwFlutuar 3.6s ease-in-out infinite;
+  }
+  @keyframes cwFlutuar{ 0%,100%{transform:translateY(0) rotate(-2deg);} 50%{transform:translateY(-4px) rotate(2deg);} }
+  .cw-info{display:flex;flex-direction:column;line-height:1.25;}
+  .cw-data{font-size:11px;font-weight:800;color:#fff;letter-spacing:.3px;}
+  .cw-hora{font-size:15px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;}
+  .cw-clima{font-size:9.5px;color:var(--text-600);font-weight:700;}
+  @media (max-width:640px){ .clima-widget{padding:6px 10px;gap:7px;} .cw-icone{font-size:24px;} .cw-hora{font-size:13px;} }
   .modo-visitante #btnSalvar, .modo-visitante #btnCompartilharTopo, .modo-visitante #btnSolicitacoes{display:none !important;}
   #watermarkVisitante{
     position:fixed;inset:0;z-index:9000;pointer-events:none;
@@ -685,6 +706,14 @@
           <p>Consulta por placa · rota com paradas · custo de viagem</p>
           <p class="session-countdown" id="sessaoCountdown"></p>
         </div>
+        <div class="clima-widget" id="climaWidget">
+            <div class="cw-icone" id="cwIcone">☀️</div>
+            <div class="cw-info">
+              <div class="cw-data" id="cwData">--/--</div>
+              <div class="cw-hora" id="cwHora">--:--</div>
+              <div class="cw-clima" id="cwClima">Rio de Janeiro</div>
+            </div>
+          </div>
         <div class="topbar-controls">
           <button type="button" class="action-card" id="btnMobile" title="Abrir em janela de celular (redimensionável)" aria-label="Abrir em janela de celular"><span class="ic">📱</span><span class="lb">Celular</span></button>
           <button type="button" class="action-card" id="btnFullscreen" title="Tela cheia" aria-label="Tela cheia"><span class="ic">⛶</span><span class="lb">Tela cheia</span></button>
@@ -1008,6 +1037,40 @@
     appId: "1:522949106325:web:9933f265203c9540cf599c"
   };
   firebase.initializeApp(firebaseConfig);
+
+  // ---------- data/hora ao vivo + clima do RJ (Open-Meteo, gratuito, sem chave) ----------
+  (function(){
+    function doisDig(n){ return (n<10?"0":"")+n; }
+    function tique(){
+      var ag = new Date();
+      var elD = document.getElementById("cwData"), elH = document.getElementById("cwHora");
+      if (elD) elD.textContent = doisDig(ag.getDate()) + "/" + doisDig(ag.getMonth()+1) + "/" + ag.getFullYear();
+      if (elH) elH.textContent = doisDig(ag.getHours()) + ":" + doisDig(ag.getMinutes());
+    }
+    tique(); setInterval(tique, 15000);
+
+    var ICONES = function(code){
+      if (code === 0) return ["☀️","Céu limpo"];
+      if (code <= 2) return ["🌤️","Poucas nuvens"];
+      if (code === 3) return ["☁️","Nublado"];
+      if (code === 45 || code === 48) return ["🌫️","Névoa"];
+      if (code >= 51 && code <= 57) return ["🌦️","Garoa"];
+      if ((code >= 61 && code <= 67) || (code >= 80 && code <= 82)) return ["🌧️","Chuva"];
+      if (code >= 95) return ["⛈️","Tempestade"];
+      return ["🌤️","—"];
+    };
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=-22.91&longitude=-43.20&current=temperature_2m,weather_code&timezone=America%2FSao_Paulo")
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if (!j || !j.current) return;
+        var par = ICONES(j.current.weather_code);
+        var elI = document.getElementById("cwIcone"), elC = document.getElementById("cwClima");
+        if (elI) elI.textContent = par[0];
+        if (elC) elC.textContent = "RJ · " + Math.round(j.current.temperature_2m) + "°C · " + par[1];
+      })
+      .catch(function(){ /* sem clima, widget segue só com data/hora */ });
+  })();
+
   var authFB = firebase.auth();
   authFB.setPersistence(firebase.auth.Auth.Persistence.SESSION);
   var dbFB = firebase.firestore();
