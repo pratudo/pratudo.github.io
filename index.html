@@ -180,13 +180,20 @@
   .stack{margin-top:20px;}
 
   .card{
-    background:var(--card);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.012) 45%, rgba(255,255,255,0) 75%),
+      var(--card);
     backdrop-filter:blur(var(--glass-blur));
     -webkit-backdrop-filter:blur(var(--glass-blur));
     border-radius:var(--radius-lg);
-    box-shadow:var(--shadow), inset 0 1px 0 rgba(210,225,255,0.16), inset 0 0 0 1px rgba(255,255,255,0.02);
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(210,225,255,0.22), inset 0 0 0 1px rgba(255,255,255,0.03), inset 0 -1px 0 rgba(0,0,0,0.22);
     border:1px solid var(--border);
     padding:24px;
+    transition:box-shadow .2s ease, border-color .2s ease;
+  }
+  .card:hover{
+    border-color:rgba(255,158,44,0.35);
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(210,225,255,0.28), inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.22);
   }
   .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
   .card h2{
@@ -197,6 +204,10 @@
     color:var(--verde-esc);
     margin:0;
     font-weight:800;
+    display:inline-block;padding:4px 11px;border-radius:999px;
+    background:linear-gradient(180deg, rgba(0,166,81,0.14), rgba(0,166,81,0.02));
+    border:1px solid rgba(0,166,81,0.25);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   }
   .card-step{
     display:inline-flex;align-items:center;justify-content:center;
@@ -554,7 +565,7 @@
           <select id="loginPerfil">
             <option value="">Selecione seu bloco…</option>
             <option value="__geral__">Acesso geral (qualquer veículo)</option>
-            <option value="__visitante__">BASE TESTE (visitante, somente visualização)</option>
+            <option value="__visitante__">BASE TESTE</option>
             <optgroup label="BLOCOS">
             <option value="ABOLICAO">ABOLICAO</option>
             <option value="ADMRJ">ADMRJ</option>
@@ -1025,10 +1036,17 @@
   var isAdmin = false;
   var isVisitante = false;
 
+  function mascarar(txt){
+    txt = String(txt == null ? "" : txt);
+    var manter = Math.ceil(txt.length / 2);
+    return txt.slice(0, manter) + txt.slice(manter).replace(/[^\s\-]/g, "*");
+  }
+  function m(txt){ return isVisitante ? mascarar(txt) : txt; }
+
   var watermarkInterval = null;
   function iniciarWatermark(){
     function desenhar(){
-      var texto = "VISITANTE — " + new Date().toLocaleString("pt-BR");
+      var texto = "BASE TESTE — " + new Date().toLocaleString("pt-BR");
       var el = document.getElementById("watermarkVisitante");
       el.innerHTML = "";
       for (var i = 0; i < 24; i++){
@@ -1858,8 +1876,8 @@
       var dataFmt = new Date(item.data).toLocaleString("pt-BR", {day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit"});
       tr.innerHTML =
         "<td>" + dataFmt + "</td>" +
-        "<td>" + (item.solicitante || "—") + "</td>" +
-        "<td>" + item.placa + "</td>" +
+        "<td>" + m(item.solicitante || "—") + "</td>" +
+        "<td>" + m(item.placa) + "</td>" +
         "<td>" + (item.bloco || "—") + "</td>" +
         "<td>" + (item.regiao || "—") + "</td>" +
         "<td>" + (item.igreja || "—") + "</td>" +
