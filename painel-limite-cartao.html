@@ -113,12 +113,31 @@
 
   /* kpis */
   .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(180px,1fr));gap:12px;}
-  .kpi{background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;}
+  .kpi{
+    position:relative;overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03) 40%, rgba(255,255,255,0) 70%),
+      var(--card-solid);
+    border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 16px 14px;
+    box-shadow:0 20px 42px rgba(0,4,16,0.55), inset 0 2px 0 rgba(255,255,255,0.18), inset 0 -2px 0 rgba(0,0,0,0.3), inset 0 0 30px rgba(255,255,255,0.02);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .kpi:hover{transform:translateY(-3px);border-color:rgba(216,181,115,0.45);box-shadow:0 26px 52px rgba(0,4,16,0.6), inset 0 2px 0 rgba(255,255,255,0.24), inset 0 -2px 0 rgba(0,0,0,0.3), inset 0 0 34px rgba(255,255,255,0.03);}
+  .kpi::after{
+    content:"";position:absolute;top:-70%;left:-45%;width:45%;height:240%;
+    background:linear-gradient(115deg, rgba(255,255,255,0.14), rgba(255,255,255,0) 65%);
+    transform:rotate(8deg) translateX(0);pointer-events:none;
+    transition:transform .6s ease;
+  }
+  .kpi:hover::after{transform:rotate(8deg) translateX(340%);}
+  .kpi.tone-verde{background:linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03) 40%, rgba(255,255,255,0) 70%), linear-gradient(160deg, rgba(0,166,81,0.22), rgba(0,166,81,0.03)), var(--card-solid);border-color:rgba(0,166,81,0.32);}
+  .kpi.tone-azul{background:linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03) 40%, rgba(255,255,255,0) 70%), linear-gradient(160deg, rgba(0,112,178,0.22), rgba(0,112,178,0.03)), var(--card-solid);border-color:rgba(0,112,178,0.32);}
   .kpi .label{font-size:11px;text-transform:uppercase;color:var(--text-400);font-weight:700;letter-spacing:.4px;}
-  .kpi .value{font-size:22px;font-weight:800;margin-top:4px;color:var(--ink);}
-  .kpi .sub{font-size:11.5px;color:var(--text-600);margin-top:2px;}
-  .kpi.danger .value{color:var(--danger);}
-  .kpi.ok .value{color:var(--success);}
+  .kpi .value{font-size:27px;font-weight:800;margin-top:6px;color:var(--ink);line-height:1;}
+  .kpi .sub{font-size:10.5px;color:var(--text-600);margin-top:9px;padding-top:8px;border-top:1px solid var(--border);}
+  .kpi.danger{border-color:rgba(162,37,44,0.4);}
+  .kpi.danger .value{color:var(--danger-texto);}
+  .kpi.ok .value{color:var(--success-texto);}
 
   /* filters */
   .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
@@ -238,6 +257,36 @@
   .tool-chip:active{transform:scale(.95);}
   .card{position:relative;}
 
+  /* seletor segmentado de tipo de gráfico */
+  .seg{
+    display:inline-flex;border:1px solid var(--border);border-radius:999px;overflow:hidden;
+    background:linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.01));
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.16);
+  }
+  .seg-btn{
+    font-size:9.5px;font-weight:800;letter-spacing:.3px;color:var(--text-600);
+    background:transparent;border:none;padding:4px 9px;cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .seg-btn + .seg-btn{border-left:1px solid var(--border);}
+  .seg-btn:hover{color:#fff;}
+  .seg-btn.ativo{
+    color:#fff;
+    background:linear-gradient(180deg, rgba(0,112,178,0.55), rgba(0,112,178,0.25));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+
+  /* títulos dos gráficos com destaque de vidro */
+  .chart-title{
+    display:inline-block;font-size:11.5px;color:#fff;font-weight:800;text-transform:uppercase;letter-spacing:.6px;
+    padding:4px 11px;border-radius:999px;margin-bottom:4px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
+    border:1px solid var(--border);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+
   .share-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px;}
   .share-label{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-400);font-weight:700;margin-right:2px;}
   .share-pill{
@@ -351,23 +400,41 @@
       </div>
       <div class="charts-grid" style="margin-top:16px;">
         <div class="chart-box">
-          <h3>Por status</h3>
-          <div class="card-tools"><button type="button" class="tool-chip" data-export-chart="chartStatus">⬇ PNG</button></div>
+          <h3 class="chart-title">Por status</h3>
+          <div class="card-tools">
+            <div class="seg" data-seg="status">
+              <button type="button" class="seg-btn ativo" data-v="doughnut">Rosca</button>
+              <button type="button" class="seg-btn" data-v="pie">Pizza</button>
+              <button type="button" class="seg-btn" data-v="column">Coluna</button>
+            </div>
+            <button type="button" class="tool-chip" data-export-chart="chartStatus">⬇ PNG</button>
+          </div>
           <div class="chart-minis" id="minisStatus"></div>
           <div class="chart-canvas-wrap chart-canvas-wrap-sm"><canvas id="chartStatus"></canvas></div>
         </div>
         <div class="chart-box">
-          <h3>Top 10 blocos — carga extra</h3>
+          <h3 class="chart-title">Top 10 blocos — carga extra</h3>
           <div class="card-tools">
-            <button type="button" class="tool-chip" id="btnTipoBlocos">⇄ Coluna</button>
+            <div class="seg" data-seg="blocos">
+              <button type="button" class="seg-btn ativo" data-v="bar">Barra</button>
+              <button type="button" class="seg-btn" data-v="column">Coluna</button>
+              <button type="button" class="seg-btn" data-v="doughnut">Rosca</button>
+            </div>
             <button type="button" class="tool-chip" data-export-chart="chartBlocos">⬇ PNG</button>
           </div>
           <div class="chart-minis" id="minisBlocos"></div>
           <div class="chart-canvas-wrap"><canvas id="chartBlocos"></canvas></div>
         </div>
         <div class="chart-box chart-box-wide">
-          <h3>Solicitações ao longo do ciclo</h3>
-          <div class="card-tools"><button type="button" class="tool-chip" data-export-chart="chartTempo">⬇ PNG</button></div>
+          <h3 class="chart-title">Solicitações ao longo do ciclo</h3>
+          <div class="card-tools">
+            <div class="seg" data-seg="tempo">
+              <button type="button" class="seg-btn ativo" data-v="column">Coluna</button>
+              <button type="button" class="seg-btn" data-v="line">Linha</button>
+              <button type="button" class="seg-btn" data-v="area">Área</button>
+            </div>
+            <button type="button" class="tool-chip" data-export-chart="chartTempo">⬇ PNG</button>
+          </div>
           <div class="chart-minis" id="minisTempo"></div>
           <div class="chart-canvas-wrap"><canvas id="chartTempo"></canvas></div>
         </div>
@@ -386,7 +453,7 @@
     </div>
 
     <div class="card" id="cardErros" hidden>
-      <h2 style="color:var(--danger);">🔴 Erros de dados detectados</h2>
+      <h2>🔴 Erros de dados detectados</h2>
       <p>Linhas com o mesmo cartão e exatamente o mesmo minuto — parecem lançamento duplicado na fonte, não um evento legítimo repetido. Confira antes de somar nos totais.</p>
       <div class="tbl-wrap" style="margin-top:14px;">
         <table>
@@ -414,7 +481,7 @@
     </div>
 
     <div class="card" id="cardErrosKm" hidden>
-      <h2 style="color:var(--danger);">🔴 Leitura de odômetro suspeita</h2>
+      <h2>🔴 Leitura de odômetro suspeita</h2>
       <p>KM rodado no ciclo acima de 5.000 km — fisicamente improvável para o período, muito provável que o condutor digitou o KM errado na hora de abastecer, não uso real. Lista focada só com esses casos (eles também aparecem, marcados, na tabela completa abaixo).</p>
       <div class="tbl-wrap" style="margin-top:14px;">
         <table>
@@ -637,8 +704,10 @@
   }
 
   function registrarSessao(bloco){
-    meuSessionId = gerarSessionId();
     var chaveLocal = "sessao_" + bloco.replace(/\s+/g,"_");
+    var sessaoExistente = null;
+    try { sessaoExistente = localStorage.getItem(chaveLocal); } catch(e){}
+    meuSessionId = sessaoExistente || gerarSessionId();
     try { localStorage.setItem(chaveLocal, meuSessionId); } catch(e){}
     var ref = db.collection("sessoes_ativas").doc(bloco);
     ref.set({
@@ -911,12 +980,12 @@
     var kmErro = kmRows.filter(function(r){ return r[7] === "erro"; }).length;
     var grid = document.getElementById("kpiGrid");
     grid.innerHTML =
-      '<div class="kpi"><div class="label">Solicitações (Alteração)</div><div class="value">' + fmtNum(alteracoes.length) + '</div></div>' +
-      '<div class="kpi"><div class="label">Carga extra concedida</div><div class="value">' + fmtBRL(somaCarga) + '</div><div class="sub">em ' + fmtNum(comAumento) + ' solicitações com aumento</div></div>' +
-      '<div class="kpi"><div class="label">Gasto acima do limite anterior</div><div class="value">' + fmtBRL(somaExcessoGasto) + '</div><div class="sub">soma do quanto cada placa já tinha estourado antes do ajuste</div></div>' +
-      '<div class="kpi danger"><div class="label">Aumento sem justificativa (crítico)</div><div class="value">' + fmtNum(criticos) + '</div></div>' +
-      '<div class="kpi danger"><div class="label">Veículos acima de 1.000 km no ciclo</div><div class="value">' + fmtNum(kmExcesso) + '</div></div>' +
-      (kmErro ? '<div class="kpi danger"><div class="label">Leituras de KM suspeitas</div><div class="value">' + fmtNum(kmErro) + '</div></div>' : '');
+      '<div class="kpi tone-azul"><div class="label">Solicitações (Alteração)</div><div class="value">' + fmtNum(alteracoes.length) + '</div><div class="sub">total no recorte atual</div></div>' +
+      '<div class="kpi tone-verde"><div class="label">Carga extra concedida</div><div class="value">' + fmtBRL(somaCarga) + '</div><div class="sub">em ' + fmtNum(comAumento) + ' solicitações com aumento</div></div>' +
+      '<div class="kpi tone-azul"><div class="label">Gasto acima do limite anterior</div><div class="value">' + fmtBRL(somaExcessoGasto) + '</div><div class="sub">soma do quanto cada placa já tinha estourado antes do ajuste</div></div>' +
+      '<div class="kpi danger"><div class="label">Aumento sem justificativa (crítico)</div><div class="value">' + fmtNum(criticos) + '</div><div class="sub">requer ação — ver "Precisa de ação"</div></div>' +
+      '<div class="kpi danger"><div class="label">Veículos acima de 1.000 km no ciclo</div><div class="value">' + fmtNum(kmExcesso) + '</div><div class="sub">dentro do fisicamente possível, mas exige justificativa</div></div>' +
+      (kmErro ? '<div class="kpi danger"><div class="label">Leituras de KM suspeitas</div><div class="value">' + fmtNum(kmErro) + '</div><div class="sub">tratadas como erro de digitação, não excesso real</div></div>' : '');
   }
 
   function renderAlertas(){
@@ -988,7 +1057,7 @@
   var chartInstances = {status:null, blocos:null, tempo:null};
   var chartsDisponiveis = typeof Chart !== "undefined";
   if (chartsDisponiveis){
-    Chart.defaults.color = "#B7AF9E";
+    Chart.defaults.color = "#E8E3D8";
     Chart.defaults.font.family = "-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
   }
 
@@ -1001,7 +1070,7 @@
   }
 
   // ---------- utilidades novas dos gráficos ----------
-  var tipoChartBlocos = "bar"; // alterna entre "bar" (horizontal) e "column" (vertical)
+  var tiposChart = { status: "doughnut", blocos: "bar", tempo: "column" };
 
   function setMinis(id, itens){
     var el = document.getElementById(id);
@@ -1063,17 +1132,20 @@
     var totalStatus = rows.length || 1;
     var ctxStatus = document.getElementById("chartStatus").getContext("2d");
     if (chartInstances.status) chartInstances.status.destroy();
+    var tipoStatus = tiposChart.status;
+    var statusEhColuna = tipoStatus === "column";
     chartInstances.status = new Chart(ctxStatus, {
-      type: "doughnut",
+      type: statusEhColuna ? "bar" : tipoStatus,
       data: {
         labels: ["Crítico (sem justificativa)", "Aumento (com justificativa)", "Dentro do padrão"],
         datasets: [{ data: [contagem.critico, contagem.excesso, contagem.ok],
           backgroundColor: [CHART_CORES.critico, CHART_CORES.excesso, CHART_CORES.ok],
-          borderColor: "#101A30", borderWidth: 3, hoverOffset: 10 }]
+          borderColor: "#101A30", borderWidth: statusEhColuna ? 0 : 3, borderRadius: statusEhColuna ? 6 : 0, hoverOffset: 10 }]
       },
       options: {
-        responsive: true, maintainAspectRatio: false, cutout: "62%",
-        plugins: { legend: { position: "bottom", labels: { boxWidth: 10, padding: 10, font: {size: 10.5} } },
+        responsive: true, maintainAspectRatio: false, cutout: tipoStatus === "doughnut" ? "62%" : 0,
+        scales: statusEhColuna ? { y: { grid: { color: "rgba(255,255,255,0.07)" }, ticks: { precision:0 } }, x: { grid: { display:false } } } : {},
+        plugins: { legend: { display: !statusEhColuna, position: "bottom", labels: { boxWidth: 10, padding: 10, font: {size: 10.5} } },
           tooltip: tooltipDash("Status das solicitações", function(idx){
             var nomes = ["Crítico (sem justificativa)", "Aumento (com justificativa)", "Dentro do padrão"];
             var vals = [contagem.critico, contagem.excesso, contagem.ok];
@@ -1099,20 +1171,26 @@
       ["Maior valor", blocosTop.length ? fmtBRL(blocosTop[0][1]) : "—"],
       ["Soma top 10", fmtBRL(somaTopBlocos)]
     ]);
-    var ehColuna = tipoChartBlocos === "column";
+    var tipoBlocos = tiposChart.blocos;
+    var ehColuna = tipoBlocos === "column";
+    var ehRosca = tipoBlocos === "doughnut";
     var ctxBlocos = document.getElementById("chartBlocos").getContext("2d");
     if (chartInstances.blocos) chartInstances.blocos.destroy();
+    var paletaBlocos = ["#001e73","#0070b2","#565080","#007d5e","#a2252c","#643200","#519DCA","#8079A8","#51A691","#D8B573"];
     chartInstances.blocos = new Chart(ctxBlocos, {
-      type: "bar",
+      type: ehRosca ? "doughnut" : "bar",
       data: {
         labels: blocosTop.map(function(b){ return b[0]; }),
         datasets: [{ data: blocosTop.map(function(b){ return b[1]; }),
-          backgroundColor: CHART_CORES.dourado, borderRadius: 6, maxBarThickness: 22,
-          hoverBackgroundColor: "#519DCA" }]
+          backgroundColor: ehRosca ? paletaBlocos : CHART_CORES.dourado,
+          borderColor: ehRosca ? "#101A30" : undefined, borderWidth: ehRosca ? 2 : 0,
+          borderRadius: ehRosca ? 0 : 6, maxBarThickness: 22,
+          hoverBackgroundColor: ehRosca ? undefined : "#519DCA" }]
       },
       options: {
         indexAxis: ehColuna ? "x" : "y", responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false },
+        cutout: ehRosca ? "58%" : 0,
+        plugins: { legend: { display: ehRosca, position: "bottom", labels: { boxWidth: 9, padding: 7, font: {size: 9} } },
           tooltip: tooltipDash("Bloco — carga extra", function(idx){
             var b = blocosTop[idx];
             if (!b) return null;
@@ -1122,11 +1200,11 @@
               ctdRow("% do top 10", somaTopBlocos ? Math.round(100*b[1]/somaTopBlocos) + "%" : "—");
           }, "Clique na barra pra filtrar a tabela detalhada por esse bloco."),
           datalabels: null },
-        scales: ehColuna
+        scales: ehRosca ? {} : (ehColuna
           ? { y: { grid: { color: "rgba(255,255,255,0.07)" }, ticks: { callback: function(v){ return fmtBRL(v); }, font:{size:10} } },
               x: { grid: { display:false }, ticks: { font:{size:9.5}, maxRotation:45, minRotation:45 } } }
           : { x: { grid: { color: "rgba(255,255,255,0.07)" }, ticks: { callback: function(v){ return fmtBRL(v); }, font:{size:10} } },
-              y: { grid: { display:false }, ticks: { font:{size:11} } } },
+              y: { grid: { display:false }, ticks: { font:{size:11} } } }),
         onClick: function(evt, els){
           if (!els.length) return;
           var idx = els[0].index;
@@ -1137,6 +1215,7 @@
       plugins: [{
         id: "valueLabels",
         afterDatasetsDraw: function(chart){
+          if (ehRosca) return;
           var ctx = chart.ctx;
           chart.data.datasets[0].data.forEach(function(val, i){
             var meta = chart.getDatasetMeta(0).data[i];
@@ -1170,13 +1249,18 @@
     ]);
     var ctxTempo = document.getElementById("chartTempo").getContext("2d");
     if (chartInstances.tempo) chartInstances.tempo.destroy();
+    var tipoTempo = tiposChart.tempo;
+    var tempoEhLinha = tipoTempo === "line" || tipoTempo === "area";
     chartInstances.tempo = new Chart(ctxTempo, {
-      type: "bar",
+      type: tempoEhLinha ? "line" : "bar",
       data: {
         labels: dias,
         datasets: [{ data: dias.map(function(d){ return porDia[d]; }),
-          backgroundColor: CHART_CORES.aco, borderRadius: 4, maxBarThickness: 26,
-          hoverBackgroundColor: "#8079A8" }]
+          backgroundColor: tempoEhLinha ? (tipoTempo === "area" ? "rgba(86,80,128,0.35)" : "transparent") : CHART_CORES.aco,
+          borderColor: tempoEhLinha ? "#8079A8" : undefined, borderWidth: tempoEhLinha ? 2.5 : 0,
+          fill: tipoTempo === "area", tension: 0.35, pointRadius: tempoEhLinha ? 3 : 0, pointBackgroundColor: "#D8B573",
+          borderRadius: 4, maxBarThickness: 26,
+          hoverBackgroundColor: tempoEhLinha ? undefined : "#8079A8" }]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
@@ -1586,10 +1670,15 @@
     });
   }
 
-  // ---- alternador barra/coluna do gráfico de blocos ----
-  document.getElementById("btnTipoBlocos").addEventListener("click", function(){
-    tipoChartBlocos = (tipoChartBlocos === "bar") ? "column" : "bar";
-    this.textContent = (tipoChartBlocos === "bar") ? "⇄ Coluna" : "⇄ Barra";
+  // ---- seletores de tipo de visualização (3 opções por gráfico) ----
+  document.addEventListener("click", function(ev){
+    var btn = ev.target.closest(".seg-btn");
+    if (!btn) return;
+    var seg = btn.closest(".seg");
+    var qual = seg.getAttribute("data-seg");
+    tiposChart[qual] = btn.getAttribute("data-v");
+    seg.querySelectorAll(".seg-btn").forEach(function(b){ b.classList.remove("ativo"); });
+    btn.classList.add("ativo");
     renderCharts();
   });
 
