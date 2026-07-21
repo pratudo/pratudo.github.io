@@ -10,9 +10,9 @@
     --dourado-clara:#519DCA;
     --aco:#565080;
     --aco-claro:#8079A8;
-    --ink:#F2EFE7;
-    --text-600:#B7AF9E;
-    --text-400:#847C6C;
+    --ink:#FAF8F3;
+    --text-600:#D9D3C6;
+    --text-400:#B0A996;
     --paper:#070B16;
     --paper-grad:radial-gradient(1100px 600px at 8% -10%, rgba(0,30,115,0.34), transparent 60%),
                  radial-gradient(900px 700px at 105% 8%, rgba(0,112,178,0.26), transparent 55%),
@@ -40,13 +40,7 @@
   body{
     background-color:var(--paper);background-image:var(--paper-grad);background-attachment:fixed;
     color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;line-height:1.4;min-height:100vh;
-    position:relative;
   }
-  body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-    background:linear-gradient(120deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 22%, rgba(255,255,255,0) 78%, rgba(140,180,255,0.04) 100%);
-  }
-  .app{position:relative;z-index:1;}
   [hidden]{display:none !important;}
   .app{max-width:1280px;margin:0 auto;padding:0 20px 64px;}
   .card{
@@ -119,29 +113,12 @@
 
   /* kpis */
   .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(180px,1fr));gap:12px;}
-  .kpi{
-    position:relative;overflow:hidden;
-    background:
-      linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02) 40%, rgba(255,255,255,0) 70%),
-      var(--card-solid);
-    border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 16px 14px;
-    box-shadow:0 14px 30px rgba(0,4,16,0.4), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -1px 0 rgba(0,0,0,0.2);
-    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-  }
-  .kpi:hover{transform:translateY(-2px);box-shadow:0 18px 36px rgba(0,4,16,0.45), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.2);}
-  .kpi::after{
-    content:"";position:absolute;top:-70%;left:-25%;width:55%;height:240%;
-    background:linear-gradient(115deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 60%);
-    transform:rotate(8deg);pointer-events:none;
-  }
-  .kpi.tone-verde{background:linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02) 40%, rgba(255,255,255,0) 70%), linear-gradient(160deg, rgba(0,166,81,0.22), rgba(0,166,81,0.03)), var(--card-solid);border-color:rgba(0,166,81,0.32);}
-  .kpi.tone-azul{background:linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02) 40%, rgba(255,255,255,0) 70%), linear-gradient(160deg, rgba(0,112,178,0.22), rgba(0,112,178,0.03)), var(--card-solid);border-color:rgba(0,112,178,0.32);}
+  .kpi{background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;}
   .kpi .label{font-size:11px;text-transform:uppercase;color:var(--text-400);font-weight:700;letter-spacing:.4px;}
-  .kpi .value{font-size:27px;font-weight:800;margin-top:6px;color:var(--ink);line-height:1;}
-  .kpi .sub{font-size:10.5px;color:var(--text-600);margin-top:9px;padding-top:8px;border-top:1px solid var(--border);}
-  .kpi.danger{border-color:rgba(162,37,44,0.4);}
-  .kpi.danger .value{color:var(--danger-texto);}
-  .kpi.ok .value{color:var(--success-texto);}
+  .kpi .value{font-size:22px;font-weight:800;margin-top:4px;color:var(--ink);}
+  .kpi .sub{font-size:11.5px;color:var(--text-600);margin-top:2px;}
+  .kpi.danger .value{color:var(--danger);}
+  .kpi.ok .value{color:var(--success);}
 
   /* filters */
   .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
@@ -198,7 +175,7 @@
   .footer-note{color:var(--text-400);font-size:11.5px;text-align:center;margin-top:20px;}
 
   /* ---------- modo visitante ---------- */
-  .modo-visitante #btnRelatorio, .modo-visitante #shareRow{display:none !important;}
+  .modo-visitante #btnRelatorio, .modo-visitante #shareRow, .modo-visitante .card-tools [data-export-chart]{display:none !important;}
   #watermarkVisitante{
     position:fixed;inset:0;z-index:9000;pointer-events:none;
     display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
@@ -216,11 +193,50 @@
   .print-only{display:none;}
 
   .charts-grid{display:grid;grid-template-columns:1fr 1.4fr;grid-template-rows:auto auto;gap:14px;}
-  .chart-box{background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;}
+  .chart-box{position:relative;background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01) 45%, rgba(255,255,255,0) 70%), var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;box-shadow:0 10px 24px rgba(0,4,16,0.35), inset 0 1px 0 rgba(255,255,255,0.12);}
   .chart-box-wide{grid-column:1 / -1;}
   .chart-canvas-wrap{position:relative;height:240px;}
   .chart-canvas-wrap-sm{height:200px;}
   @media (max-width:780px){ .charts-grid{grid-template-columns:1fr;} }
+
+  /* mini-cartões resumo no topo de cada gráfico */
+  .chart-minis{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:8px 0 12px;}
+  .chart-mini{
+    background:linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02) 55%), rgba(16,26,48,0.85);
+    border:1px solid var(--border);border-radius:9px;padding:8px 9px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.14);
+  }
+  .chart-mini .cm-l{font-size:9px;text-transform:uppercase;letter-spacing:.3px;color:var(--text-400);font-weight:700;}
+  .chart-mini .cm-v{font-size:14.5px;font-weight:800;color:var(--ink);margin-top:2px;line-height:1.1;}
+  @media (max-width:520px){ .chart-minis{grid-template-columns:1fr 1fr;} }
+
+  /* tooltip mini-dashboard 240x320 dos gráficos */
+  #chartTipDash{
+    position:fixed;z-index:9500;width:240px;min-height:120px;max-height:320px;overflow:auto;
+    background:linear-gradient(160deg, rgba(30,55,130,0.55), rgba(10,17,40,0.92));
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(216,181,115,0.4);border-radius:12px;padding:12px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+    pointer-events:none;font-size:11.5px;color:var(--ink);
+  }
+  #chartTipDash .ctd-t{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--dourado-clara);font-weight:800;margin-bottom:7px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+  #chartTipDash .ctd-r{display:flex;justify-content:space-between;gap:8px;margin-top:5px;}
+  #chartTipDash .ctd-r b{color:#fff;}
+  #chartTipDash .ctd-note{margin-top:8px;padding-top:7px;border-top:1px solid var(--border);color:var(--text-600);font-size:10.5px;line-height:1.35;}
+
+  /* botão exportar por cartão + alternador de tipo */
+  .card-tools{position:absolute;top:10px;right:12px;display:flex;gap:6px;z-index:5;}
+  .tool-chip{
+    font-size:10px;font-weight:800;letter-spacing:.3px;color:var(--text-600);
+    background:linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02));
+    border:1px solid var(--border);border-radius:999px;padding:4px 10px;cursor:pointer;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.18);
+    transition:border-color .15s ease, color .15s ease, transform .12s ease;
+  }
+  .tool-chip:hover{border-color:var(--dourado-clara);color:#fff;}
+  .tool-chip:active{transform:scale(.95);}
+  .card{position:relative;}
 
   .share-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px;}
   .share-label{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-400);font-weight:700;margin-right:2px;}
@@ -336,14 +352,23 @@
       <div class="charts-grid" style="margin-top:16px;">
         <div class="chart-box">
           <h3>Por status</h3>
+          <div class="card-tools"><button type="button" class="tool-chip" data-export-chart="chartStatus">⬇ PNG</button></div>
+          <div class="chart-minis" id="minisStatus"></div>
           <div class="chart-canvas-wrap chart-canvas-wrap-sm"><canvas id="chartStatus"></canvas></div>
         </div>
         <div class="chart-box">
-          <h3>Maiores blocos — carga extra</h3>
+          <h3>Top 10 blocos — carga extra</h3>
+          <div class="card-tools">
+            <button type="button" class="tool-chip" id="btnTipoBlocos">⇄ Coluna</button>
+            <button type="button" class="tool-chip" data-export-chart="chartBlocos">⬇ PNG</button>
+          </div>
+          <div class="chart-minis" id="minisBlocos"></div>
           <div class="chart-canvas-wrap"><canvas id="chartBlocos"></canvas></div>
         </div>
         <div class="chart-box chart-box-wide">
           <h3>Solicitações ao longo do ciclo</h3>
+          <div class="card-tools"><button type="button" class="tool-chip" data-export-chart="chartTempo">⬇ PNG</button></div>
+          <div class="chart-minis" id="minisTempo"></div>
           <div class="chart-canvas-wrap"><canvas id="chartTempo"></canvas></div>
         </div>
       </div>
@@ -886,12 +911,12 @@
     var kmErro = kmRows.filter(function(r){ return r[7] === "erro"; }).length;
     var grid = document.getElementById("kpiGrid");
     grid.innerHTML =
-      '<div class="kpi tone-azul"><div class="label">Solicitações (Alteração)</div><div class="value">' + fmtNum(alteracoes.length) + '</div><div class="sub">total no recorte atual</div></div>' +
-      '<div class="kpi tone-verde"><div class="label">Carga extra concedida</div><div class="value">' + fmtBRL(somaCarga) + '</div><div class="sub">em ' + fmtNum(comAumento) + ' solicitações com aumento</div></div>' +
-      '<div class="kpi tone-azul"><div class="label">Gasto acima do limite anterior</div><div class="value">' + fmtBRL(somaExcessoGasto) + '</div><div class="sub">soma do quanto cada placa já tinha estourado antes do ajuste</div></div>' +
-      '<div class="kpi danger"><div class="label">Aumento sem justificativa (crítico)</div><div class="value">' + fmtNum(criticos) + '</div><div class="sub">requer ação — ver "Precisa de ação"</div></div>' +
-      '<div class="kpi danger"><div class="label">Veículos acima de 1.000 km no ciclo</div><div class="value">' + fmtNum(kmExcesso) + '</div><div class="sub">dentro do fisicamente possível, mas exige justificativa</div></div>' +
-      (kmErro ? '<div class="kpi danger"><div class="label">Leituras de KM suspeitas</div><div class="value">' + fmtNum(kmErro) + '</div><div class="sub">tratadas como erro de digitação, não excesso real</div></div>' : '');
+      '<div class="kpi"><div class="label">Solicitações (Alteração)</div><div class="value">' + fmtNum(alteracoes.length) + '</div></div>' +
+      '<div class="kpi"><div class="label">Carga extra concedida</div><div class="value">' + fmtBRL(somaCarga) + '</div><div class="sub">em ' + fmtNum(comAumento) + ' solicitações com aumento</div></div>' +
+      '<div class="kpi"><div class="label">Gasto acima do limite anterior</div><div class="value">' + fmtBRL(somaExcessoGasto) + '</div><div class="sub">soma do quanto cada placa já tinha estourado antes do ajuste</div></div>' +
+      '<div class="kpi danger"><div class="label">Aumento sem justificativa (crítico)</div><div class="value">' + fmtNum(criticos) + '</div></div>' +
+      '<div class="kpi danger"><div class="label">Veículos acima de 1.000 km no ciclo</div><div class="value">' + fmtNum(kmExcesso) + '</div></div>' +
+      (kmErro ? '<div class="kpi danger"><div class="label">Leituras de KM suspeitas</div><div class="value">' + fmtNum(kmErro) + '</div></div>' : '');
   }
 
   function renderAlertas(){
@@ -975,6 +1000,48 @@
     var cardEl = tbl && tbl.closest(".card"); if (cardEl && cardEl.scrollIntoView) cardEl.scrollIntoView({behavior:"smooth", block:"start"});
   }
 
+  // ---------- utilidades novas dos gráficos ----------
+  var tipoChartBlocos = "bar"; // alterna entre "bar" (horizontal) e "column" (vertical)
+
+  function setMinis(id, itens){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = itens.map(function(it){
+      return '<div class="chart-mini"><div class="cm-l">' + it[0] + '</div><div class="cm-v">' + it[1] + '</div></div>';
+    }).join("");
+  }
+
+  function tooltipDash(titulo, linhas, nota){
+    return {
+      enabled: false,
+      external: function(context){
+        var tipEl = document.getElementById("chartTipDash");
+        if (!tipEl){
+          tipEl = document.createElement("div");
+          tipEl.id = "chartTipDash";
+          document.body.appendChild(tipEl);
+        }
+        var tt = context.tooltip;
+        if (!tt || tt.opacity === 0){ tipEl.style.display = "none"; return; }
+        var idx = tt.dataPoints && tt.dataPoints.length ? tt.dataPoints[0].dataIndex : -1;
+        if (idx < 0){ tipEl.style.display = "none"; return; }
+        var conteudo = linhas(idx);
+        if (!conteudo){ tipEl.style.display = "none"; return; }
+        tipEl.innerHTML = '<div class="ctd-t">' + titulo + '</div>' + conteudo +
+          (nota ? '<div class="ctd-note">' + nota + '</div>' : '');
+        tipEl.style.display = "block";
+        var x = context.chart.canvas.getBoundingClientRect().left + tt.caretX + 14;
+        var y = context.chart.canvas.getBoundingClientRect().top + tt.caretY - 20;
+        if (x + 252 > window.innerWidth) x = x - 268;
+        if (y + 330 > window.innerHeight) y = window.innerHeight - 330;
+        if (y < 8) y = 8;
+        tipEl.style.left = x + "px";
+        tipEl.style.top = y + "px";
+      }
+    };
+  }
+  function ctdRow(l, v){ return '<div class="ctd-r"><span>' + l + '</span><b>' + v + '</b></div>'; }
+
   function renderCharts(){
     if (!chartsDisponiveis){
       ["chartStatus","chartBlocos","chartTempo"].forEach(function(id){
@@ -988,6 +1055,12 @@
     // ---- donut: status ----
     var contagem = {critico:0, excesso:0, ok:0};
     rows.forEach(function(r){ var st = statusDe(r); if (contagem[st]!==undefined) contagem[st]++; });
+    setMinis("minisStatus", [
+      ["Crítico", fmtNum(contagem.critico)],
+      ["Com justificativa", fmtNum(contagem.excesso)],
+      ["No padrão", fmtNum(contagem.ok)]
+    ]);
+    var totalStatus = rows.length || 1;
     var ctxStatus = document.getElementById("chartStatus").getContext("2d");
     if (chartInstances.status) chartInstances.status.destroy();
     chartInstances.status = new Chart(ctxStatus, {
@@ -1001,7 +1074,13 @@
       options: {
         responsive: true, maintainAspectRatio: false, cutout: "62%",
         plugins: { legend: { position: "bottom", labels: { boxWidth: 10, padding: 10, font: {size: 10.5} } },
-          tooltip: { callbacks: { label: function(c){ return c.label + ": " + c.parsed + " (" + (rows.length? Math.round(100*c.parsed/rows.length):0) + "%)"; } } } },
+          tooltip: tooltipDash("Status das solicitações", function(idx){
+            var nomes = ["Crítico (sem justificativa)", "Aumento (com justificativa)", "Dentro do padrão"];
+            var vals = [contagem.critico, contagem.excesso, contagem.ok];
+            return ctdRow("Categoria", nomes[idx]) +
+              ctdRow("Solicitações", fmtNum(vals[idx])) +
+              ctdRow("Participação", Math.round(100*vals[idx]/totalStatus) + "%");
+          }, "Clique na fatia pra filtrar a tabela detalhada por esse status.") },
         onClick: function(evt, els){
           if (!els.length) return;
           var idx = els[0].index;
@@ -1012,8 +1091,15 @@
       }
     });
 
-    // ---- bar: maiores blocos ----
-    var blocosTop = agruparCargaExtra(rows, 4).slice(0,8);
+    // ---- bar/coluna: top 10 blocos ----
+    var blocosTop = agruparCargaExtra(rows, 4).slice(0,10);
+    var somaTopBlocos = blocosTop.reduce(function(s,b){ return s + b[1]; }, 0);
+    setMinis("minisBlocos", [
+      ["Nº 1", blocosTop.length ? m(blocosTop[0][0]) : "—"],
+      ["Maior valor", blocosTop.length ? fmtBRL(blocosTop[0][1]) : "—"],
+      ["Soma top 10", fmtBRL(somaTopBlocos)]
+    ]);
+    var ehColuna = tipoChartBlocos === "column";
     var ctxBlocos = document.getElementById("chartBlocos").getContext("2d");
     if (chartInstances.blocos) chartInstances.blocos.destroy();
     chartInstances.blocos = new Chart(ctxBlocos, {
@@ -1021,16 +1107,26 @@
       data: {
         labels: blocosTop.map(function(b){ return b[0]; }),
         datasets: [{ data: blocosTop.map(function(b){ return b[1]; }),
-          backgroundColor: CHART_CORES.dourado, borderRadius: 6, barThickness: 18,
+          backgroundColor: CHART_CORES.dourado, borderRadius: 6, maxBarThickness: 22,
           hoverBackgroundColor: "#519DCA" }]
       },
       options: {
-        indexAxis: "y", responsive: true, maintainAspectRatio: false,
+        indexAxis: ehColuna ? "x" : "y", responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false },
-          tooltip: { callbacks: { label: function(c){ return fmtBRL(c.parsed.x); } } },
+          tooltip: tooltipDash("Bloco — carga extra", function(idx){
+            var b = blocosTop[idx];
+            if (!b) return null;
+            return ctdRow("Bloco", b[0]) +
+              ctdRow("Carga extra", fmtBRL(b[1])) +
+              ctdRow("Solicitações", fmtNum(b[2])) +
+              ctdRow("% do top 10", somaTopBlocos ? Math.round(100*b[1]/somaTopBlocos) + "%" : "—");
+          }, "Clique na barra pra filtrar a tabela detalhada por esse bloco."),
           datalabels: null },
-        scales: { x: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { callback: function(v){ return fmtBRL(v); }, font:{size:10} } },
-                  y: { grid: { display:false }, ticks: { font:{size:11} } } },
+        scales: ehColuna
+          ? { y: { grid: { color: "rgba(255,255,255,0.07)" }, ticks: { callback: function(v){ return fmtBRL(v); }, font:{size:10} } },
+              x: { grid: { display:false }, ticks: { font:{size:9.5}, maxRotation:45, minRotation:45 } } }
+          : { x: { grid: { color: "rgba(255,255,255,0.07)" }, ticks: { callback: function(v){ return fmtBRL(v); }, font:{size:10} } },
+              y: { grid: { display:false }, ticks: { font:{size:11} } } },
         onClick: function(evt, els){
           if (!els.length) return;
           var idx = els[0].index;
@@ -1046,8 +1142,9 @@
             var meta = chart.getDatasetMeta(0).data[i];
             if (!meta) return;
             ctx.save();
-            ctx.fillStyle = "#F2EFE7"; ctx.font = "700 10.5px sans-serif"; ctx.textBaseline = "middle";
-            ctx.fillText(fmtBRL(val), meta.x + 6, meta.y);
+            ctx.fillStyle = "#FAF8F3"; ctx.font = "700 10px sans-serif";
+            if (ehColuna){ ctx.textAlign = "center"; ctx.fillText(fmtBRL(val), meta.x, meta.y - 6); }
+            else { ctx.textBaseline = "middle"; ctx.fillText(fmtBRL(val), meta.x + 6, meta.y); }
             ctx.restore();
           });
         }
@@ -1064,6 +1161,13 @@
       var pa = a.split("/"), pb = b.split("/");
       return new Date(pa[2],pa[1]-1,pa[0]) - new Date(pb[2],pb[1]-1,pb[0]);
     });
+    var totalDias = dias.reduce(function(s,d){ return s + porDia[d]; }, 0);
+    var diaPico = dias.slice().sort(function(a,b){ return porDia[b]-porDia[a]; })[0] || "—";
+    setMinis("minisTempo", [
+      ["Total no ciclo", fmtNum(totalDias)],
+      ["Dia de pico", diaPico + (diaPico !== "—" ? " (" + porDia[diaPico] + ")" : "")],
+      ["Média por dia", dias.length ? fmtNum(Math.round(totalDias/dias.length)) : "—"]
+    ]);
     var ctxTempo = document.getElementById("chartTempo").getContext("2d");
     if (chartInstances.tempo) chartInstances.tempo.destroy();
     chartInstances.tempo = new Chart(ctxTempo, {
@@ -1076,9 +1180,17 @@
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: { legend: { display: false },
+          tooltip: tooltipDash("Solicitações no dia", function(idx){
+            var d = dias[idx];
+            if (!d) return null;
+            return ctdRow("Dia", d) +
+              ctdRow("Solicitações", fmtNum(porDia[d])) +
+              ctdRow("% do ciclo", totalDias ? Math.round(100*porDia[d]/totalDias) + "%" : "—") +
+              ctdRow("Média do ciclo", dias.length ? fmtNum(Math.round(totalDias/dias.length)) + "/dia" : "—");
+          }, "Acima da média = dia mais movimentado que o normal do ciclo.") },
         scales: { x: { grid: { display:false }, ticks: { font:{size:9.5}, maxRotation:45, minRotation:45 } },
-                  y: { grid: { color: "rgba(255,255,255,0.06)" }, ticks: { precision:0, font:{size:10} } } }
+                  y: { grid: { color: "rgba(255,255,255,0.07)" }, ticks: { precision:0, font:{size:10} } } }
       },
       plugins: [{
         id: "valueLabelsTop",
@@ -1473,6 +1585,35 @@
       status.textContent = "Erro ao salvar " + bloco + ": " + err.message;
     });
   }
+
+  // ---- alternador barra/coluna do gráfico de blocos ----
+  document.getElementById("btnTipoBlocos").addEventListener("click", function(){
+    tipoChartBlocos = (tipoChartBlocos === "bar") ? "column" : "bar";
+    this.textContent = (tipoChartBlocos === "bar") ? "⇄ Coluna" : "⇄ Barra";
+    renderCharts();
+  });
+
+  // ---- exportar PNG por gráfico ----
+  document.addEventListener("click", function(ev){
+    var btn = ev.target.closest("[data-export-chart]");
+    if (!btn) return;
+    if (isVisitante) return; // visitante não exporta nada
+    var canvas = document.getElementById(btn.getAttribute("data-export-chart"));
+    if (!canvas) return;
+    // fundo sólido pro PNG não sair transparente
+    var exp = document.createElement("canvas");
+    exp.width = canvas.width; exp.height = canvas.height;
+    var ctx = exp.getContext("2d");
+    ctx.fillStyle = "#0A1128";
+    ctx.fillRect(0, 0, exp.width, exp.height);
+    ctx.drawImage(canvas, 0, 0);
+    var a = document.createElement("a");
+    a.href = exp.toDataURL("image/png");
+    a.download = btn.getAttribute("data-export-chart") + "_" + new Date().toISOString().slice(0,10) + ".png";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
 
   document.getElementById("shareRow").addEventListener("click", function(ev){
     var btn = ev.target.closest("[data-share]");
