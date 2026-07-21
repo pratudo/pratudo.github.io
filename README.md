@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combustível de Frota — IURD Rio de Janeiro</title>
+<style>
+  :root{
+    --verde:#00A651;
+    --verde-esc:#3FCB82;
+    --verde-mais-esc:#02040C;
+    --amarelo:#D8B573;
+    --amarelo-esc:#EAD09A;
+    --ink:#F7FAFF;
+    --text-600:#C6D2EE;
+    --text-400:#93A2C6;
+    --paper:#050912;
+    --paper-grad:radial-gradient(1200px 640px at 10% -12%, rgba(62,130,220,0.24), transparent 60%),
+                 radial-gradient(900px 700px at 105% 5%, rgba(0,166,81,0.16), transparent 55%),
+                 linear-gradient(180deg, #060B18, #04070F 55%, #02040A);
+    --card:rgba(140,175,255,0.075);
+    --card-solid:#0A1226;
+    --border:rgba(160,195,255,0.20);
+    --glass-blur:22px;
+    --success:#4ADE9E;
+    --success-bg:rgba(74,222,158,0.15);
+    --warning:#F0C158;
+    --warning-bg:rgba(240,193,88,0.15);
+    --danger:#FF7A85;
+    --danger-bg:rgba(255,122,133,0.15);
+    --radius-lg:18px;
+    --radius-md:11px;
+    --shadow:0 24px 54px rgba(0,4,16,0.55);
+    --font-head: Helvetica, Arial, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  [hidden]{display:none !important;}
+  html,body{margin:0;padding:0;}
+  html{color-scheme:dark;}
+  body{
+    background-color:var(--paper);
+    background-image:var(--paper-grad);
+    background-attachment:fixed;
+    color:var(--ink);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.4;
+    min-height:100vh;
+    -webkit-user-select:none;-moz-user-select:none;user-select:none;
+  }
+  body.modo-admin{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
+  .modo-visitante #btnSalvar, .modo-visitante #btnCompartilharTopo, .modo-visitante #btnSolicitacoes{display:none !important;}
+  #watermarkVisitante{
+    position:fixed;inset:0;z-index:9000;pointer-events:none;
+    display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
+    overflow:hidden;opacity:0.09;
+  }
+  #watermarkVisitante span{
+    display:block;transform:rotate(-28deg);font-size:22px;font-weight:800;color:#fff;
+    white-space:nowrap;padding:40px;
+  }
+  input, textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;}
+  .app{max-width:1120px;margin:0 auto;padding:0 20px 64px;}
+
+  /* ---------- header ---------- */
+  .topbar{
+    background:linear-gradient(135deg, rgba(62,130,220,0.14), rgba(0,166,81,0.10)), var(--card);
+    backdrop-filter:blur(var(--glass-blur));
+    -webkit-backdrop-filter:blur(var(--glass-blur));
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow);
+    margin-bottom:20px;
+    padding:0;
+    position:relative;
+    overflow:hidden;
+  }
+  .topbar-accent{height:3px;background:linear-gradient(90deg,var(--verde),var(--amarelo));}
+  .topbar-inner{padding:20px 24px 22px;position:relative;z-index:1;}
+  .topbar::after{
+    content:"";
+    position:absolute;
+    right:-70px;top:-70px;
+    width:220px;height:220px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(62,130,220,0.16), transparent 70%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:1.6px;
+    font-size:11px;
+    font-weight:700;
+    color:var(--amarelo-esc);
+    margin:0 0 6px;
+  }
+  .session-countdown{font-size:11px;color:var(--text-400);font-variant-numeric:tabular-nums;margin:2px 0 0;}
+  .session-countdown.perto{color:#e0665f;font-weight:700;}
+  .topbar h1{
+    font-family:var(--font-head);
+    font-weight:800;
+    font-size:clamp(20px,3.2vw,25px);
+    margin:0 0 5px;
+    letter-spacing:-0.2px;
+    color:var(--ink);
+  }
+  .topbar p{margin:0;color:var(--text-600);font-size:13px;}
+  .topbar-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+  .topbar-controls{display:flex;gap:8px;flex:0 0 auto;flex-wrap:wrap;}
+  .action-card{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    min-width:60px;flex:0 0 auto;
+    padding:9px 10px 7px;border-radius:13px;
+    border:1px solid var(--border);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.02) 45%, rgba(255,255,255,0) 75%),
+      linear-gradient(135deg, rgba(62,130,220,0.16), rgba(0,166,81,0.10)),
+      var(--card-solid);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    color:var(--ink);text-decoration:none;cursor:pointer;
+    box-shadow:0 10px 22px rgba(0,4,16,0.45), inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.25);
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .action-card .ic{font-size:19px;line-height:1;}
+  .action-card .lb{font-size:10px;font-weight:700;letter-spacing:.2px;color:var(--text-600);text-align:center;white-space:nowrap;}
+  .action-card:hover{border-color:var(--verde);transform:translateY(-2px);box-shadow:0 14px 26px rgba(0,4,16,0.5), inset 0 1px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(0,0,0,0.25);}
+  .action-card:active{transform:translateY(0) scale(.97);}
+  .action-card.destaque{
+    border-color:var(--verde);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0) 60%),
+      linear-gradient(160deg, var(--verde-esc), var(--verde));
+    box-shadow:0 10px 24px rgba(0,166,81,0.45), inset 0 1px 0 rgba(255,255,255,0.4);
+    animation:pulseDestaque 2.6s ease-in-out infinite;
+  }
+  .action-card.destaque .lb{color:#04140C;}
+  .dot-sessao{position:absolute;top:-2px;right:-4px;width:8px;height:8px;border-radius:50%;background:#3ee87a;border:1.5px solid #04140C;}
+  .action-card .ic{position:relative;display:inline-block;}
+  .action-card.destaque:hover{background:linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0) 60%), linear-gradient(160deg, var(--verde-esc), var(--verde-esc));}
+  .action-card.admin-view{
+    border-color:rgba(190,200,220,0.32);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02) 45%, rgba(255,255,255,0) 75%),
+      rgba(150,160,180,0.14);
+  }
+  .action-card.admin-view .ic{filter:grayscale(1) brightness(1.3);}
+  .action-card.admin-view .lb{color:var(--text-600);}
+  .action-card.admin-view:hover{border-color:rgba(210,220,240,0.55);}
+  @keyframes pulseDestaque{
+    0%, 100% { box-shadow:0 10px 24px rgba(0,166,81,0.4), inset 0 1px 0 rgba(255,255,255,0.4); }
+    50% { box-shadow:0 10px 28px rgba(0,166,81,0.7), inset 0 1px 0 rgba(255,255,255,0.4); }
+  }
+  @media (max-width:640px){
+    .topbar-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;}
+    .action-card{min-width:0;width:100%;padding:10px 4px 8px;}
+    .action-card .lb{font-size:9px;white-space:normal;line-height:1.15;}
+  }
+  .topbar-meta{
+    margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;
+  }
+  .meta-chip{
+    background:var(--paper);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:5px 12px;
+    font-size:11px;
+    font-weight:600;
+    color:var(--text-600);
+  }
+
+  /* ---------- layout ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    position:relative;
+  }
+  @media (max-width:780px){ .layout{grid-template-columns:1fr;} }
+  .stack{margin-top:20px;}
+
+  .card{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.012) 45%, rgba(255,255,255,0) 75%),
+      var(--card);
+    backdrop-filter:blur(var(--glass-blur));
+    -webkit-backdrop-filter:blur(var(--glass-blur));
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(210,225,255,0.22), inset 0 0 0 1px rgba(255,255,255,0.03), inset 0 -1px 0 rgba(0,0,0,0.22);
+    border:1px solid var(--border);
+    padding:24px;
+    transition:box-shadow .2s ease, border-color .2s ease;
+  }
+  .card:hover{
+    border-color:rgba(255,158,44,0.35);
+    box-shadow:var(--shadow), inset 0 1px 0 rgba(210,225,255,0.28), inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.22);
+  }
+  .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .card h2{
+    font-family:var(--font-head);
+    font-size:13.5px;
+    text-transform:uppercase;
+    letter-spacing:1.1px;
+    color:var(--verde-esc);
+    margin:0;
+    font-weight:800;
+    display:inline-block;padding:4px 11px;border-radius:999px;
+    background:linear-gradient(180deg, rgba(0,166,81,0.14), rgba(0,166,81,0.02));
+    border:1px solid rgba(0,166,81,0.25);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  }
+  .card-step{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:50%;
+    background:var(--verde);color:#fff;font-size:11.5px;font-weight:800;
+    margin-right:9px;flex:0 0 auto;
+  }
+  .card-title-row{display:flex;align-items:center;}
+
+  /* ---------- plate widget ---------- */
+  .plate-field{margin-bottom:16px;}
+  .plate-field > label{
+    display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:8px;
+  }
+  .plate-box{
+    display:flex;
+    border-radius:8px;
+    overflow:hidden;
+    border:2px solid #1B1E24;
+    box-shadow:0 3px 0 rgba(0,0,0,0.12);
+    background:#fff;
+    max-width:280px;
+  }
+  .plate-flag{
+    width:34px;flex:0 0 auto;
+    background:#0B4EA2;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:#fff;font-size:8px;font-weight:700;letter-spacing:0.3px;
+    padding:4px 2px;text-align:center;
+    line-height:1.3;
+  }
+  .plate-flag .stars{font-size:7px;letter-spacing:1px;margin-bottom:2px;color:var(--amarelo);}
+  .plate-input-wrap{flex:1;position:relative;background:#fff;}
+  #placaInput{
+    width:100%;border:none;outline:none;background:#fff;
+    font-family:'Courier New',Courier,monospace;
+    font-weight:800;font-size:24px;letter-spacing:3px;text-align:center;
+    color:#111;padding:10px 6px 6px;text-transform:uppercase;
+  }
+  .plate-sub{
+    text-align:center;font-size:8px;letter-spacing:2px;color:#555;padding-bottom:5px;font-weight:700;
+  }
+  .plate-box:focus-within{box-shadow:0 3px 0 rgba(0,0,0,0.12), 0 0 0 3px rgba(62,130,220,0.25);}
+
+  .plate-row{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+  .vehicle-icon-wrap{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.01)), var(--card-solid);
+    border:1px solid var(--border);border-radius:var(--radius-md);
+    padding:8px 14px;min-width:88px;
+    box-shadow:0 4px 12px rgba(0,4,16,0.3), inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  .vehicle-icon-svg{width:58px;height:30px;}
+  .vehicle-icon-svg svg{width:100%;height:100%;display:block;}
+  .vehicle-icon-label{font-size:9px;font-weight:800;color:var(--text-600);text-transform:uppercase;letter-spacing:.4px;text-align:center;}
+
+  .autocomplete-panel{
+    position:relative;max-width:280px;
+  }
+  .autocomplete-list{
+    position:absolute;top:4px;left:0;right:0;
+    background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);
+    box-shadow:var(--shadow);max-height:230px;overflow-y:auto;z-index:20;
+  }
+  .autocomplete-item{
+    padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);
+    display:flex;justify-content:space-between;gap:8px;
+  }
+  .autocomplete-item:last-child{border-bottom:none;}
+  .autocomplete-item:hover, .autocomplete-item.active{background:var(--success-bg);}
+  .autocomplete-plate{font-weight:800;font-family:'Courier New',monospace;letter-spacing:1px;}
+  .autocomplete-meta{color:var(--text-600);font-size:11.5px;text-align:right;}
+
+  .status-line{font-size:12.5px;margin-top:8px;display:none;align-items:center;gap:6px;font-weight:600;}
+  .status-line.show{display:flex;}
+  .status-ok{color:var(--success);}
+  .status-warn{color:var(--warning);}
+
+  /* ---------- vehicle info ---------- */
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+  @media (max-width:420px){.info-grid{grid-template-columns:1fr;}}
+  .info-item{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;}
+  .info-item.auto-item{border-left:3px solid var(--verde);background:linear-gradient(90deg, rgba(62,130,220,0.10), transparent 60%), var(--paper);}
+  .info-label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-600);margin-bottom:3px;font-weight:700;}
+  .info-value{display:block;font-size:14px;font-weight:700;color:var(--ink);}
+  .badge{
+    display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;
+    padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle;
+  }
+  .badge-estimate{background:var(--warning-bg);color:var(--warning);}
+  .badge-official{background:var(--success-bg);color:var(--success);}
+  .auto-caption{
+    display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--verde-esc);
+    margin:14px 0 -2px;text-transform:uppercase;letter-spacing:.4px;
+  }
+  .auto-caption::before{content:"⚡";font-size:12px;}
+  .auto-badge{
+    display:inline-flex;align-items:center;gap:3px;font-size:9.5px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.4px;color:var(--verde-esc);background:var(--success-bg);border-radius:20px;
+    padding:1px 7px;margin-left:7px;vertical-align:middle;
+  }
+  .input-suffix.campo-auto{border-left:3px solid var(--verde);}
+  .input-suffix.campo-fixo{background:var(--paper);}
+  .input-suffix.campo-fixo input{color:var(--text-600);cursor:default;}
+  select{
+    width:100%;border:1.5px solid var(--border);border-radius:var(--radius-md);
+    background:var(--card);color:var(--ink);padding:11px 10px;font-size:15px;
+    font-family:var(--font-body);margin-top:6px;
+  }
+  select option{color:#12161c;background:#fff;}
+  select optgroup{color:#12161c;background:#fff;font-weight:700;font-style:normal;}
+  select:focus-visible{outline:2.5px solid var(--verde);outline-offset:2px;}
+
+  /* ---------- compartilhar destacado ---------- */
+  .share-highlight{
+    margin-top:16px;padding:12px 14px;border-radius:var(--radius-md);
+    background:linear-gradient(135deg, rgba(62,130,220,0.14), rgba(0,166,81,0.10));
+    border:1px solid var(--border);
+  }
+  .share-highlight-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--verde-esc);margin:0 0 9px;}
+  .share-grid{display:flex;gap:7px;flex-wrap:wrap;}
+  .share-btn{
+    flex:1 1 0;min-width:0;
+    display:flex;align-items:center;justify-content:center;gap:5px;
+    padding:9px 8px;border-radius:20px;border:1px solid var(--border);
+    background:linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)), var(--card-solid);
+    box-shadow:0 4px 10px rgba(0,4,16,0.35), inset 0 1px 0 rgba(255,255,255,0.14);
+    color:var(--ink);font-size:13px;font-weight:700;cursor:pointer;
+    font-family:var(--font-body);transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .share-btn span{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .share-btn:hover{border-color:var(--verde);}
+  .share-btn:active{transform:translateY(1px);box-shadow:0 2px 6px rgba(0,4,16,0.3), inset 0 1px 0 rgba(255,255,255,0.1);}
+  @media (max-width:420px){ .share-btn span{display:none;} }
+
+  .share-menu-wrap{position:relative;}
+  .share-dropdown{
+    position:absolute;top:44px;right:0;z-index:50;
+    background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-md);
+    box-shadow:var(--shadow);min-width:180px;overflow:hidden;
+  }
+  .share-dropdown-item{
+    display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+    padding:10px 14px;border:none;background:transparent;color:var(--ink);
+    font-size:13.5px;font-weight:600;cursor:pointer;font-family:var(--font-body);
+  }
+  .share-dropdown-item:hover{background:var(--paper);}
+
+  fieldset{border:none;padding:0;margin:0 0 16px;}
+  fieldset[disabled] .toggle-row{opacity:.45;pointer-events:none;}
+  .hint-block{
+    font-size:12.5px;color:var(--text-600);background:var(--paper);border:1px dashed var(--border);
+    border-radius:var(--radius-md);padding:12px;text-align:center;
+  }
+
+  /* ---------- form basics (reused) ---------- */
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+  .input-suffix{
+    display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--radius-md);
+    background:var(--card);overflow:hidden;transition:border-color .15s ease, box-shadow .15s ease, background-color .2s ease;
+  }
+  .input-suffix:focus-within{border-color:var(--verde);box-shadow:0 0 0 3px rgba(62,130,220,0.14);}
+  .input-suffix input, .input-suffix textarea{
+    border:none;background:transparent;outline:none;padding:11px 10px;font-size:15px;
+    font-family:var(--font-body);font-variant-numeric:tabular-nums;color:var(--ink);width:100%;min-width:0;
+  }
+  .input-suffix .prefix{padding-left:12px;color:var(--text-600);font-weight:700;}
+  .input-suffix > span{padding-right:12px;color:var(--text-600);font-size:13px;white-space:nowrap;}
+
+  .toggle-row{display:flex;gap:8px;}
+  .toggle-btn{
+    flex:1;border:1.5px solid var(--border);background:var(--card);border-radius:var(--radius-md);
+    padding:10px;font-size:13.5px;font-weight:700;color:var(--text-600);cursor:pointer;
+    font-family:var(--font-body);
+  }
+  .toggle-btn.active{background:var(--verde);border-color:var(--verde);color:#fff;}
+
+  .checkbox-row{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--text-600);margin:-6px 0 18px;cursor:pointer;}
+  .checkbox-row input{width:16px;height:16px;accent-color:var(--verde);}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:420px){.two-col{grid-template-columns:1fr;}}
+
+  .btn-primary,.btn-secondary,.btn-ghost{
+    font-family:var(--font-body);font-size:14.5px;font-weight:800;border-radius:var(--radius-md);
+    padding:12px 18px;cursor:pointer;border:1.5px solid transparent;
+    transition:transform .1s ease, box-shadow .1s ease, background-color .15s ease;
+  }
+  .btn-primary{
+    background:linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0)), var(--verde);
+    color:#04140C;width:100%;margin-top:4px;
+    box-shadow:0 8px 20px rgba(0,166,81,0.28), inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+  .btn-primary:hover{background:linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0)), var(--verde-esc);}
+  .btn-primary:active{transform:translateY(1px);box-shadow:0 3px 10px rgba(0,166,81,0.22), inset 0 1px 0 rgba(255,255,255,0.25);}
+  .btn-secondary{
+    background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01)), var(--card-solid);
+    border-color:var(--border);color:var(--text-600);width:100%;margin-top:8px;
+    box-shadow:0 4px 12px rgba(0,4,16,0.3), inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  .btn-secondary:hover{border-color:var(--text-400);}
+  .btn-secondary:active{transform:translateY(1px);box-shadow:0 2px 6px rgba(0,4,16,0.25);}
+  .btn-ghost{background:transparent;border:none;color:var(--verde-esc);padding:6px 0;text-decoration:underline;}
+  .btn-ghost.small{font-size:13px;}
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
+    outline:2.5px solid var(--verde);outline-offset:2px;
+  }
+
+  /* ---------- gauge ---------- */
+  .gauges-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+  .gauge-wrap{flex:1 1 130px;min-width:120px;text-align:center;}
+  #gaugeSvg, #gaugePercentSvg{width:100%;max-width:200px;}
+  #gaugeNeedle, #gaugePercentNeedle{transition:transform .5s cubic-bezier(.34,1.4,.64,1);transform-origin:100px 110px;}
+  .gauge-label{font-size:12px;font-weight:700;color:var(--verde-esc);margin-top:-6px;}
+  @media (max-width:380px){ .gauges-row{flex-direction:column;align-items:center;} }
+
+  /* ---------- results ---------- */
+  .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+  .result-item{background:var(--paper);border-radius:var(--radius-md);padding:14px;border:1px solid var(--border);}
+  .result-item.highlight{background:var(--verde-mais-esc);border-color:var(--verde-mais-esc);}
+  .result-item.highlight .result-label{color:var(--amarelo);}
+  .result-item.highlight .result-value{color:#fff;}
+  .result-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-600);margin-bottom:4px;font-weight:700;}
+  .result-value{display:block;font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink);}
+
+  /* ---------- comparator ---------- */
+  .compare-card{margin-top:20px;}
+  .hint{font-size:13px;color:var(--text-600);margin:0 0 16px;}
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+  @media (max-width:480px){.compare-grid{grid-template-columns:1fr;}}
+  .compare-result{font-size:14.5px;padding:14px 16px;border-radius:var(--radius-md);background:var(--paper);border:1px solid var(--border);color:var(--ink);margin-bottom:12px;}
+  .compare-bar{height:10px;border-radius:6px;background:var(--border);overflow:hidden;}
+  .compare-bar-fill{height:100%;width:0%;background:var(--success);transition:width .4s ease, background .4s ease;}
+
+  /* ---------- history ---------- */
+  .history-card{margin-top:20px;}
+  .history-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .history-header h2{margin:0;}
+  .history-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .history-table th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-600);padding:8px 9px;border-bottom:1.5px solid var(--border);white-space:nowrap;}
+  .history-table td{padding:9px;border-bottom:1px solid var(--border);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .history-table tr:last-child td{border-bottom:none;}
+  .history-scroll{overflow-x:auto;}
+
+  .disclaimer-card{margin-top:20px;background:var(--paper);border:1px dashed var(--border);padding:0;}
+  .disclaimer-card summary{
+    cursor:pointer;padding:10px 16px;font-size:12px;font-weight:700;color:var(--warning);
+    list-style:none;display:flex;align-items:center;gap:6px;
+  }
+  .disclaimer-card summary::before{content:"ℹ";font-size:12px;}
+  .disclaimer-card summary::-webkit-details-marker{display:none;}
+  .disclaimer-card[open] summary{border-bottom:1px solid var(--border);}
+  .disclaimer-card ul{margin:0;padding:12px 16px 14px 30px;font-size:11.5px;color:var(--text-600);}
+  .disclaimer-card li{margin-bottom:6px;}
+
+  /* ---------- gate overlays (login / offline / admin) ---------- */
+  .gate-overlay{
+    position:fixed;inset:0;z-index:100;
+    background-color:var(--paper);background-image:var(--paper-grad);
+    display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;
+  }
+  .gate-card{
+    background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius-lg);
+    box-shadow:var(--shadow);padding:32px;max-width:380px;width:100%;text-align:center;
+  }
+  .gate-card-wide{max-width:540px;text-align:left;}
+  .gate-card-wide h1{text-align:center;}
+  .gate-icon{font-size:32px;margin-bottom:10px;}
+  .gate-card h1{font-family:var(--font-head);font-size:19px;margin:0 0 8px;color:var(--ink);}
+  .gate-card .hint{margin-bottom:16px;}
+  .login-error{color:var(--danger);font-size:12.5px;background:var(--danger-bg);border-radius:var(--radius-md);padding:8px 10px;margin-bottom:12px;text-align:left;}
+
+  .app-footer{text-align:center;color:var(--text-400);font-size:12px;margin-top:28px;}
+  .app-footer strong{color:var(--text-600);}
+
+  /* ---------- address blocks (origem/parada/destino) ---------- */
+  .addr-block{border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;background:var(--paper);margin-bottom:14px;}
+  .addr-block:last-child{margin-bottom:0;}
+  .addr-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .addr-title{font-size:12.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--verde-esc);}
+  .addr-remove{
+    border:none;background:var(--danger-bg);color:var(--danger);width:22px;height:22px;border-radius:50%;
+    font-weight:800;cursor:pointer;font-size:14px;line-height:1;
+  }
+  .addr-status{font-size:12px;font-weight:600;border-radius:var(--radius-md);}
+  .addr-status-ok{background:var(--success-bg);color:var(--success);border:1px solid transparent;}
+  .addr-status-warn{background:var(--warning-bg);color:var(--warning);border:1px solid transparent;}
+  .addr-status-neutral{background:var(--card-solid);color:var(--text-600);border:1px dashed var(--border);}
+
+  .addr-bloco-picker{
+    background:linear-gradient(135deg, rgba(62,130,220,0.10), rgba(0,166,81,0.08));
+    border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;margin-bottom:14px;
+  }
+  .addr-bloco-igrejas{
+    display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;max-height:150px;overflow-y:auto;
+  }
+  .addr-bloco-chip{
+    border:1px solid var(--border);background:var(--card-solid);color:var(--text-600);
+    border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;
+    font-family:var(--font-body);
+  }
+  .addr-bloco-chip:hover{border-color:var(--verde);}
+  .addr-bloco-chip.ativo{background:var(--verde);border-color:var(--verde);color:#04140C;}
+
+  /* ---------- print-only summary ---------- */
+  .print-only{display:none;}
+  @media print{
+    @page{margin:16mm 14mm;}
+    #mainContent{display:none !important;}
+    .print-only{display:block !important;}
+    body{background:#fff;color:#111;}
+    .pr-header{border-bottom:3px solid #00A651;padding-bottom:10px;margin-bottom:16px;}
+    .pr-header h1{margin:0 0 2px;font-size:20px;}
+    .pr-sub{color:#555;margin:0;font-size:12px;}
+    .pr-section-title{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#00713A;font-weight:800;margin:16px 0 6px;}
+    .pr-table{width:100%;border-collapse:collapse;}
+    .pr-table th{text-align:left;padding:6px 10px;background:#F0F4F1;width:170px;font-size:12px;border-bottom:1px solid #e2e2e2;}
+    .pr-table td{padding:6px 10px;border-bottom:1px solid #e2e2e2;font-size:13px;}
+    .pr-total-box{
+      margin-top:16px;padding:14px 16px;border:2px solid #00A651;border-radius:6px;
+      display:flex;justify-content:space-between;align-items:center;
+    }
+    .pr-total-box .label{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#555;font-weight:700;}
+    .pr-total-box .value{font-size:22px;font-weight:800;color:#00512A;}
+    .pr-foot{color:#888;font-size:10.5px;margin-top:20px;border-top:1px solid #e2e2e2;padding-top:8px;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    #gaugeNeedle,.compare-bar-fill{transition:none;}
+  }
+</style>
+</head>
+<body>
+<div id="watermarkVisitante" hidden></div>
+<div class="app">
+
+  <div id="offlineScreen" class="gate-overlay" hidden>
+    <div class="gate-card">
+      <div class="gate-icon">⏸</div>
+      <h1>Sistema temporariamente indisponível</h1>
+      <p class="hint">O administrador colocou o sistema offline por um período. Tente novamente mais tarde.</p>
+      <p class="hint" id="offlineAteTexto" style="margin-bottom:0;"></p>
+    </div>
+  </div>
+
+  <div id="loginScreen" class="gate-overlay" hidden>
+    <div class="gate-card">
+      <div class="gate-icon">🔒</div>
+      <h1>Acesso restrito</h1>
+      <p class="hint">Digite a senha de acesso para entrar.</p>
+      <div class="field">
+        <label for="loginPerfil">Seu bloco</label>
+        <div class="input-suffix">
+          <select id="loginPerfil">
+            <option value="">Selecione seu bloco…</option>
+            <option value="__geral__">Acesso geral (qualquer veículo)</option>
+            <option value="__visitante__">BASE TESTE</option>
+            <option value="__admin__">PORTAL ADM</option>
+            <optgroup label="BLOCOS">
+            <option value="ABOLICAO">ABOLICAO</option>
+            <option value="ADMRJ">ADMRJ</option>
+            <option value="ALCANTARA">ALCANTARA</option>
+            <option value="BARRA MANSA">BARRA MANSA</option>
+            <option value="BOTAFOGO">BOTAFOGO</option>
+            <option value="CABO FRIO">CABO FRIO</option>
+            <option value="CAMPO GRANDE">CAMPO GRANDE</option>
+            <option value="CAMPOS">CAMPOS</option>
+            <option value="CATEDRAL">CATEDRAL</option>
+            <option value="CATEDRAL I">CATEDRAL I</option>
+            <option value="CATEDRAL II">CATEDRAL II</option>
+            <option value="CATEDRAL III">CATEDRAL III</option>
+            <option value="CAXIAS">CAXIAS</option>
+            <option value="LOTE XV">LOTE XV</option>
+            <option value="MACAE">MACAE</option>
+            <option value="NITEROI">NITEROI</option>
+            <option value="NOVA IGUACU">NOVA IGUACU</option>
+            <option value="PETROPOLIS">PETROPOLIS</option>
+            <option value="PIABETA">PIABETA</option>
+            <option value="REALENGO">REALENGO</option>
+            <option value="RECREIO">RECREIO</option>
+            <option value="SANTA CRUZ I">SANTA CRUZ I</option>
+            <option value="TAQUARA">TAQUARA</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="loginSenha">Senha</label>
+        <div class="input-suffix"><input type="password" id="loginSenha" placeholder="••••" autocomplete="current-password"></div>
+      </div>
+      <p class="login-error" id="loginError" hidden></p>
+      <button type="button" class="btn-primary" id="btnEntrar">Entrar</button>
+      <button type="button" class="btn-ghost small" id="btnAbrirAdminLogin" style="margin-top:10px;">Área do administrador</button>
+    </div>
+  </div>
+
+  <div id="adminScreen" class="gate-overlay" hidden>
+    <div class="gate-card gate-card-wide">
+      <div class="gate-icon" style="text-align:center;">⚙</div>
+      <h1>Área do administrador</h1>
+      <div id="adminAuthWrap">
+        <p class="hint">Confirme a senha atual para abrir o painel.</p>
+        <div class="field">
+          <label for="adminSenhaAtual">Senha atual</label>
+          <div class="input-suffix"><input type="password" id="adminSenhaAtual" autocomplete="current-password"></div>
+        </div>
+        <p class="login-error" id="adminAuthError" hidden></p>
+        <button type="button" class="btn-primary" id="btnAdminConfirmar">Confirmar</button>
+      </div>
+
+      <div id="adminPainel" hidden>
+        <div class="addr-block">
+          <div class="addr-title" style="margin-bottom:10px;">Liberar edição de KM, consumo e preço</div>
+          <p class="hint">Por padrão, distância (rota automática), consumo (12 km/L gasolina, 10 km/L diesel) e preço (R$ 6,70 gasolina, R$ 6,90 diesel) ficam travados para todo mundo. Ligue aqui pra corrigir manualmente nesta sessão. Entrar com a senha de administrador (em qualquer uma das telas) já libera tudo automaticamente.</p>
+          <label class="checkbox-row" for="chkLiberarEdicao" style="margin:0;">
+            <input type="checkbox" id="chkLiberarEdicao">
+            <span>Permitir editar KM, consumo e preço manualmente agora</span>
+          </label>
+        </div>
+
+        <div class="addr-block">
+          <div class="addr-title" style="margin-bottom:10px;">Contas de acesso</div>
+          <p class="hint">Mesmas contas de bloco do Portal ADM (painel de limite de cartão) — gerenciadas por lá.</p>
+        </div>
+
+        <div class="addr-block">
+          <div class="addr-title" style="margin-bottom:10px;">Deixar o sistema offline</div>
+          <div class="field">
+            <label for="offlineAteInput">Offline até (data e hora) — deixe vazio para não bloquear</label>
+            <div class="input-suffix"><input type="datetime-local" id="offlineAteInput"></div>
+          </div>
+          <div class="toggle-row">
+            <button type="button" class="btn-secondary" id="btnAtivarOffline" style="margin-top:0;">Aplicar bloqueio</button>
+            <button type="button" class="btn-secondary" id="btnRemoverOffline" style="margin-top:0;">Remover bloqueio</button>
+          </div>
+          <p class="hint" id="offlineMsgAdmin"></p>
+          <p class="hint">Isso já vale pra todo mundo assim que você clicar — não precisa baixar nem subir nada no GitHub.</p>
+        </div>
+
+        <div class="addr-block">
+          <div class="addr-title" style="margin-bottom:10px;">Solicitações recebidas</div>
+          <p class="hint">Cada pessoa exporta as próprias solicitações em "Minhas solicitações → Exportar" e te manda o arquivo .xlsx. Importe aqui pra ver tudo junto (pode importar vários arquivos de uma vez).</p>
+          <div class="field">
+            <label for="importarArquivo">Arquivos Excel (.xlsx) recebidos</label>
+            <div class="input-suffix"><input type="file" id="importarArquivo" accept=".xlsx,.xls" multiple></div>
+          </div>
+          <p class="hint" id="importarMsg"></p>
+          <p class="hint" id="importadasEmpty">Nenhum arquivo importado ainda.</p>
+          <div class="history-scroll">
+            <table class="history-table" id="importadasTable" hidden>
+              <thead><tr><th>Data</th><th>Solicitante</th><th>Placa</th><th>Bloco</th><th>Região</th><th>Igreja</th><th>KM</th><th>Valor</th></tr></thead>
+              <tbody id="importadasBody"></tbody>
+            </table>
+          </div>
+          <div class="toggle-row" style="margin-top:10px;">
+            <button type="button" class="btn-secondary" id="btnExportarImportadas" style="margin-top:0;">Exportar tudo (Excel)</button>
+            <button type="button" class="btn-secondary" id="btnLimparImportadas" style="margin-top:0;">Limpar importadas</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn-ghost small" id="btnFecharAdmin" style="margin-top:14px;">Fechar</button>
+    </div>
+  </div>
+
+<div id="mainContent" hidden>
+
+  <header class="topbar">
+    <div class="topbar-accent"></div>
+    <div class="topbar-inner">
+      <div class="topbar-top">
+        <div class="topbar-titles">
+          <p class="eyebrow">IURD · Base Estado — Rio de Janeiro</p>
+          <h1>Combustíveis — Cálculo de Rotas</h1>
+          <p>Consulta por placa · rota com paradas · custo de viagem</p>
+          <p class="session-countdown" id="sessaoCountdown"></p>
+        </div>
+        <div class="topbar-controls">
+          <button type="button" class="action-card" id="btnMobile" title="Abrir em janela de celular (redimensionável)" aria-label="Abrir em janela de celular"><span class="ic">📱</span><span class="lb">Celular</span></button>
+          <button type="button" class="action-card" id="btnFullscreen" title="Tela cheia" aria-label="Tela cheia"><span class="ic">⛶</span><span class="lb">Tela cheia</span></button>
+          <div class="share-menu-wrap">
+            <button type="button" class="action-card" id="btnCompartilharTopo" title="Compartilhar resumo" aria-label="Compartilhar resumo"><span class="ic">📤</span><span class="lb">Compartilhar</span></button>
+            <div class="share-dropdown" id="shareDropdownTopo" hidden>
+              <button type="button" class="share-dropdown-item" data-share="whatsapp">💬 WhatsApp</button>
+              <button type="button" class="share-dropdown-item" data-share="txt">📄 Arquivo TXT</button>
+              <button type="button" class="share-dropdown-item" data-share="pdf">🧾 PDF</button>
+              <button type="button" class="share-dropdown-item" data-share="png">🖼 Imagem PNG</button>
+            </div>
+          </div>
+          <button type="button" class="action-card" id="btnSolicitacoes" title="Minhas solicitações" aria-label="Minhas solicitações"><span class="ic">📋</span><span class="lb">Solicitações</span></button>
+          <a href="painel-limite-cartao.html" target="_blank" rel="noopener" class="action-card destaque" title="Abrir Detalhamento — já entra direto, sem pedir senha de novo" aria-label="Abrir Detalhamento"><span class="ic">🪪<span class="dot-sessao"></span></span><span class="lb">Detalhamento</span></a>
+          <button type="button" class="action-card" id="btnAdmin" title="Área do administrador" aria-label="Área do administrador"><span class="ic">⚙</span><span class="lb">Admin</span></button>
+          <a href="painel-limite-cartao.html?modo=admin" target="_blank" rel="noopener" class="action-card admin-view" id="btnVerTodosBlocos" title="Ver todos os blocos, sem restrição (Portal ADM)" aria-label="Ver todos os blocos" hidden><span class="ic">🗂</span><span class="lb">Todos os blocos</span></a>
+          <button type="button" class="action-card" id="btnSair" title="Sair" aria-label="Sair" hidden><span class="ic">⏻</span><span class="lb">Sair</span></button>
+        </div>
+      </div>
+      <div class="topbar-meta">
+        <span class="meta-chip">Combustível de referência: R$ 6,70/L (diesel R$ 6,90/L)</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+
+    <!-- STEP 1: PLACA -->
+    <section class="card" id="cardPlaca">
+      <div class="card-head">
+        <div class="card-title-row"><span class="card-step">1</span><h2>Identificação do veículo</h2></div>
+      </div>
+
+      <div class="plate-field">
+        <label for="placaInput">Digite a placa <span style="opacity:.5; font-weight:400;">(atalho: Ctrl+K)</span></label>
+        <p id="dadosStatus" class="muted" style="font-size:11px; margin:2px 0 8px;"></p>
+        <div class="plate-row">
+          <div class="autocomplete-panel">
+            <div class="plate-box">
+              <div class="plate-flag"><span class="stars">★★★</span>BRASIL</div>
+              <div class="plate-input-wrap">
+                <input type="text" id="placaInput" maxlength="8" placeholder="ABC-1D23" autocomplete="off" spellcheck="false">
+                <div class="plate-sub">MERCOSUL</div>
+              </div>
+            </div>
+            <div class="autocomplete-list" id="autocompleteList" hidden></div>
+          </div>
+          <div class="vehicle-icon-wrap" id="vehicleIconWrap" hidden>
+            <div class="vehicle-icon-svg" id="vehicleIconSvg"></div>
+            <span class="vehicle-icon-label" id="vehicleIconLabel"></span>
+          </div>
+        </div>
+        <div class="status-line" id="placaStatus"></div>
+      </div>
+
+      <p class="auto-caption" id="autoCaption" hidden>Preenchido automaticamente pela placa</p>
+      <div class="info-grid" id="infoGrid" hidden>
+        <div class="info-item auto-item"><span class="info-label">Modelo</span><span class="info-value" id="infoModelo">—</span></div>
+        <div class="info-item auto-item"><span class="info-label">Motor</span><span class="info-value" id="infoMotor">—</span></div>
+        <div class="info-item auto-item"><span class="info-label">Câmbio</span><span class="info-value" id="infoCambio">—</span></div>
+        <div class="info-item auto-item"><span class="info-label">Combustível / Ano</span><span class="info-value" id="infoCombAno">—</span></div>
+        <div class="info-item auto-item"><span class="info-label">Bloco</span><span class="info-value" id="infoBloco">—</span></div>
+        <div class="info-item auto-item"><span class="info-label">Região</span><span class="info-value" id="infoRegiao">—</span></div>
+        <div class="info-item auto-item" style="grid-column:1 / -1;"><span class="info-label">Igreja</span><span class="info-value" id="infoIgreja">—</span></div>
+      </div>
+
+      <div class="field" id="fallbackManual" hidden style="margin-top:14px;">
+        <label for="consumoManual">Placa não encontrada — informe o consumo médio manualmente</label>
+        <div class="input-suffix">
+          <input type="number" id="consumoManual" min="0" step="0.1" placeholder="0" inputmode="decimal">
+          <span>km/L</span>
+        </div>
+        <label for="tipoCombustivelManual" style="margin-top:10px;">Combustível deste veículo</label>
+        <select id="tipoCombustivelManual">
+          <option value="Gasolina">Gasolina</option>
+          <option value="Etanol">Etanol</option>
+          <option value="Diesel">Diesel</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- STEP 2: ORIGEM -->
+    <section class="card" id="cardOrigem">
+      <div class="card-head">
+        <div class="card-title-row"><span class="card-step">2</span><h2>Origem da viagem</h2></div>
+      </div>
+      <fieldset id="origemFieldset" disabled>
+        <div class="hint-block" id="origemHint">Informe a placa no passo 1 — a igreja do veículo preenche aqui automaticamente, mas pode ser trocada.</div>
+        <div id="origemBlocoWrap" hidden></div>
+      </fieldset>
+    </section>
+  </main>
+
+  <!-- STEP 3: PARADAS -->
+  <section class="card stack" id="cardParadas">
+    <div class="card-head">
+      <div class="card-title-row"><span class="card-step">3</span><h2>Pontos de parada <span style="color:var(--text-400);font-weight:600;text-transform:none;letter-spacing:0;">(opcional, até 5)</span></h2></div>
+    </div>
+    <p class="hint" id="paradasVazio">Nenhuma parada adicionada. Use quando a viagem passar por mais de um endereço antes do destino final.</p>
+    <div id="paradasContainer"></div>
+    <button type="button" class="btn-secondary" id="btnAddParada" style="margin-top:4px;">+ Adicionar parada</button>
+  </section>
+
+  <!-- STEP 4: DESTINO -->
+  <section class="card stack" id="cardDestino">
+    <div class="card-head">
+      <div class="card-title-row"><span class="card-step">4</span><h2>Destino</h2></div>
+    </div>
+    <div id="destinoBlocoWrap"></div>
+  </section>
+
+  <!-- STEP 3: CALCULO -->
+  <section class="card stack" id="cardCalculo">
+    <div class="card-head">
+      <div class="card-title-row"><span class="card-step">5</span><h2>Cálculo da viagem</h2></div>
+    </div>
+
+    <div class="layout" style="margin-top:0;">
+      <div>
+        <div class="field">
+          <label for="distancia">Distância percorrida <span class="auto-badge" id="distanciaTravadaBadge">travado</span></label>
+          <div class="input-suffix campo-fixo" id="distanciaWrap">
+            <input type="number" id="distancia" min="0" step="0.1" placeholder="0" inputmode="decimal" readonly>
+            <span>km</span>
+          </div>
+          <div class="hint" id="distanciaAutoHint" style="margin:6px 0 0;"></div>
+        </div>
+
+        <label style="display:block;font-size:13px;font-weight:700;margin-bottom:8px;">Tipo de percurso</label>
+        <div class="toggle-row" style="margin-bottom:16px;">
+          <button type="button" class="toggle-btn active" data-percurso="ida">Somente ida</button>
+          <button type="button" class="toggle-btn" data-percurso="idavolta">Ida e volta</button>
+        </div>
+
+        <div class="field">
+          <label for="consumoAtivo">Consumo médio (do veículo identificado) <span class="auto-badge" id="consumoTravadoBadge">travado</span></label>
+          <div class="input-suffix campo-fixo" id="consumoWrap">
+            <input type="number" id="consumoAtivo" min="0" step="0.1" placeholder="0" inputmode="decimal" readonly>
+            <span>km/L</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="preco">Preço do combustível <span class="auto-badge" id="precoTipoBadge">fixo</span></label>
+          <div class="input-suffix campo-fixo" id="precoWrap">
+            <span class="prefix">R$</span>
+            <input type="text" id="preco" value="6,70" inputmode="decimal" readonly>
+            <span>/L</span>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="field">
+            <label for="nomeSolicitante">Seu nome</label>
+            <div class="input-suffix">
+              <input type="text" id="nomeSolicitante" placeholder="Quem está pedindo">
+            </div>
+          </div>
+          <div class="field">
+            <label for="kmAtualVeiculo">KM atual do veículo</label>
+            <div class="input-suffix">
+              <input type="number" id="kmAtualVeiculo" min="0" step="1" placeholder="Ex: 45230" inputmode="numeric">
+              <span>km</span>
+            </div>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <button type="button" class="btn-ghost" id="btnSalvar" style="margin-top:0;">+ Salvar esta solicitação</button>
+          <button type="button" class="btn-secondary" id="btnLimparTudo" style="margin-top:0;">🗑 Limpar tudo</button>
+        </div>
+
+        <div class="share-highlight">
+          <p class="share-highlight-label">📤 Compartilhar este cálculo</p>
+          <div class="share-grid">
+            <button type="button" class="share-btn" data-share="whatsapp">💬<span>WhatsApp</span></button>
+            <button type="button" class="share-btn" data-share="txt">📄<span>TXT</span></button>
+            <button type="button" class="share-btn" data-share="pdf">🧾<span>PDF</span></button>
+            <button type="button" class="share-btn" data-share="png">🖼<span>PNG</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="gauges-row">
+          <div class="gauge-wrap">
+            <svg id="gaugeSvg" viewBox="0 0 200 120" role="img" aria-hidden="true">
+              <defs>
+                <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#BFD6FF"/>
+                  <stop offset="55%" stop-color="#3E82DC"/>
+                  <stop offset="100%" stop-color="#050912"/>
+                </linearGradient>
+              </defs>
+              <path d="M20,110 A80,80 0 0 1 180,110" fill="none" stroke="url(#gaugeGrad)" stroke-width="14" stroke-linecap="round"/>
+              <text x="14" y="108" font-size="10" fill="#6E7EA8" font-family="sans-serif">E</text>
+              <text x="180" y="108" font-size="10" fill="#6E7EA8" font-family="sans-serif" text-anchor="end">F</text>
+              <circle cx="100" cy="110" r="7" fill="#EEF3FE"/>
+              <line id="gaugeNeedle" x1="100" y1="110" x2="100" y2="42" stroke="#EEF3FE" stroke-width="4" stroke-linecap="round" transform="rotate(-90 100 110)"/>
+            </svg>
+            <div class="gauge-label" id="gaugeLabel">Informe a capacidade do tanque</div>
+          </div>
+          <div class="gauge-wrap">
+            <svg id="gaugePercentSvg" viewBox="0 0 200 120" role="img" aria-hidden="true">
+              <defs>
+                <linearGradient id="gaugePercentGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#4ADE9E"/>
+                  <stop offset="60%" stop-color="#F0C158"/>
+                  <stop offset="100%" stop-color="#FF7A85"/>
+                </linearGradient>
+              </defs>
+              <path d="M20,110 A80,80 0 0 1 180,110" fill="none" stroke="url(#gaugePercentGrad)" stroke-width="14" stroke-linecap="round"/>
+              <text x="14" y="108" font-size="10" fill="#6E7EA8" font-family="sans-serif">0%</text>
+              <text x="180" y="108" font-size="10" fill="#6E7EA8" font-family="sans-serif" text-anchor="end">100%</text>
+              <circle cx="100" cy="110" r="7" fill="#EEF3FE"/>
+              <line id="gaugePercentNeedle" x1="100" y1="110" x2="100" y2="42" stroke="#EEF3FE" stroke-width="4" stroke-linecap="round" transform="rotate(-90 100 110)"/>
+            </svg>
+            <div class="gauge-label" id="gaugePercentLabel">% do tanque nesta viagem</div>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:10px;">
+          <label for="tanque">Capacidade do tanque (para o indicador)</label>
+          <div class="input-suffix">
+            <input type="number" id="tanque" min="0" step="1" value="50" inputmode="decimal">
+            <span>L</span>
+          </div>
+        </div>
+
+        <div class="result-grid">
+          <div class="result-item highlight">
+            <span class="result-label">Custo total</span>
+            <span class="result-value" id="rCusto">R$ 0,00</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Combustível necessário</span>
+            <span class="result-value" id="rLitros">0,00 L</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Custo por km</span>
+            <span class="result-value" id="rCustoKm">R$ 0,00</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Consumo por km</span>
+            <span class="result-value" id="rLitrosKm">0,000 L</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARATOR -->
+  <section class="card compare-card">
+    <div class="card-head"><h2>Comparador etanol × gasolina</h2></div>
+    <p class="hint">Regra prática: o etanol compensa quando o preço dele não passa de 70% do preço da gasolina.</p>
+    <div class="compare-grid">
+      <div class="field" style="margin-bottom:0">
+        <label for="precoEtanol">Preço do etanol</label>
+        <div class="input-suffix"><span class="prefix">R$</span><input type="number" id="precoEtanol" min="0" step="0.01" placeholder="0,00" inputmode="decimal"><span>/L</span></div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label for="precoGasolina">Preço da gasolina</label>
+        <div class="input-suffix"><span class="prefix">R$</span><input type="number" id="precoGasolina" min="0" step="0.01" value="7.00" inputmode="decimal"><span>/L</span></div>
+      </div>
+    </div>
+    <div class="compare-result" id="compareResult" aria-live="polite">Informe os dois preços para comparar.</div>
+    <div class="compare-bar"><div class="compare-bar-fill" id="compareBarFill"></div></div>
+  </section>
+
+  <!-- SOLICITAÇÕES -->
+  <section class="card history-card" id="historyCard" hidden>
+    <div class="history-header">
+      <h2>Minhas solicitações</h2>
+      <button type="button" class="btn-ghost small" id="btnLimparHistorico">Limpar</button>
+    </div>
+    <p class="hint">Fica guardado só neste navegador. Para juntar com as solicitações de outras pessoas, exporte o Excel abaixo e envie para o administrador (e-mail, WhatsApp, pasta do OneDrive) — ele importa no painel dele.</p>
+    <button type="button" class="btn-secondary" id="btnExportarSolicitacoes" style="margin-bottom:14px;">⬇ Exportar minhas solicitações (Excel)</button>
+    <p class="hint" id="historyEmpty">Nenhuma solicitação salva ainda.</p>
+    <div class="history-scroll">
+      <table class="history-table" id="historyTable" hidden>
+        <thead>
+          <tr><th>Data</th><th>Solicitante</th><th>Placa</th><th>Bloco</th><th>Região</th><th>Igreja</th><th>KM veículo</th><th>KM rota</th><th>Valor</th></tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- DISCLAIMERS -->
+  <details class="card disclaimer-card">
+    <summary>Observações importantes</summary>
+    <ul>
+      <li>Os valores de consumo são estimativas com base em dados públicos (INMETRO/PBEV e fabricantes) por motorização — não substituem a apuração real do veículo. Modelos marcados como <span class="badge badge-estimate" style="margin-left:0;">estimativa</span> não têm fonte oficial direta e devem ser conferidos.</li>
+      <li>Endereços de 809 igrejas/bases da IURD-RJ já vêm carregados neste arquivo (fonte: base oficial em KML) — cobre 97% das igrejas com veículo cadastrado. Para as poucas que faltam, ou se algum endereço estiver desatualizado, preencha o CEP no bloco de endereço e clique em "Salvar este endereço" para corrigir.</li>
+      <li>Paleta inspirada nas cores institucionais da Petrobras por escolha visual; esta ferramenta é interna da IURD-RJ e não tem qualquer vínculo ou afiliação com a Petrobras.</li>
+      <li>O login e o bloqueio de acesso funcionam neste arquivo, mas não são segurança de verdade (não há servidor por trás) — servem para evitar acesso casual, não para proteger dados sensíveis. Qualquer pessoa com conhecimento técnico pode contornar. Trocar a senha ou ativar o bloqueio só vale para quem abrir o arquivo baixado depois — cópias já salvas em outros computadores continuam com a senha antiga até serem substituídas.</li>
+    </ul>
+  </details>
+
+  <footer class="app-footer">
+    <p>Consulta de placa e cálculo funcionam offline após o login. Busca de CEP e distância automática precisam de internet.</p>
+    <p style="margin-top:6px;">Em breve: acesso restrito a e-mails @universal.org, com senha vinculada a cada bloco para consulta de placa.</p>
+  </footer>
+
+</div>
+<div id="resumoImpressao" class="print-only"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var firebaseConfig = {
+    apiKey: "AIzaSyBve8n8DFPLlXrzumUpcZ17fmTquJdbJDQ",
+    authDomain: "painel-iurd-rj.firebaseapp.com",
+    projectId: "painel-iurd-rj",
+    storageBucket: "painel-iurd-rj.firebasestorage.app",
+    messagingSenderId: "522949106325",
+    appId: "1:522949106325:web:9933f265203c9540cf599c"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var authFB = firebase.auth();
+  authFB.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+  var dbFB = firebase.firestore();
+  try { authFB.setPersistence(firebase.auth.Auth.Persistence.SESSION); } catch(e){}
+
+  // Bloqueia clique-direito e cópia para quem não é administrador.
+  // Aviso: isso não é segurança de verdade (dá pra contornar via ferramentas de navegador),
+  // é só uma barreira contra cópia casual. A proteção de verdade agora é o login no Firebase,
+  // que decide o que o navegador chega a receber.
+  document.addEventListener("contextmenu", function(ev){
+    if (!isAdmin) ev.preventDefault();
+  });
+  document.addEventListener("copy", function(ev){
+    if (!isAdmin) ev.preventDefault();
+  });
+
+
+  var STORAGE_KEY = "combustivel_frota_historico_v2";
+  var NOME_SOLICITANTE_KEY = "combustivel_frota_nome_solicitante";
+  var DB = {vehicles: [], models: []};
+  // models: [exibicao, motor, transmissao, combustivel, consumo, estimativa]
+  // vehicles: [placa, bloco, regiao, igreja, modeloIdx, ano]
+
+  var vehicleByPlate = {};
+
+  var percursoAtual = "ida";
+  var isAdmin = false;
+  var isVisitante = false;
+
+  function mascarar(txt){
+    txt = String(txt == null ? "" : txt);
+    var manter = Math.ceil(txt.length / 2);
+    return txt.slice(0, manter) + txt.slice(manter).replace(/[^\s\-]/g, "*");
+  }
+  function m(txt){ return isVisitante ? mascarar(txt) : txt; }
+
+  var watermarkInterval = null;
+  function iniciarWatermark(){
+    function desenhar(){
+      var texto = "BASE TESTE — " + new Date().toLocaleString("pt-BR");
+      var el = document.getElementById("watermarkVisitante");
+      el.innerHTML = "";
+      for (var i = 0; i < 24; i++){
+        var s = document.createElement("span");
+        s.textContent = texto;
+        el.appendChild(s);
+      }
+    }
+    desenhar();
+    if (watermarkInterval) clearInterval(watermarkInterval);
+    watermarkInterval = setInterval(desenhar, 60000);
+  }
+
+  // ================= BLOQUEIO POR SENHA ERRADA (separado do bloqueio por dispositivo) =================
+  var SENHA_BLOQUEIO_INICIAL_MS = 30 * 60 * 1000;
+  var SENHA_BLOQUEIO_ESCALADA_MS = 3 * 60 * 60 * 1000;
+  function emailParaDocId(email){ return email.replace(/[.\/]/g, "_"); }
+  function checarBloqueioSenha(email){
+    return dbFB.collection("tentativas_senha").doc(emailParaDocId(email)).get().then(function(doc){
+      if (!doc.exists) return {bloqueado:false};
+      var d = doc.data();
+      var agora = Date.now();
+      if (d.bloqueadoAte && d.bloqueadoAte > agora){
+        return {bloqueado:true, minutos: Math.ceil((d.bloqueadoAte - agora)/60000)};
+      }
+      return {bloqueado:false};
+    }).catch(function(){ return {bloqueado:false}; });
+  }
+  function registrarFalhaSenha(email){
+    var ref = dbFB.collection("tentativas_senha").doc(emailParaDocId(email));
+    return ref.get().then(function(doc){
+      var d = doc.exists ? doc.data() : {falhas:0, bloqueadoAte:null};
+      var falhas = (d.falhas || 0) + 1;
+      var agora = Date.now();
+      var bloqueadoAte = d.bloqueadoAte || null;
+      var jaEstavaBloqueado = bloqueadoAte && bloqueadoAte > agora;
+      if (jaEstavaBloqueado){ bloqueadoAte = agora + SENHA_BLOQUEIO_ESCALADA_MS; }
+      else if (falhas >= 3){ bloqueadoAte = agora + SENHA_BLOQUEIO_INICIAL_MS; }
+      ref.set({falhas: falhas, bloqueadoAte: bloqueadoAte, ultimaTentativa: agora});
+      return {falhas: falhas, bloqueadoAte: bloqueadoAte};
+    });
+  }
+  function limparFalhasSenha(email){
+    dbFB.collection("tentativas_senha").doc(emailParaDocId(email)).set({falhas:0, bloqueadoAte:null, ultimaTentativa:Date.now()});
+  }
+  var blocoAtual = null;
+  var currentVehicle = null; // {placa, bloco, regiao, igreja, modeloIdx, ano}
+  var lastResult = null;
+
+  // Mesmas contas de bloco usadas no painel de limite de cartão — uma senha só por bloco, vale nos dois painéis.
+  var BLOCO_EMAIL = {
+    "LOTE XV": "lotexv@paineliurd.app", "CAMPOS": "campos@paineliurd.app", "CAXIAS": "caxias@paineliurd.app",
+    "MACAE": "macae@paineliurd.app", "PETROPOLIS": "petropolis@paineliurd.app", "CAMPO GRANDE": "campogrande@paineliurd.app",
+    "CABO FRIO": "cabofrio@paineliurd.app", "CATEDRAL I": "catedral1@paineliurd.app", "ABOLICAO": "abolicao@paineliurd.app",
+    "ALCANTARA": "alcantara@paineliurd.app", "NOVA IGUACU": "novaiguacu@paineliurd.app", "CATEDRAL III": "catedral3@paineliurd.app",
+    "SANTA CRUZ I": "santacruz1@paineliurd.app", "NITEROI": "niteroi@paineliurd.app", "CATEDRAL II": "catedral2@paineliurd.app",
+    "PIABETA": "piabeta@paineliurd.app", "BOTAFOGO": "botafogo@paineliurd.app", "TAQUARA": "taquara@paineliurd.app",
+    "CATEDRAL": "catedral@paineliurd.app", "BARRA MANSA": "barramansa@paineliurd.app", "REALENGO": "realengo@paineliurd.app",
+    "RECREIO": "recreio@paineliurd.app", "ADMRJ": "admrj@paineliurd.app"
+  };
+
+  var el = {
+    placaInput: document.getElementById("placaInput"),
+    autocompleteList: document.getElementById("autocompleteList"),
+    vehicleIconWrap: document.getElementById("vehicleIconWrap"),
+    vehicleIconSvg: document.getElementById("vehicleIconSvg"),
+    vehicleIconLabel: document.getElementById("vehicleIconLabel"),
+    placaStatus: document.getElementById("placaStatus"),
+    infoGrid: document.getElementById("infoGrid"),
+    autoCaption: document.getElementById("autoCaption"),
+    infoModelo: document.getElementById("infoModelo"),
+    infoMotor: document.getElementById("infoMotor"),
+    infoCambio: document.getElementById("infoCambio"),
+    infoCombAno: document.getElementById("infoCombAno"),
+    infoBloco: document.getElementById("infoBloco"),
+    infoRegiao: document.getElementById("infoRegiao"),
+    infoIgreja: document.getElementById("infoIgreja"),
+    fallbackManual: document.getElementById("fallbackManual"),
+    consumoManual: document.getElementById("consumoManual"),
+    tipoCombustivelManual: document.getElementById("tipoCombustivelManual"),
+
+    origemFieldset: document.getElementById("origemFieldset"),
+    origemHint: document.getElementById("origemHint"),
+    origemBlocoWrap: document.getElementById("origemBlocoWrap"),
+    destinoBlocoWrap: document.getElementById("destinoBlocoWrap"),
+
+    distancia: document.getElementById("distancia"),
+    distanciaAutoHint: document.getElementById("distanciaAutoHint"),
+    consumoAtivo: document.getElementById("consumoAtivo"),
+    preco: document.getElementById("preco"),
+    precoTipoBadge: document.getElementById("precoTipoBadge"),
+    tanque: document.getElementById("tanque"),
+    nomeSolicitante: document.getElementById("nomeSolicitante"),
+    kmAtualVeiculo: document.getElementById("kmAtualVeiculo"),
+
+    rLitros: document.getElementById("rLitros"),
+    rCusto: document.getElementById("rCusto"),
+    rCustoKm: document.getElementById("rCustoKm"),
+    rLitrosKm: document.getElementById("rLitrosKm"),
+    gaugeNeedle: document.getElementById("gaugeNeedle"),
+    gaugeLabel: document.getElementById("gaugeLabel"),
+    gaugePercentNeedle: document.getElementById("gaugePercentNeedle"),
+    gaugePercentLabel: document.getElementById("gaugePercentLabel"),
+
+    precoEtanol: document.getElementById("precoEtanol"),
+    precoGasolina: document.getElementById("precoGasolina"),
+    compareResult: document.getElementById("compareResult"),
+    compareBarFill: document.getElementById("compareBarFill"),
+
+    historyEmpty: document.getElementById("historyEmpty"),
+    historyTable: document.getElementById("historyTable"),
+    historyBody: document.getElementById("historyBody"),
+
+    resumoImpressao: document.getElementById("resumoImpressao")
+  };
+
+  function fmtNum(n, decimals){
+    if (!isFinite(n)) n = 0;
+    return n.toLocaleString("pt-BR", {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+  }
+  function fmtBRL(n){
+    if (!isFinite(n)) n = 0;
+    return n.toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
+  }
+  function num(elm){
+    var v = parseFloat((elm.value || "").replace(",", "."));
+    return isFinite(v) && v >= 0 ? v : 0;
+  }
+  function normalizaPlaca(s){
+    return (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  }
+  function marcarAuto(inputEl, ativo){
+    var wrap = inputEl.closest(".input-suffix");
+    if (wrap) wrap.classList.toggle("campo-auto", !!ativo);
+  }
+
+  // ================= ICONE DO VEICULO (silhueta por categoria) =================
+  var SVG_VEICULO = {
+    hatch: '<svg viewBox="0 0 64 32" fill="none"><path d="M8 24c0-1 1-9 5-11 3-1.5 6-2 9-2h13c3 0 6 .7 9 2.3 3 1.7 5 6.7 5 8.7v2H8v0z" fill="currentColor" opacity="0.92"/><path d="M17 21c1-4 3-6 6-6h11c3 0 5.3 2 6.5 6" stroke="#050912" stroke-width="1.4" fill="none" opacity="0.5"/><circle cx="18" cy="25" r="4.2" fill="#050912"/><circle cx="46" cy="25" r="4.2" fill="#050912"/><circle cx="18" cy="25" r="1.6" fill="currentColor"/><circle cx="46" cy="25" r="1.6" fill="currentColor"/></svg>',
+    sedan: '<svg viewBox="0 0 64 32" fill="none"><path d="M5 24c0-2 1.5-7 4-8.5 2-1.2 4-1.2 6-1.5l4-3.5c1.5-1.3 3-2 5-2h9c2 0 3.5.7 5 2l4 3.5c2.5.3 5 .5 7 1.7 2.5 1.5 4 6 4 8.3v1.5H5v-1z" fill="currentColor" opacity="0.92"/><path d="M17 14.5c1-2.3 2.5-3.5 4.5-3.5h11c2 0 3.5 1.2 4.5 3.5" stroke="#050912" stroke-width="1.4" fill="none" opacity="0.5"/><circle cx="17" cy="25.5" r="4.2" fill="#050912"/><circle cx="47" cy="25.5" r="4.2" fill="#050912"/><circle cx="17" cy="25.5" r="1.6" fill="currentColor"/><circle cx="47" cy="25.5" r="1.6" fill="currentColor"/></svg>',
+    suv: '<svg viewBox="0 0 64 32" fill="none"><path d="M6 24c0-2 .5-11 5-13.5 3-1.7 6-2 9.5-2h9c3.5 0 7 .5 10 2.3 4.5 2.7 5.5 10.7 5.5 13.2v1H6v-1z" fill="currentColor" opacity="0.92"/><path d="M15 21c.5-5 2.5-7.5 6-7.5h13c3.5 0 5.7 2.7 6.3 7.5" stroke="#050912" stroke-width="1.4" fill="none" opacity="0.5"/><rect x="15" y="9.2" width="34" height="1.6" fill="currentColor" opacity="0.5"/><circle cx="17" cy="25.5" r="4.5" fill="#050912"/><circle cx="47" cy="25.5" r="4.5" fill="#050912"/><circle cx="17" cy="25.5" r="1.8" fill="currentColor"/><circle cx="47" cy="25.5" r="1.8" fill="currentColor"/></svg>',
+    van: '<svg viewBox="0 0 64 32" fill="none"><rect x="6" y="6" width="50" height="18" rx="2.5" fill="currentColor" opacity="0.92"/><path d="M11 11h13v6H11z" fill="#050912" opacity="0.45"/><path d="M27 11h9v6h-9z" fill="#050912" opacity="0.45"/><circle cx="17" cy="25.5" r="4.3" fill="#050912"/><circle cx="45" cy="25.5" r="4.3" fill="#050912"/><circle cx="17" cy="25.5" r="1.7" fill="currentColor"/><circle cx="45" cy="25.5" r="1.7" fill="currentColor"/></svg>',
+    pickup: '<svg viewBox="0 0 64 32" fill="none"><path d="M4 23c0-1.5 1-7 4-8.5 2-1 4-1.3 6-1.5l3.5-3c1.3-1.1 2.7-1.7 4.3-1.7h5c1.8 0 3 .8 3.7 2.2l1.5 4h16c1.5 0 2.5 1.3 2.5 3v6.5H4v-1z" fill="currentColor" opacity="0.92"/><path d="M15 14c.8-1.8 2-2.7 3.7-2.7h4.6c1 0 1.7.5 2 1.5l1 3.2" stroke="#050912" stroke-width="1.4" fill="none" opacity="0.5"/><rect x="33" y="14.5" width="17" height="7" rx="1" fill="#050912" opacity="0.35"/><circle cx="17" cy="24.5" r="4.3" fill="#050912"/><circle cx="45" cy="24.5" r="4.3" fill="#050912"/><circle cx="17" cy="24.5" r="1.7" fill="currentColor"/><circle cx="45" cy="24.5" r="1.7" fill="currentColor"/></svg>'
+  };
+  function categorizarVeiculo(modeloExibicao){
+    var s = (modeloExibicao || "").toUpperCase();
+    if (/STRADA|SAVEIRO|MONTANA|S10|WT/.test(s)) return "pickup";
+    if (/SCUDO|JUMPY|EXPERT|DAILY/.test(s)) return "van";
+    if (/TRACKER|CRETA|T-CROSS|CCROSS|COMMANDER|SPIN/.test(s)) return "suv";
+    if (/HB20S|COROLLA/.test(s)) return "sedan";
+    return "hatch";
+  }
+  function mostrarIconeVeiculo(modeloExibicao){
+    var cat = categorizarVeiculo(modeloExibicao);
+    el.vehicleIconSvg.innerHTML = SVG_VEICULO[cat] || SVG_VEICULO.hatch;
+    var rotulos = {hatch:"Hatch", sedan:"Sedã", suv:"SUV", van:"Furgão", pickup:"Picape"};
+    el.vehicleIconLabel.textContent = rotulos[cat] || "Veículo";
+    el.vehicleIconWrap.hidden = false;
+  }
+  function esconderIconeVeiculo(){
+    el.vehicleIconWrap.hidden = true;
+  }
+
+  // Preço e consumo fixos por combustível — travados, só o administrador edita.
+  var PRECOS_FIXOS = {"Gasolina": 6.70, "Etanol": 6.70, "Diesel": 6.90, "Flex": 6.70};
+  var CONSUMOS_FIXOS = {"Gasolina": 12, "Etanol": 12, "Diesel": 10, "Flex": 12};
+  var precoFuelTypeAtual = "Gasolina";
+  function definirPrecoFixo(nomeCombustivel){
+    var chave = PRECOS_FIXOS.hasOwnProperty(nomeCombustivel) ? nomeCombustivel : "Gasolina";
+    precoFuelTypeAtual = chave;
+    if (!isAdmin || el.preco.dataset.editadoManual !== "1"){
+      el.preco.value = fmtNum(PRECOS_FIXOS[chave], 2);
+      marcarAuto(el.preco, true);
+    }
+    if (!isAdmin || el.consumoAtivo.dataset.editadoManual !== "1"){
+      el.consumoAtivo.value = fmtNum(CONSUMOS_FIXOS[chave], 0);
+    }
+    if (!el.fallbackManual.hidden && !el.consumoManual.value){
+      el.consumoManual.value = fmtNum(CONSUMOS_FIXOS[chave], 0);
+    }
+    atualizarBadgePreco();
+    calcular();
+  }
+  function formataPlacaExibicao(raw){
+    var p = normalizaPlaca(raw);
+    if (p.length <= 3) return p;
+    return p.slice(0,3) + "-" + p.slice(3,7);
+  }
+
+  // ================= ENDEREÇOS (origem / paradas / destino) =================
+  var ADDR_BOOK_KEY = "combustivel_frota_enderecos_v1";
+  var ROTA_FATOR_CORRECAO = 1.35; // ajusta distância em linha reta para uma aproximação de distância rodoviária
+  var MAX_PARADAS = 5;
+
+  function normalizaTexto(s){
+    return (s || "").trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  // Base de endereços reais extraída do KML (IURD-BASE-RJ) — [nomeOriginal, enderecoCompleto, cep, lat, lon]
+  // Populada depois do login, a partir do Firestore (ver carregarDadosEContinuar).
+  var ENDERECOS_BASE = {};
+
+  function lerLivroEnderecos(){
+    try { return JSON.parse(localStorage.getItem(ADDR_BOOK_KEY) || "{}"); }
+    catch(e){ return {}; }
+  }
+  function salvarEnderecoLivro(nome, registro){
+    var livro = lerLivroEnderecos();
+    livro[normalizaTexto(nome)] = Object.assign({nomeOriginal: nome}, registro);
+    try { localStorage.setItem(ADDR_BOOK_KEY, JSON.stringify(livro)); } catch(e){}
+  }
+  // Apelidos que apontam para um endereço já existente na base (mesmo local, nomes diferentes)
+  var ALIASES_ENDERECO = {
+    "catedral": "catedral rio de janeiro",
+    "nacional": "catedral rio de janeiro",
+    "solo sagrado": "catedral rio de janeiro"
+  };
+  function buscarEnderecoSalvo(nome){
+    if (!nome) return null;
+    var chave = normalizaTexto(nome);
+    var livro = lerLivroEnderecos();
+    if (livro[chave]) return livro[chave]; // correção manual do usuário tem prioridade
+    var base = ENDERECOS_BASE[chave] || ENDERECOS_BASE[ALIASES_ENDERECO[chave]];
+    if (base) return {nomeOriginal: base[0], enderecoCompleto: base[1], cep: base[2], lat: base[3], lon: base[4]};
+    return null;
+  }
+
+  var IGREJAS_CONHECIDAS = [];
+  function atualizarIgrejasConhecidas(){
+    var set = {};
+    DB.vehicles.forEach(function(v){ if (v[3]) set[v[3]] = true; });
+    Object.keys(ENDERECOS_BASE).forEach(function(k){ set[ENDERECOS_BASE[k][0]] = true; });
+    Object.keys(ALIASES_ENDERECO).forEach(function(k){ set[k.toUpperCase()] = true; });
+    var livro = lerLivroEnderecos();
+    Object.keys(livro).forEach(function(k){
+      if (livro[k] && livro[k].nomeOriginal) set[livro[k].nomeOriginal] = true;
+    });
+    IGREJAS_CONHECIDAS = Object.keys(set).sort();
+  }
+
+  // Bloco -> lista de igrejas daquele bloco (para o seletor rápido do Destino)
+  var BLOCOS_CONHECIDOS = [];
+  var IGREJAS_POR_BLOCO = {};
+  (function(){
+    var mapa = {};
+    DB.vehicles.forEach(function(v){
+      var bloco = v[1], igreja = v[3];
+      if (!bloco || !igreja) return;
+      if (!mapa[bloco]) mapa[bloco] = {};
+      mapa[bloco][igreja] = true;
+    });
+    BLOCOS_CONHECIDOS = Object.keys(mapa).sort();
+    BLOCOS_CONHECIDOS.forEach(function(bloco){
+      IGREJAS_POR_BLOCO[bloco] = Object.keys(mapa[bloco]).sort();
+    });
+  })();
+
+  function haversineKm(lat1, lon1, lat2, lon2){
+    var R = 6371;
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLon = (lon2 - lon1) * Math.PI / 180;
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+
+  function criarBlocoEnderecoElemento(titulo, removivel, comBlocoPicker){
+    var div = document.createElement("div");
+    div.className = "addr-block";
+    div.innerHTML =
+      '<div class="addr-head">' +
+        '<span class="addr-title">' + titulo + '</span>' +
+        (removivel ? '<button type="button" class="addr-remove" title="Remover parada">&times;</button>' : '') +
+      '</div>' +
+      (comBlocoPicker ?
+        '<div class="field addr-bloco-picker">' +
+          '<label>Escolher por bloco (opcional, mais rápido)</label>' +
+          '<select class="addr-bloco-select"><option value="">Selecione um bloco…</option></select>' +
+          '<div class="addr-bloco-igrejas" hidden></div>' +
+        '</div>'
+      : "") +
+      '<div class="field" style="position:relative;margin-bottom:12px;">' +
+        '<label>Igreja / local</label>' +
+        '<div class="input-suffix"><input type="text" class="addr-igreja" placeholder="Nome da igreja ou local" autocomplete="off"></div>' +
+        '<div class="autocomplete-list addr-sugestoes" hidden></div>' +
+      '</div>' +
+      '<div class="two-col">' +
+        '<div class="field">' +
+          '<label>CEP</label>' +
+          '<div class="input-suffix"><input type="text" class="addr-cep" placeholder="00000-000" inputmode="numeric" maxlength="9"></div>' +
+        '</div>' +
+        '<div class="field">' +
+          '<label>Status</label>' +
+          '<div class="addr-status addr-status-neutral" style="padding:11px 12px;">Preencha a igreja ou o CEP</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Endereço completo</label>' +
+        '<div class="input-suffix"><textarea class="addr-endereco" rows="2" placeholder="Rua, número, bairro, cidade/UF"></textarea></div>' +
+      '</div>' +
+      '<button type="button" class="btn-ghost small addr-salvar">Salvar este endereço para esta igreja</button>';
+
+    if (comBlocoPicker){
+      var selectEl = div.querySelector(".addr-bloco-select");
+      BLOCOS_CONHECIDOS.forEach(function(bloco){
+        var opt = document.createElement("option");
+        opt.value = bloco; opt.textContent = bloco;
+        selectEl.appendChild(opt);
+      });
+      var listaEl = div.querySelector(".addr-bloco-igrejas");
+      selectEl.addEventListener("change", function(){
+        var bloco = selectEl.value;
+        listaEl.innerHTML = "";
+        if (!bloco){ listaEl.hidden = true; return; }
+        var igrejas = IGREJAS_POR_BLOCO[bloco] || [];
+        igrejas.forEach(function(nome){
+          var chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "addr-bloco-chip";
+          chip.textContent = nome;
+          chip.addEventListener("click", function(){
+            if (div._api) div._api.setIgreja(nome);
+            listaEl.querySelectorAll(".addr-bloco-chip").forEach(function(c){ c.classList.remove("ativo"); });
+            chip.classList.add("ativo");
+          });
+          listaEl.appendChild(chip);
+        });
+        listaEl.hidden = igrejas.length === 0;
+      });
+    }
+    return div;
+  }
+
+  function inicializarBlocoEndereco(root, onMudou){
+    var igrejaInput = root.querySelector(".addr-igreja");
+    var sugestoesEl = root.querySelector(".addr-sugestoes");
+    var cepInput = root.querySelector(".addr-cep");
+    var statusEl = root.querySelector(".addr-status");
+    var enderecoInput = root.querySelector(".addr-endereco");
+    var salvarBtn = root.querySelector(".addr-salvar");
+    var latAtual = null, lonAtual = null;
+
+    function setStatus(msg, tipo){
+      statusEl.textContent = msg;
+      statusEl.className = "addr-status addr-status-" + (tipo || "neutral");
+    }
+
+    function aplicarRegistro(registro){
+      if (!registro) return;
+      cepInput.value = registro.cep || "";
+      enderecoInput.value = registro.enderecoCompleto || "";
+      marcarAuto(cepInput, true);
+      marcarAuto(enderecoInput, true);
+      latAtual = registro.lat || null;
+      lonAtual = registro.lon || null;
+      setStatus(latAtual ? "Endereço salvo carregado." : "Endereço salvo carregado (sem coordenadas — distância manual).", latAtual ? "ok" : "warn");
+      if (onMudou) onMudou();
+    }
+
+    igrejaInput.addEventListener("input", function(){
+      var termo = igrejaInput.value.trim();
+      if (termo.length < 2){ sugestoesEl.hidden = true; return; }
+      var termoNorm = normalizaTexto(termo);
+      var candidatos = IGREJAS_CONHECIDAS.filter(function(nome){
+        return normalizaTexto(nome).indexOf(termoNorm) !== -1;
+      }).slice(0, 8);
+      if (!candidatos.length){ sugestoesEl.hidden = true; return; }
+      sugestoesEl.innerHTML = "";
+      candidatos.forEach(function(nome){
+        var registro = buscarEnderecoSalvo(nome);
+        var item = document.createElement("div");
+        item.className = "autocomplete-item";
+        item.innerHTML = "<span>" + nome + "</span><span class=\"autocomplete-meta\">" + (registro ? "endereço disponível" : "sem endereço") + "</span>";
+        item.addEventListener("mousedown", function(ev){
+          ev.preventDefault();
+          igrejaInput.value = nome;
+          sugestoesEl.hidden = true;
+          var reg = buscarEnderecoSalvo(nome);
+          if (reg) aplicarRegistro(reg);
+          else setStatus("⚠ Ainda não há endereço salvo para esta igreja — digite o CEP abaixo para preencher.", "warn");
+        });
+        sugestoesEl.appendChild(item);
+      });
+      sugestoesEl.hidden = false;
+    });
+    igrejaInput.addEventListener("blur", function(){
+      setTimeout(function(){ sugestoesEl.hidden = true; }, 150);
+    });
+    igrejaInput.addEventListener("focus", function(){
+      igrejaInput.dispatchEvent(new Event("input"));
+    });
+
+    cepInput.addEventListener("input", function(){
+      var digits = cepInput.value.replace(/\D/g, "").slice(0,8);
+      cepInput.value = digits.length > 5 ? digits.slice(0,5) + "-" + digits.slice(5) : digits;
+      marcarAuto(cepInput, false);
+    });
+    cepInput.addEventListener("blur", function(){ buscarCep(); });
+
+    function buscarCep(){
+      var digits = cepInput.value.replace(/\D/g, "");
+      if (digits.length !== 8) return;
+      setStatus("Consultando CEP…", "neutral");
+      fetch("https://viacep.com.br/ws/" + digits + "/json/")
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if (data.erro){ setStatus("CEP não encontrado.", "warn"); return; }
+          var partes = [data.logradouro, data.bairro, [data.localidade, data.uf].filter(Boolean).join("/")].filter(Boolean);
+          enderecoInput.value = partes.join(", ");
+          marcarAuto(enderecoInput, true);
+          setStatus("Endereço preenchido pelo CEP — localizando no mapa…", "ok");
+          geocodificarBloco();
+        })
+        .catch(function(){ setStatus("Não foi possível consultar o CEP agora (sem internet?).", "warn"); });
+    }
+
+    enderecoInput.addEventListener("input", function(){ marcarAuto(enderecoInput, false); });
+    enderecoInput.addEventListener("blur", function(){
+      if (enderecoInput.value.trim()) geocodificarBloco();
+    });
+
+    function geocodificarBloco(){
+      var texto = enderecoInput.value.trim();
+      if (!texto) return;
+      setStatus("Localizando endereço no mapa…", "neutral");
+      var q = encodeURIComponent(texto + ", Rio de Janeiro, Brasil");
+      fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q=" + q)
+        .then(function(r){ return r.json(); })
+        .then(function(arr){
+          if (arr && arr[0]){
+            latAtual = parseFloat(arr[0].lat);
+            lonAtual = parseFloat(arr[0].lon);
+            setStatus("Endereço localizado no mapa.", "ok");
+          } else {
+            latAtual = null; lonAtual = null;
+            setStatus("Endereço não localizado — inclua na distância manualmente.", "warn");
+          }
+          if (onMudou) onMudou();
+        })
+        .catch(function(){
+          latAtual = null; lonAtual = null;
+          setStatus("Falha ao localizar (sem internet?).", "warn");
+          if (onMudou) onMudou();
+        });
+    }
+
+    salvarBtn.addEventListener("click", function(){
+      var nome = igrejaInput.value.trim();
+      if (!nome){ alert("Informe o nome da igreja antes de salvar o endereço."); return; }
+      if (!enderecoInput.value.trim()){ alert("Informe o endereço antes de salvar."); return; }
+      salvarEnderecoLivro(nome, {
+        cep: cepInput.value,
+        enderecoCompleto: enderecoInput.value,
+        lat: latAtual, lon: lonAtual,
+        salvoEm: new Date().toISOString()
+      });
+      setStatus('Endereço salvo para "' + nome + '". Da próxima vez, digitar esse nome já preenche.', "ok");
+      atualizarIgrejasConhecidas();
+    });
+
+    var api = {
+      get igreja(){ return igrejaInput.value.trim(); },
+      get endereco(){ return enderecoInput.value.trim(); },
+      get lat(){ return latAtual; },
+      get lon(){ return lonAtual; },
+      get textoResumo(){
+        var nome = igrejaInput.value.trim();
+        var end = enderecoInput.value.trim();
+        if (nome && end) return nome + " (" + end + ")";
+        return nome || end || "";
+      },
+      setIgreja: function(nome){
+        igrejaInput.value = nome || "";
+        var reg = nome ? buscarEnderecoSalvo(nome) : null;
+        if (reg) aplicarRegistro(reg);
+        else { latAtual = null; lonAtual = null; cepInput.value = ""; enderecoInput.value = ""; marcarAuto(cepInput, false); marcarAuto(enderecoInput, false); setStatus("⚠ Ainda não há endereço salvo para esta igreja — digite o CEP abaixo para preencher.", "warn"); }
+      },
+      limpar: function(){
+        igrejaInput.value = ""; cepInput.value = ""; enderecoInput.value = "";
+        latAtual = null; lonAtual = null;
+        marcarAuto(cepInput, false); marcarAuto(enderecoInput, false);
+        setStatus("Preencha a igreja ou o CEP", "neutral");
+      }
+    };
+    root._api = api;
+    return api;
+  }
+
+  var blocoOrigem = null, blocoDestino = null;
+  var paradasAtivas = [];
+  var recalculoTimer = null;
+
+  function agendarRecalculoRota(){
+    clearTimeout(recalculoTimer);
+    recalculoTimer = setTimeout(recalcularDistanciaRota, 500);
+  }
+
+  var distanciaAutoValor = null;
+
+  function recalcularDistanciaRota(){
+    if (!blocoOrigem || !blocoDestino) return;
+    var pontos = [blocoOrigem];
+    paradasAtivas.forEach(function(p){ if (p.api.igreja || p.api.endereco) pontos.push(p.api); });
+    pontos.push(blocoDestino);
+
+    var comCoordenadas = pontos.filter(function(p){ return p.lat && p.lon; });
+    if (comCoordenadas.length < 2){
+      el.distanciaAutoHint.textContent = "";
+      return;
+    }
+    if (comCoordenadas.length !== pontos.length){
+      el.distanciaAutoHint.innerHTML = '<span style="color:var(--warning);">Nem todos os pontos foram localizados no mapa — distância parcial, confira manualmente.</span>';
+    } else {
+      el.distanciaAutoHint.innerHTML = '<span style="color:var(--success);">Distância calculada automaticamente pela rota.</span>';
+    }
+
+    var totalKm = 0;
+    for (var i=0; i<comCoordenadas.length-1; i++){
+      totalKm += haversineKm(comCoordenadas[i].lat, comCoordenadas[i].lon, comCoordenadas[i+1].lat, comCoordenadas[i+1].lon);
+    }
+    totalKm = totalKm * ROTA_FATOR_CORRECAO;
+    distanciaAutoValor = Math.round(totalKm * 10) / 10;
+
+    // Campo travado por padrão: o cálculo automático sempre vale, sem precisar de clique.
+    // Só não sobrescreve se o administrador tiver liberado edição manual e já tiver digitado outro valor.
+    var respeitarValorManual = isAdmin && el.distancia.dataset.autoPreenchido !== "1" && el.distancia.value !== "";
+    if (!respeitarValorManual){
+      el.distancia.value = distanciaAutoValor;
+      el.distancia.dataset.autoPreenchido = "1";
+      marcarAuto(el.distancia, true);
+      calcular();
+    }
+  }
+
+  function renumerarParadas(){
+    paradasAtivas.forEach(function(p, i){
+      p.root.querySelector(".addr-title").textContent = "Parada " + (i+1);
+    });
+  }
+  function atualizarUiParadas(){
+    document.getElementById("btnAddParada").hidden = paradasAtivas.length >= MAX_PARADAS;
+    document.getElementById("paradasVazio").hidden = paradasAtivas.length > 0;
+  }
+  function adicionarParada(){
+    if (paradasAtivas.length >= MAX_PARADAS) return;
+    var root = criarBlocoEnderecoElemento("Parada " + (paradasAtivas.length + 1), true);
+    document.getElementById("paradasContainer").appendChild(root);
+    var api = inicializarBlocoEndereco(root, agendarRecalculoRota);
+    root.querySelector(".addr-remove").addEventListener("click", function(){
+      root.remove();
+      paradasAtivas = paradasAtivas.filter(function(p){ return p.root !== root; });
+      renumerarParadas();
+      atualizarUiParadas();
+      agendarRecalculoRota();
+    });
+    paradasAtivas.push({root: root, api: api});
+    renumerarParadas();
+    atualizarUiParadas();
+  }
+  // ================= FIM ENDEREÇOS =================
+
+  // ---- autocomplete ----
+  function buscarSugestoes(termo){
+    var t = normalizaPlaca(termo);
+    if (t.length < 2) return [];
+    var out = [];
+    for (var i=0;i<DB.vehicles.length;i++){
+      var v = DB.vehicles[i];
+      if (v[0].replace(/-/g,"").indexOf(t) === 0){
+        out.push(v);
+        if (out.length >= 8) break;
+      }
+    }
+    return out;
+  }
+
+  function renderSugestoes(lista){
+    if (!lista.length){ el.autocompleteList.hidden = true; el.autocompleteList.innerHTML = ""; return; }
+    el.autocompleteList.innerHTML = "";
+    lista.forEach(function(v){
+      var modelo = DB.models[v[4]];
+      var item = document.createElement("div");
+      item.className = "autocomplete-item";
+      item.innerHTML = "<span class=\"autocomplete-plate\">" + v[0] + "</span>" +
+                        "<span class=\"autocomplete-meta\">" + modelo[0] + " — " + v[3] + "</span>";
+      item.addEventListener("mousedown", function(ev){
+        ev.preventDefault();
+        el.placaInput.value = formataPlacaExibicao(v[0]);
+        selecionarPlaca(v[0]);
+      });
+      el.autocompleteList.appendChild(item);
+    });
+    el.autocompleteList.hidden = false;
+  }
+
+  function limparIdentificacao(){
+    currentVehicle = null;
+    el.infoGrid.hidden = true;
+    el.autoCaption.hidden = true;
+    el.fallbackManual.hidden = true;
+    el.consumoAtivo.value = "";
+    el.origemFieldset.disabled = true;
+    el.origemHint.hidden = false;
+    el.origemBlocoWrap.hidden = true;
+    esconderIconeVeiculo();
+    if (blocoOrigem) blocoOrigem.limpar();
+    calcular();
+  }
+
+  function selecionarPlaca(placaKey){
+    var v = vehicleByPlate[normalizaPlaca(placaKey)];
+    el.autocompleteList.hidden = true;
+    if (!v){
+      currentVehicle = null;
+      el.infoGrid.hidden = true;
+    el.autoCaption.hidden = true;
+      el.fallbackManual.hidden = false;
+      el.placaStatus.className = "status-line show status-warn";
+      el.placaStatus.textContent = "Placa não encontrada na base — preencha o consumo manualmente.";
+      el.origemFieldset.disabled = true;
+      el.origemHint.hidden = false;
+      el.origemHint.textContent = "Placa não cadastrada — preencha a origem manualmente abaixo, se necessário.";
+      el.origemBlocoWrap.hidden = true;
+      esconderIconeVeiculo();
+      if (blocoOrigem) blocoOrigem.limpar();
+      el.preco.dataset.editadoManual = "0";
+      el.consumoAtivo.dataset.editadoManual = "0";
+      definirPrecoFixo(el.tipoCombustivelManual.value);
+      calcular();
+      return;
+    }
+    currentVehicle = v;
+    var modelo = DB.models[v[4]]; // exibicao, motor, transmissao, combustivel, consumo, estimativa
+    el.fallbackManual.hidden = true;
+    el.placaStatus.className = "status-line show status-ok";
+    el.placaStatus.textContent = "Veículo encontrado na base.";
+
+    el.infoModelo.textContent = modelo[0];
+    el.infoMotor.textContent = modelo[1];
+    el.infoCambio.textContent = modelo[2];
+    el.infoCombAno.textContent = modelo[3] + (v[5] ? (" · " + v[5]) : "");
+    el.infoBloco.textContent = v[1] || "—";
+    el.infoRegiao.textContent = v[2] || "—";
+    el.infoIgreja.textContent = v[3] || "—";
+    el.infoGrid.hidden = false;
+    el.autoCaption.hidden = false;
+    mostrarIconeVeiculo(modelo[0]);
+
+    el.preco.dataset.editadoManual = "0";
+    el.consumoAtivo.dataset.editadoManual = "0";
+    definirPrecoFixo(modelo[3]);
+
+    el.origemFieldset.disabled = false;
+    el.origemHint.hidden = true;
+    el.origemBlocoWrap.hidden = false;
+    if (blocoOrigem) blocoOrigem.setIgreja(v[3] || "");
+
+    calcular();
+  }
+
+  el.placaInput.addEventListener("input", function(){
+    var raw = el.placaInput.value;
+    var norm = normalizaPlaca(raw);
+    el.placaInput.value = formataPlacaExibicao(norm);
+    el.placaStatus.className = "status-line";
+    if (norm.length < 7){
+      limparIdentificacao();
+      renderSugestoes(buscarSugestoes(norm));
+      return;
+    }
+    var sugestoes = buscarSugestoes(norm);
+    if (norm.length >= 7 && vehicleByPlate[norm]){
+      selecionarPlaca(norm);
+    } else {
+      renderSugestoes(sugestoes);
+      if (norm.length >= 7 && sugestoes.length === 0){
+        selecionarPlaca(norm); // dispara fallback "não encontrada"
+      }
+    }
+  });
+  el.placaInput.addEventListener("blur", function(){
+    setTimeout(function(){ el.autocompleteList.hidden = true; }, 150);
+  });
+  el.placaInput.addEventListener("focus", function(){
+    renderSugestoes(buscarSugestoes(el.placaInput.value));
+  });
+
+  // ---- percurso toggle ----
+  document.querySelectorAll("[data-percurso]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      document.querySelectorAll("[data-percurso]").forEach(function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      percursoAtual = btn.getAttribute("data-percurso");
+      calcular();
+    });
+  });
+
+  // ---- gauge ----
+  function updateGauge(tanques, hasCapacity){
+    var fraction;
+    if (!hasCapacity || tanques <= 0){ fraction = 0; }
+    else {
+      fraction = tanques % 1;
+      if (fraction === 0) fraction = 1;
+    }
+    fraction = Math.min(Math.max(fraction, 0), 1);
+    var angle = -90 + fraction * 180;
+    el.gaugeNeedle.setAttribute("transform", "rotate(" + angle + " 100 110)");
+
+    if (!hasCapacity){ el.gaugeLabel.textContent = "Informe a capacidade do tanque"; }
+    else if (tanques <= 0){ el.gaugeLabel.textContent = "0 tanques"; }
+    else {
+      var plural = tanques >= 2 ? "s" : "";
+      el.gaugeLabel.textContent = fmtNum(tanques, 2) + " tanque" + plural + " cheio" + plural;
+    }
+
+    // segundo painel: velocímetro de % do tanque usado nesta viagem (satura em 100%)
+    var pct = hasCapacity ? Math.min(Math.max(tanques * 100, 0), 100) : 0;
+    var anguloPct = -90 + (pct/100) * 180;
+    el.gaugePercentNeedle.setAttribute("transform", "rotate(" + anguloPct + " 100 110)");
+    if (!hasCapacity){ el.gaugePercentLabel.textContent = "% do tanque nesta viagem"; }
+    else { el.gaugePercentLabel.textContent = fmtNum(hasCapacity ? Math.min(tanques*100,999) : 0, 0) + "% do tanque" + (tanques > 1 ? " (mais de 1 tanque)" : ""); }
+  }
+
+  // ---- calculo principal ----
+  function calcular(){
+    var distancia = num(el.distancia);
+    var idaVolta = percursoAtual === "idavolta";
+    var consumo = el.fallbackManual.hidden ? num(el.consumoAtivo) : num(el.consumoManual);
+    var preco = num(el.preco);
+    var tanque = num(el.tanque);
+
+    var distanciaTotal = distancia * (idaVolta ? 2 : 1);
+    var litros = consumo > 0 ? distanciaTotal / consumo : 0;
+    var custoTotal = litros * preco;
+    var custoPorKm = distanciaTotal > 0 ? custoTotal / distanciaTotal : 0;
+    var litrosPorKm = distanciaTotal > 0 ? litros / distanciaTotal : 0;
+
+    el.rLitros.textContent = fmtNum(litros, 2) + " L";
+    el.rCusto.textContent = fmtBRL(custoTotal);
+    el.rCustoKm.textContent = fmtBRL(custoPorKm) + "/km";
+    el.rLitrosKm.textContent = fmtNum(litrosPorKm, 3) + " L/km";
+
+    var tanques = tanque > 0 ? litros / tanque : 0;
+    updateGauge(tanques, tanque > 0);
+
+    var origemTexto = blocoOrigem ? (blocoOrigem.textoResumo || "—") : "—";
+    var destinoTexto = blocoDestino ? (blocoDestino.textoResumo || "—") : "—";
+    var paradasTextos = paradasAtivas.map(function(p){ return p.api.textoResumo; }).filter(Boolean);
+
+    lastResult = {
+      data: new Date().toISOString(),
+      solicitante: (el.nomeSolicitante.value || "").trim() || "—",
+      placa: currentVehicle ? formataPlacaExibicao(currentVehicle[0]) : (el.placaInput.value || "—"),
+      modelo: currentVehicle ? DB.models[currentVehicle[4]][0] : "Não cadastrado",
+      bloco: currentVehicle ? (currentVehicle[1] || "—") : "—",
+      regiao: currentVehicle ? (currentVehicle[2] || "—") : "—",
+      igreja: currentVehicle ? (currentVehicle[3] || "—") : "—",
+      kmVeiculo: num(el.kmAtualVeiculo),
+      origem: origemTexto,
+      origemTexto: origemTexto,
+      destinoTexto: destinoTexto,
+      paradasTextos: paradasTextos,
+      percurso: idaVolta ? "Ida e volta" : "Somente ida",
+      consumo: consumo,
+      preco: preco,
+      distanciaTotal: distanciaTotal,
+      litros: litros,
+      custoTotal: custoTotal
+    };
+  }
+
+  el.tipoCombustivelManual.addEventListener("change", function(){
+    definirPrecoFixo(el.tipoCombustivelManual.value);
+  });
+
+  [el.distancia, el.consumoAtivo, el.consumoManual, el.preco, el.tanque].forEach(function(input){
+    input.addEventListener("input", function(){
+      if (input === el.distancia){ el.distancia.dataset.autoPreenchido = "0"; marcarAuto(el.distancia, false); }
+      if (input === el.preco){ el.preco.dataset.editadoManual = "1"; marcarAuto(el.preco, false); }
+      if (input === el.consumoAtivo){ el.consumoAtivo.dataset.editadoManual = "1"; }
+      calcular();
+    });
+  });
+
+  // ---- comparador ----
+  function compararCombustiveis(){
+    var pe = num(el.precoEtanol);
+    var pg = num(el.precoGasolina);
+    if (pe <= 0 || pg <= 0){
+      el.compareResult.textContent = "Informe os dois preços para comparar.";
+      el.compareBarFill.style.width = "0%";
+      return;
+    }
+    var ratio = pe / pg;
+    var pct = ratio * 100;
+    el.compareBarFill.style.width = Math.min(pct, 100) + "%";
+    if (ratio <= 0.7){
+      el.compareBarFill.style.background = "var(--success)";
+      el.compareResult.innerHTML = "<strong>Etanol compensa.</strong> Ele custa " + fmtNum(pct, 1) + "% do preço da gasolina (limite de referência: 70%).";
+    } else {
+      el.compareBarFill.style.background = "var(--warning)";
+      el.compareResult.innerHTML = "<strong>Gasolina compensa.</strong> O etanol está em " + fmtNum(pct, 1) + "% do preço da gasolina, acima do limite de referência de 70%.";
+    }
+  }
+  [el.precoEtanol, el.precoGasolina].forEach(function(input){ input.addEventListener("input", compararCombustiveis); });
+
+  // ---- historico ----
+  function lerHistorico(){
+    try { var raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }
+    catch(e){ return []; }
+  }
+  function salvarHistorico(lista){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(lista.slice(0,150))); }
+    catch(e){ /* indisponível */ }
+  }
+  function renderHistorico(){
+    var lista = lerHistorico();
+    if (lista.length === 0){ el.historyEmpty.hidden = false; el.historyTable.hidden = true; return; }
+    el.historyEmpty.hidden = true; el.historyTable.hidden = false;
+    el.historyBody.innerHTML = "";
+    lista.forEach(function(item){
+      var tr = document.createElement("tr");
+      var dataFmt = new Date(item.data).toLocaleString("pt-BR", {day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit"});
+      tr.innerHTML =
+        "<td>" + dataFmt + "</td>" +
+        "<td>" + m(item.solicitante || "—") + "</td>" +
+        "<td>" + m(item.placa) + "</td>" +
+        "<td>" + (item.bloco || "—") + "</td>" +
+        "<td>" + (item.regiao || "—") + "</td>" +
+        "<td>" + (item.igreja || "—") + "</td>" +
+        "<td>" + fmtNum(item.distanciaTotal,1) + " km</td>" +
+        "<td>" + fmtBRL(item.custoTotal) + "</td>";
+      el.historyBody.appendChild(tr);
+    });
+  }
+  function salvarCalculoAtual(){
+    calcular();
+    if (!lastResult || lastResult.distanciaTotal <= 0) return;
+    try { localStorage.setItem(NOME_SOLICITANTE_KEY, lastResult.solicitante === "—" ? "" : lastResult.solicitante); } catch(e){}
+    var lista = lerHistorico();
+    lista.unshift(lastResult);
+    salvarHistorico(lista);
+    renderHistorico();
+    document.getElementById("historyCard").hidden = false;
+  }
+  function limparHistorico(){
+    if (confirm("Limpar todas as solicitações salvas neste navegador?")){
+      salvarHistorico([]);
+      renderHistorico();
+    }
+  }
+
+  document.getElementById("btnSalvar").addEventListener("click", salvarCalculoAtual);
+  document.getElementById("btnLimparHistorico").addEventListener("click", limparHistorico);
+
+  // ================= XLSX: exportar (usuário) / importar (admin) =================
+  function baixarArquivo(nome, conteudo, tipo){
+    var blob = new Blob(["\uFEFF" + conteudo], {type: tipo + ";charset=utf-8"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = nome;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  }
+  function gerarLinhasPlanilha(lista){
+    return lista.map(function(item){
+      var dataFmt = item.data || "";
+      if (/^\d{4}-\d{2}-\d{2}T/.test(dataFmt)){ dataFmt = new Date(dataFmt).toLocaleString("pt-BR"); }
+      return {
+        "Data": dataFmt,
+        "Solicitante": item.solicitante || "",
+        "Placa": item.placa || "",
+        "Bloco": item.bloco || "",
+        "Regiao": item.regiao || "",
+        "Igreja": item.igreja || "",
+        "KM_rota": Math.round((item.distanciaTotal || 0) * 10) / 10,
+        "Valor": Math.round((item.custoTotal || 0) * 100) / 100
+      };
+    });
+  }
+  function gerarPlanilha(lista, nomeArquivo){
+    if (typeof XLSX === "undefined"){
+      alert("Não foi possível carregar o gerador de Excel (precisa de internet na primeira vez). Tente novamente com conexão.");
+      return;
+    }
+    var ws = XLSX.utils.json_to_sheet(gerarLinhasPlanilha(lista));
+    ws["!cols"] = [{wch:17},{wch:20},{wch:11},{wch:14},{wch:16},{wch:24},{wch:10},{wch:11}];
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Solicitações");
+    XLSX.writeFile(wb, nomeArquivo);
+  }
+  function exportarSolicitacoes(){
+    var lista = lerHistorico();
+    if (!lista.length){ alert("Nenhuma solicitação salva para exportar ainda."); return; }
+    var quem = normalizaTexto(el.nomeSolicitante.value || "solicitante").replace(/\s+/g, "_") || "solicitante";
+    gerarPlanilha(lista, "solicitacoes_" + quem + ".xlsx");
+  }
+  document.getElementById("btnExportarSolicitacoes").addEventListener("click", exportarSolicitacoes);
+
+  var IMPORTADAS_KEY = "combustivel_frota_importadas_admin";
+  function lerImportadas(){ try { return JSON.parse(localStorage.getItem(IMPORTADAS_KEY) || "[]"); } catch(e){ return []; } }
+  function salvarImportadas(lista){ try { localStorage.setItem(IMPORTADAS_KEY, JSON.stringify(lista.slice(0,3000))); } catch(e){} }
+
+  function renderImportadas(){
+    var lista = lerImportadas();
+    var tabela = document.getElementById("importadasTable");
+    var vazio = document.getElementById("importadasEmpty");
+    var corpo = document.getElementById("importadasBody");
+    if (!lista.length){ vazio.hidden = false; tabela.hidden = true; return; }
+    vazio.hidden = true; tabela.hidden = false;
+    corpo.innerHTML = "";
+    lista.forEach(function(item){
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>" + (item.data || "—") + "</td>" +
+        "<td>" + (item.solicitante || "—") + "</td>" +
+        "<td>" + (item.placa || "—") + "</td>" +
+        "<td>" + (item.bloco || "—") + "</td>" +
+        "<td>" + (item.regiao || "—") + "</td>" +
+        "<td>" + (item.igreja || "—") + "</td>" +
+        "<td>" + fmtNum(item.distanciaTotal,1) + " km</td>" +
+        "<td>" + fmtBRL(item.custoTotal) + "</td>";
+      corpo.appendChild(tr);
+    });
+  }
+
+  document.getElementById("importarArquivo").addEventListener("change", function(ev){
+    var arquivos = Array.prototype.slice.call(ev.target.files || []);
+    if (!arquivos.length) return;
+    var msg = document.getElementById("importarMsg");
+    if (typeof XLSX === "undefined"){
+      msg.textContent = "Não foi possível carregar o leitor de Excel (precisa de internet na primeira vez). Tente novamente com conexão.";
+      return;
+    }
+    var pendentes = arquivos.length;
+    var novos = [];
+    var falhas = 0;
+    arquivos.forEach(function(file){
+      var reader = new FileReader();
+      reader.onload = function(){
+        try {
+          var wb = XLSX.read(reader.result, {type: "array"});
+          var ws = wb.Sheets[wb.SheetNames[0]];
+          var linhas = XLSX.utils.sheet_to_json(ws);
+          linhas.forEach(function(l){
+            novos.push({
+              data: l["Data"] || "",
+              solicitante: l["Solicitante"] || "",
+              placa: l["Placa"] || "",
+              bloco: l["Bloco"] || "",
+              regiao: l["Regiao"] || l["Região"] || "",
+              igreja: l["Igreja"] || "",
+              distanciaTotal: parseFloat(l["KM_rota"]) || 0,
+              custoTotal: parseFloat(l["Valor"]) || 0
+            });
+          });
+        } catch(e){ falhas++; }
+        pendentes--;
+        if (pendentes === 0){
+          var atual = lerImportadas();
+          salvarImportadas(atual.concat(novos));
+          renderImportadas();
+          msg.textContent = novos.length + " solicitação(ões) importada(s) de " + arquivos.length + " arquivo(s)." + (falhas ? " (" + falhas + " arquivo(s) não puderam ser lidos.)" : "");
+          ev.target.value = "";
+        }
+      };
+      reader.onerror = function(){ pendentes--; falhas++; };
+      reader.readAsArrayBuffer(file);
+    });
+  });
+
+  document.getElementById("btnExportarImportadas").addEventListener("click", function(){
+    var lista = lerImportadas();
+    if (!lista.length){ alert("Nenhuma solicitação importada ainda
