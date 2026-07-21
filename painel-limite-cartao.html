@@ -223,6 +223,7 @@
     <div class="bloco-picker" id="blocoPickerWrap" style="margin:16px auto;">
       <select id="loginPerfil">
         <option value="">Selecione seu bloco…</option>
+        <option value="__visitante__">BASE TESTE (visitante, somente visualização)</option>
         <option value="ABOLICAO">ABOLICAO</option>
         <option value="ADMRJ">ADMRJ</option>
         <option value="ALCANTARA">ALCANTARA</option>
@@ -710,7 +711,7 @@
     document.getElementById("loginError").hidden = true;
     if (!modoAdmin && !perfil){ mostrarErroLogin("Escolha o seu bloco na lista."); return; }
     if (!senha){ mostrarErroLogin("Digite a senha."); return; }
-    var emailAlvo = modoAdmin ? "admin.principal@paineliurd.app" : BLOCO_EMAIL[perfil];
+    var emailAlvo = modoAdmin ? "admin.principal@paineliurd.app" : (perfil === "__visitante__" ? "basedeteste@paineliurd.app" : BLOCO_EMAIL[perfil]);
     document.getElementById("loginCarregando").hidden = false;
     checarBloqueioSenha(emailAlvo).then(function(chk){
       if (chk.bloqueado){
