@@ -566,6 +566,7 @@
             <option value="">Selecione seu bloco…</option>
             <option value="__geral__">Acesso geral (qualquer veículo)</option>
             <option value="__visitante__">BASE TESTE</option>
+            <option value="__admin__">PORTAL ADM</option>
             <optgroup label="BLOCOS">
             <option value="ABOLICAO">ABOLICAO</option>
             <option value="ADMRJ">ADMRJ</option>
@@ -2468,7 +2469,7 @@
     erroEl.hidden = true;
     if (!senha){ erroEl.textContent = "Digite a senha."; erroEl.hidden = false; return; }
 
-    var emailPrincipal = (perfil && BLOCO_EMAIL[perfil]) ? BLOCO_EMAIL[perfil] : (perfil === "__visitante__" ? "basedeteste@paineliurd.app" : "geral@paineliurd.app");
+    var emailPrincipal = (perfil && BLOCO_EMAIL[perfil]) ? BLOCO_EMAIL[perfil] : (perfil === "__visitante__" ? "basedeteste@paineliurd.app" : (perfil === "__admin__" ? "admin@paineliurd.app" : "geral@paineliurd.app"));
 
     checarBloqueioSenha(emailPrincipal).then(function(chk){
       if (chk.bloqueado){
@@ -2507,6 +2508,8 @@
         tentativa(BLOCO_EMAIL[perfil], null, null);
       } else if (perfil === "__visitante__"){
         tentativa("basedeteste@paineliurd.app", null, null);
+      } else if (perfil === "__admin__"){
+        tentativa("admin@paineliurd.app", "adminaux@paineliurd.app", null);
       } else {
         tentativa("geral@paineliurd.app", "admin@paineliurd.app", "adminaux@paineliurd.app");
       }
